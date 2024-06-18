@@ -22,3 +22,6 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64
 
 !ENTRY org.eclipse.cdt.core 1 0 2024-06-17 20:10:16.260
 !MESSAGE Indexed 'FreeRTOSDemoProject' (30 sources, 99 headers) in 2.4 sec: 6,458 declarations; 28,274 references; 0 unresolved inclusions; 1 syntax errors; 5 unresolved names (0.014%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-06-18 07:09:10.895
+!MESSAGE Indexed 'FreeRTOSDemoProject' (33 sources, 103 headers) in 6.83 sec: 8,169 declarations; 49,737 references; 0 unresolved inclusions; 1 syntax errors; 10 unresolved names (0.017%)

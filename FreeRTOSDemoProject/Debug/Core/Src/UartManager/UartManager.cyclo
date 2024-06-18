@@ -1,0 +1,4 @@
+../Core/Src/UartManager/UartManager.c:40:6:message_handler_task	2
+../Core/Src/UartManager/UartManager.c:58:6:print_task	1
+../Core/Src/UartManager/UartManager.c:73:6:process_message	1
+../Core/Src/UartManager/UartManager.c:85:5:extract_command	4

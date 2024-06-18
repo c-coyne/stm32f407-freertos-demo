@@ -34,11 +34,27 @@ extern "C" {
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+#include "UartManager.h"
 
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+
+typedef enum {
+	sDefault = 0
+}state_t;
+
+extern xTaskHandle handle_message_handler_task;
+extern xTaskHandle handle_print_task;
+
+extern QueueHandle_t q_print;
+extern QueueHandle_t q_data;
+
+extern UART_HandleTypeDef huart2;
+
+extern state_t curr_state;
 
 /* USER CODE END ET */
 

@@ -40,19 +40,28 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-xTaskHandle handle_sample_task;
+xTaskHandle handle_message_handler_task;
+xTaskHandle handle_print_task;
+
+QueueHandle_t q_print;
+QueueHandle_t q_data;
+
+volatile uint8_t user_data;
+
+// State variable
+state_t curr_state = sDefault;
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
-void sample_task_function(void *param);
 
 /* USER CODE END PFP */
 
@@ -92,11 +101,30 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  status = xTaskCreate(sample_task_function, "sample_task", 250, NULL, 2, &handle_sample_task);
-
+  // Create message handler task and check that it was created successfully
+  status = xTaskCreate(message_handler_task, "msg_task", 250, NULL, 2, &handle_message_handler_task);
   configASSERT(pdPASS == status);
+
+  // Create print task and check that it was created successfully
+  status = xTaskCreate(print_task, "print_task", 250, NULL, 2, &handle_print_task);
+  configASSERT(pdPASS == status);
+
+  // Create data queue and check that it was created successfully
+  q_data = xQueueCreate(10, sizeof(char));
+  configASSERT(NULL != q_data);
+
+  // Create print queue and check that it was created successfully
+  q_print = xQueueCreate(10, sizeof(size_t));
+  configASSERT(NULL != q_print);
+
+  // Prepare UART to receive a message
+  HAL_UART_Receive_IT(&huart2, (uint8_t*)&user_data, 1);
+
+  // Start the kernel
+  vTaskStartScheduler();
 
   /* USER CODE END 2 */
 
@@ -155,6 +183,39 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
 }
 
 /**
@@ -301,12 +362,61 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-void sample_task_function(void *param)
+// This function is called from the UART interrupt handler, so it executes in the interrupt context
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	// Dummy variable used to replace final character in data queue
+	uint8_t dummy;
+
+	// Add a small delay to allow timing for message transmission
+//	for(uint32_t i=0; i<4000; i++)
+
+	// Check if data is available via UART
+	if(!xQueueIsQueueFullFromISR(q_data)) {
+		// Enqueue data byte
+		xQueueSendFromISR(q_data, (void*)&user_data, NULL);
+	}
+	// If no data available, check if last entered character is newline character
+	else {
+		if(user_data == '\n') {
+			// Replace last byte of data queue with '\n'
+			xQueueReceiveFromISR(q_data, (void*)&dummy, NULL);
+			xQueueSendFromISR(q_data, (void*)&user_data, NULL);
+		}
+	}
+
+	// Send notification to message handler task if user_data == '\n'
+	if(user_data == '\n') {
+		xTaskNotifyFromISR(handle_message_handler_task, 0, eNoAction, NULL);
+	}
+
+	// Enable UART data byte reception again in interrupt mode
+	HAL_UART_Receive_IT(&huart2, (uint8_t*)&user_data, 1);
 
 }
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM6 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM6) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

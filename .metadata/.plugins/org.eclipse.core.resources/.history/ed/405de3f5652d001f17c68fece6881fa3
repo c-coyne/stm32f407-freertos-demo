@@ -1,0 +1,20 @@
+/*
+ * UartManager.h
+ *
+ *  Created on: Jun 17, 2024
+ *      Author: chris
+ */
+
+#ifndef UARTMANAGER_H_
+#define UARTMANAGER_H_
+
+#include "Config_UartManager.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include <stdint.h>
+
+void message_handler_task(void *param);
+void print_task(void *param);
+
+#endif /* UARTMANAGER_H_ */
