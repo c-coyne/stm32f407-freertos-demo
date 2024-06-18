@@ -13,6 +13,7 @@ This project is intended to demonstrate a variety of the features available with
 - **Software:** STM32CubeIDE, FreeRTOS
 
 ## Project Structure
+```
 FreeRTOSDemoProject/
 ├── Binaries/
 ├── Includes/
@@ -49,7 +50,7 @@ FreeRTOSDemoProject/
 │ └── Tasks/
 │ │ └── UartManager.md
 └── README.md
-
+```
 
 ## Getting Started
 
