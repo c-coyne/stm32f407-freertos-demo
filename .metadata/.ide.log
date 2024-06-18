@@ -830,3 +830,37 @@
 2024-06-17 15:47:04,268 [INFO] ApiDb:452 - User favorites MCUs=[]
 2024-06-17 15:47:04,271 [INFO] ApiDb:448 - Save user favorites file /home/chris/.stm32cubeide/favorites.boards.txt: 0 item(s)
 2024-06-17 15:47:04,271 [INFO] ApiDb:452 - User favorites Boards=[]
+2024-06-17 20:21:04,552 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 630619728 Bytes (1045430272)
+2024-06-17 20:21:06,199 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 655785552 Bytes (1045430272)
+2024-06-17 20:21:14,554 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 742817360 Bytes (1045430272)
+2024-06-17 20:21:14,805 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-06-17 20:21:14,805 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-06-17 20:21:14,805 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-06-17 20:21:14,806 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-06-17 20:21:14,806 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-06-17 20:21:15,007 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-06-17 20:21:15,268 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-06-17 20:21:15,372 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-06-17 20:21:15,569 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-06-17 20:21:15,681 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-06-17 20:21:16,209 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-06-17 20:21:16,211 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-06-17 20:21:16,349 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-06-17 20:21:16,375 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-06-17 20:21:16,589 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-06-17 20:21:16,592 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-06-17 20:21:16,724 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-06-17 20:21:16,740 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-06-17 20:21:16,861 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-06-17 20:21:16,901 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-06-17 20:21:17,088 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-06-17 20:21:17,091 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-06-17 20:21:17,278 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-06-17 20:21:17,989 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 360mS.
+2024-06-17 20:21:17,993 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-06-17 20:21:18,129 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-06-17 20:21:19,656 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 1663mS.
+2024-06-17 20:21:19,657 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 1mS.
+2024-06-17 20:21:19,658 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 1mS.
+2024-06-17 20:21:23,574 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out
+2024-06-17 20:21:33,398 [ERROR] ConfigurationRetriever:142 - IOException on connection: Read timed out

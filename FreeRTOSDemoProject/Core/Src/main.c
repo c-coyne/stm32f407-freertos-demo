@@ -43,12 +43,16 @@
 
 /* USER CODE BEGIN PV */
 
+xTaskHandle handle_sample_task;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
+
+void sample_task_function(void *param);
 
 /* USER CODE END PFP */
 
@@ -65,6 +69,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+
+  BaseType_t status;
 
   /* USER CODE END 1 */
 
@@ -87,6 +93,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+
+  status = xTaskCreate(sample_task_function, "sample_task", 250, NULL, 2, &handle_sample_task);
+
+  configASSERT(pdPASS == status);
 
   /* USER CODE END 2 */
 
@@ -290,6 +300,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void sample_task_function(void *param)
+{
+
+}
 
 /* USER CODE END 4 */
 
