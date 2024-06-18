@@ -86,13 +86,16 @@ FreeRTOSDemoProject/
     Sequence Diagram: SequenceDiagram.png
 
 ## License
+
 This project is licensed under the [MIT License](https://opensource.org/license/MIT).
+
+## Contact
+
+Christopher Coyne: christopher.w.coyne@gmail.com  
+Project Link: https://github.com/c-coyne/stm32f407-freertos-demo
 
 ## Acknowledgements
 
     FreeRTOS: FreeRTOS.org
     STM32CubeIDE: STMicroelectronics
 
-Contact
-
-For any questions or feedback, please contact your email.
