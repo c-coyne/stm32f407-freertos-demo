@@ -369,7 +369,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	uint8_t dummy;
 
 	// Add a small delay to allow timing for message transmission
-//	for(uint32_t i=0; i<4000; i++)
+	for(uint32_t i=0; i<4000; i++)
 
 	// Check if data is available via UART
 	if(!xQueueIsQueueFullFromISR(q_data)) {

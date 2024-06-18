@@ -1,9 +1,18 @@
-/*
- * UartManager.h
- *
- *  Created on: Jun 17, 2024
- *      Author: chris
- */
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 18th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 18th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ UartManager ]                                                           |
+| FILE:       UartManager.h                                                             |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `UartManager` task is responsible for handling all UART transmission and       |
+|    reception operations. This task manages communication between the microcontroller  |
+|    and external devices via the UART interface.                                       |
+| --------------------------------------------------------------------------------------|
+\*=====================================================================================*/
 
 #ifndef UARTMANAGER_H_
 #define UARTMANAGER_H_
@@ -21,10 +30,14 @@
 void message_handler_task(void *param);
 void print_task(void *param);
 
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
 typedef struct
 {
 	uint8_t payload[10];
 	uint32_t len;
-}message_t;
+} message_t;
 
 #endif /* UARTMANAGER_H_ */
