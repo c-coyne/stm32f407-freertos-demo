@@ -44,12 +44,13 @@ extern "C" {
 
 // Typedefs
 typedef enum {
-	sDefault = 0
+	sMainMenu = 0
 }state_t;
 
 extern state_t curr_state;
 
 // Task handles
+extern xTaskHandle handle_main_menu_task;
 extern xTaskHandle handle_message_handler_task;
 extern xTaskHandle handle_print_task;
 

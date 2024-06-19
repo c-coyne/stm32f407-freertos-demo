@@ -21,7 +21,13 @@
  *  Messages                                        *
  ****************************************************/
 
+// General system messages
 const char *msg_inv = "**** Invalid option ****\n";
 const char *msg_rcv = " Success: message received\n";
+
+// Main menu
+const char *msg_main_menu = "\n========================\n"
+							  "|       Main Menu      |\n"
+						      "========================\n";
 
 #endif /* CONFIG_UARTMANAGER_H_ */
