@@ -88,6 +88,7 @@ void main_menu_task(void *param)
 			xQueueSend(q_print, &msg_inv, portMAX_DELAY);
 			continue;
 		}
+
 	}
 }
 

@@ -1,25 +1,26 @@
 # UartManager Task Documentation
 
-## Overview
-The `UartManager` task is responsible for handling all UART transmission and reception operations. This task manages communication between the microcontroller and external devices via the UART interface.
+## UartManager: message handler task
+### Overview
+The `message_handler_task` is responsible for handling all UART transmission and reception operations. This task manages communication between the microcontroller and external devices via the UART interface.
 
-## Task Description
-- **Task Name:** UartManager
-- **Priority:** [Specify priority]
-- **Stack Size:** [Specify stack size]
+### Task Description
+- **Task Name:** message_handler_task
+- **Priority:** 2
+- **Stack Size:** 1000 bytes (250 words)
 - **File Location:** `Core/Src/UartManager/UartManager.c`
 - **Header File Location:** `Core/Inc/UartManager/UartManager.h`
 - **Config File Location:** `Core/Inc/UartManager/Config_UartManager.h`
 
-## Functionality
-### Purpose
-The `UartManager` task performs the following functions:
-- Initializes the UART peripheral.
-- Sends and receives data over UART.
-- Handles UART interrupts.
-- Manages a queue for UART messages.
+### Functionality
+#### Purpose
+The main application is configured to take care of initialization of the UART peripheral, handling of UART interrupts, and managing the data queue for UART messages.
 
-### Code Snippet
+The `message_handler_task` performs the following functions:
+- Waits for notification from the UART interrupt handler
+- Receives data from the data queue and processes it accordingly
+
+#### Code Snippet
 ```c
 void message_handler_task(void *param)
 {
@@ -40,19 +41,73 @@ void message_handler_task(void *param)
 }
 ```
 
+## UartManager: print task
+### Overview
+The `print_task` is responsible for displaying data to the user via a UART message.
+
+### Task Description
+- **Task Name:** print_task
+- **Priority:** 2
+- **Stack Size:** 1000 bytes (250 words)
+- **File Location:** `Core/Src/UartManager/UartManager.c`
+- **Header File Location:** `Core/Inc/UartManager/UartManager.h`
+- **Config File Location:** `Core/Inc/UartManager/Config_UartManager.h`
+
+### Functionality
+#### Purpose
+The `print_task` performs the following functions:
+- Waits for data to be populated to the print queue (`q_print`)
+- Sends data from the print queue to the screen via the STM32 HAL
+
+#### Code Snippet
+```c
+void print_task(void *param)
+{
+	uint32_t *msg;
+
+	// Wait for data in the print queue, then send over UART when available
+	while(1){
+		xQueueReceive(q_print, &msg, portMAX_DELAY);
+		HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen((char*)msg),HAL_MAX_DELAY);
+	}
+}
+```
+
 ## Diagrams
 
 ### Data flow diagram
 ```mermaid
-flowchart TD
-    id1[UART interrupt handler] --> id2[UART 'user_data' reception buffer]
-    id2 --> id3[Queue: q_data]
-    id3 --> message_handler_task
-    id1 -->|xTaskNotifyFromISR| message_handler_task
-    message_handler_task --> process_message
-    process_message --> id4[Queue: q_print]
-    id4 --> print_task
-    print_task --> HAL_UART_transmit
+graph TD
+    subgraph FreeRTOS Tasks
+        MHT[message_handler_task]
+        PT[print_task]
+        MMT[main_menu_task]
+    end
+
+    subgraph Queues
+        Q1[q_print]
+        Q2[q_data]
+    end
+
+    subgraph Messages
+        M1[message_t]
+        CMD1[Command]
+    end
+
+    subgraph UART Communication
+        U1[UART_Transmit]
+    end
+
+    MHT -->|Notify process message| PM
+    PM -->|Extract command| EC
+    EC --> Q2
+    Q2 --> EC
+    EC --> PM
+    PM --> MMT
+    MMT -->|Send main menu| Q1
+    MMT -->|Notify invalid entry| Q1
+    Q1 --> PT
+    PT -->|Transmit message over UART| U1
 ```
 
 ### Sequence diagram
