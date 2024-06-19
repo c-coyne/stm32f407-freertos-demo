@@ -1,0 +1,8 @@
+/*
+ * UartManager.c
+ *
+ *  Created on: Jun 17, 2024
+ *      Author: chris
+ */
+
+void process_message(command_t *msg);

@@ -1,0 +1,16 @@
+/*
+ * UartManager.h
+ *
+ *  Created on: Jun 17, 2024
+ *      Author: chris
+ */
+
+#ifndef SRC_UARTMANAGER_UARTMANAGER_H_
+#define SRC_UARTMANAGER_UARTMANAGER_H_
+
+#include "Config_UartManager.h"
+
+void message_handler_task(void *param);
+void print_task(void *param);
+
+#endif /* SRC_UARTMANAGER_UARTMANAGER_H_ */

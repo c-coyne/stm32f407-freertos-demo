@@ -1,0 +1,9 @@
+/*
+ * UartManager.c
+ *
+ *  Created on: Jun 17, 2024
+ *      Author: chris
+ */
+
+void message_handler_task(void *param);
+void print_task(void *param);
