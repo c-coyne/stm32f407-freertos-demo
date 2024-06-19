@@ -39,6 +39,60 @@ int extract_command(message_t *msg);
  ****************************************************/
 
 /*******************************************************************************************************
+ * @brief Task to display and handle the main menu.                                                    *
+ *                                                                                                     *
+ * This FreeRTOS task displays the main menu and waits for user input commands. It sends the main      *
+ * menu message to the print queue (`q_print`) and waits for user input notifications. Based on the    *
+ * received input, it processes the user command and performs the corresponding action.                *
+ *                                                                                                     *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void                                                                                        *
+ *                                                                                                     *
+ * @note This function is intended to run as a FreeRTOS task.                                          *
+ * @note The print queue (`q_print`) must be initialized. The task must be notified when a new         *
+ *       command is available.                                                                         *
+ * @note The main menu is displayed, and the user input is processed. Invalid inputs are handled and   *
+ * an error message is sent to the print queue.                                                        *
+ ******************************************************************************************************/
+void main_menu_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+	int option;
+
+	while(1) {
+
+		xQueueSend(q_print, &msg_main_menu, portMAX_DELAY);
+
+		// Wait for menu commands
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		if(msg->len == 1) {
+			// Get user option, convert from ASCII to number
+			option = msg->payload[0] - 48;
+			switch(option) {
+				case 0:
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				default:
+					xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+					continue;
+			}
+		}
+		// Handle invalid entry
+		else {
+			xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+			continue;
+		}
+
+	}
+}
+
+/*******************************************************************************************************
  * @brief Task to handle messages from the user.                                                       *
  *                                                                                                     *
  * This FreeRTOS task waits for notifications indicating that a new message is available in the data   *
@@ -115,12 +169,14 @@ void process_message(message_t *msg) {
 
 	extract_command(msg);
 
-	xQueueSend(q_print, &msg_rcv, portMAX_DELAY);
-
-//	switch(curr_state) {
-//		default:
-//			break;
-//	}
+	switch(curr_state) {
+		case sMainMenu:
+			// Notify the main menu task and pass the message
+			xTaskNotify(handle_main_menu_task, (uint32_t)msg, eSetValueWithOverwrite);
+			break;
+		default:
+			break;
+	}
 }
 
 /*******************************************************************************************************

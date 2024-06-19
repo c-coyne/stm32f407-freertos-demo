@@ -44,6 +44,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+xTaskHandle handle_main_menu_task;
 xTaskHandle handle_message_handler_task;
 xTaskHandle handle_print_task;
 
@@ -53,7 +54,7 @@ QueueHandle_t q_data;
 volatile uint8_t user_data;
 
 // State variable
-state_t curr_state = sDefault;
+state_t curr_state = sMainMenu;
 
 /* USER CODE END PV */
 
@@ -103,6 +104,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+
+  // Create main menu task and check that it was created successfully
+  status = xTaskCreate(main_menu_task, "main_menu_task", 250, NULL, 2, &handle_main_menu_task);
+  configASSERT(pdPASS == status);
 
   // Create message handler task and check that it was created successfully
   status = xTaskCreate(message_handler_task, "msg_task", 250, NULL, 2, &handle_message_handler_task);
@@ -369,7 +374,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	uint8_t dummy;
 
 	// Add a small delay to allow timing for message transmission
-	for(uint32_t i=0; i<4000; i++)
+	for(uint32_t i=0; i<4000; i++);
 
 	// Check if data is available via UART
 	if(!xQueueIsQueueFullFromISR(q_data)) {

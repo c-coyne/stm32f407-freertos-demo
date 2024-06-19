@@ -27,6 +27,7 @@
  *  Public functions                                *
  ****************************************************/
 
+void main_menu_task(void *param);
 void message_handler_task(void *param);
 void print_task(void *param);
 
