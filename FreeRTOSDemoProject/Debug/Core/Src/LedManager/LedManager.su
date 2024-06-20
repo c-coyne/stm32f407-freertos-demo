@@ -1,0 +1,9 @@
+../Core/Src/LedManager/LedManager.c:82:6:led_task	40	static
+../Core/Src/LedManager/LedManager.c:179:6:led_callback	24	static
+../Core/Src/LedManager/LedManager.c:207:6:set_led_timer	40	static
+../Core/Src/LedManager/LedManager.c:232:6:control_all_leds	16	static
+../Core/Src/LedManager/LedManager.c:254:6:control_led_group	16	static
+../Core/Src/LedManager/LedManager.c:291:6:control_single_led	24	static
+../Core/Src/LedManager/LedManager.c:320:6:execute_led_effect	16	static
+../Core/Src/LedManager/LedManager.c:367:5:parse_freq_string	24	static
+../Core/Src/LedManager/LedManager.c:403:5:freq_str_to_int	24	static

@@ -8,10 +8,9 @@
 | FILE:       Config_UartManager.h                                                      |
 | --------------------------------------------------------------------------------------|
 | DESCRIPTION:                                                                          |
-|    The `UartManager` task is responsible for handling all UART transmission and       |
-|    reception operations. This task manages communication between the microcontroller  |
-|    and external devices via the UART interface.                                       |
-| --------------------------------------------------------------------------------------|
+|    The `UartManager` module is responsible for handling all UART transmission and     |
+|    reception operations. This module manages communication between the                |
+|    microcontroller and external devices via the UART interface.                       |
 \*=====================================================================================*/
 
 #ifndef CONFIG_UARTMANAGER_H_
@@ -22,12 +21,9 @@
  ****************************************************/
 
 // General system messages
-const char *msg_inv = "**** Invalid option ****\n";
-const char *msg_rcv = " Success: message received\n";
+extern const char *msg_inv_uart;
 
 // Main menu
-const char *msg_main_menu = "\n========================\n"
-							  "|       Main Menu      |\n"
-						      "========================\n";
+extern const char *msg_main_menu;
 
 #endif /* CONFIG_UARTMANAGER_H_ */

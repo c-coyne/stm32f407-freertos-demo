@@ -36,6 +36,7 @@ extern "C" {
 #include "task.h"
 #include "queue.h"
 #include "UartManager.h"
+#include "timers.h"
 
 /* USER CODE END Includes */
 
@@ -44,19 +45,24 @@ extern "C" {
 
 // Typedefs
 typedef enum {
-	sMainMenu = 0
-}state_t;
+	sMainMenu = 0,
+	sLedMenu
+} system_state_t;
 
-extern state_t curr_state;
+extern system_state_t curr_sys_state;
 
 // Task handles
 extern xTaskHandle handle_main_menu_task;
 extern xTaskHandle handle_message_handler_task;
 extern xTaskHandle handle_print_task;
+extern xTaskHandle handle_led_task;
 
 // Queue handles
 extern QueueHandle_t q_print;
 extern QueueHandle_t q_data;
+
+// Timer handles
+extern TimerHandle_t handle_led_timer[4];
 
 // UART handles
 extern UART_HandleTypeDef huart2;

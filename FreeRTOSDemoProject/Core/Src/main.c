@@ -22,6 +22,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "LedManager.h"
+#include "Config_LedManager.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,17 +47,24 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+// Task handles
 xTaskHandle handle_main_menu_task;
 xTaskHandle handle_message_handler_task;
 xTaskHandle handle_print_task;
+xTaskHandle handle_led_task;
 
+// Queue handles
 QueueHandle_t q_print;
 QueueHandle_t q_data;
 
+// Software timer handles
+TimerHandle_t handle_led_timer[4];
+
+// UART buffer
 volatile uint8_t user_data;
 
 // State variable
-state_t curr_state = sMainMenu;
+system_state_t curr_sys_state = sMainMenu;
 
 /* USER CODE END PV */
 
@@ -117,6 +127,10 @@ int main(void)
   status = xTaskCreate(print_task, "print_task", 250, NULL, 2, &handle_print_task);
   configASSERT(pdPASS == status);
 
+  // Create LED task and check that it was created successfully
+  status = xTaskCreate(led_task, "led_task", 250, NULL, 2, &handle_led_task);
+  configASSERT(pdPASS == status);
+
   // Create data queue and check that it was created successfully
   q_data = xQueueCreate(10, sizeof(char));
   configASSERT(NULL != q_data);
@@ -124,6 +138,11 @@ int main(void)
   // Create print queue and check that it was created successfully
   q_print = xQueueCreate(10, sizeof(size_t));
   configASSERT(NULL != q_print);
+
+  // Create software timers for LED effects
+  for(int i=0; i<NUM_LED_TIMERS; i++) {
+	  handle_led_timer[i] = xTimerCreate("led_timer", pdMS_TO_TICKS(500), pdTRUE, (void*)i, led_callback);
+  }
 
   // Prepare UART to receive a message
   HAL_UART_Receive_IT(&huart2, (uint8_t*)&user_data, 1);

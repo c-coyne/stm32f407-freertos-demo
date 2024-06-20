@@ -1,0 +1,238 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 18th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 18th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ UartManager ]                                                           |
+| FILE:       UartManager.c                                                             |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `UartManager` task is responsible for handling all UART transmission and       |
+|    reception operations. This task manages communication between the microcontroller  |
+|    and external devices via the UART interface.                                       |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "UartManager.h"
+#include "Config_UartManager.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "main.h"
+#include <string.h>
+#include <stdint.h>
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+void process_message(message_t *msg);
+int extract_command(message_t *msg);
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv = "**** Invalid option ****\n";
+const char *msg_rcv = " Success: message received\n";
+const char *msg_main_menu = "\n======================================\n"
+							  "|              Main Menu             |\n"
+						      "======================================\n\n"
+							  " Start or modify an LED effect ---> 0\n\n"
+							  " Enter your selection here: ";
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Task to display and handle the main menu.                                                    *
+ *                                                                                                     *
+ * This FreeRTOS task displays the main menu and waits for user input commands. It sends the main      *
+ * menu message to the print queue (`q_print`) and waits for user input notifications. Based on the    *
+ * received input, it processes the user command and performs the corresponding action.                *
+ *                                                                                                     *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void                                                                                        *
+ *                                                                                                     *
+ * @note This function is intended to run as a FreeRTOS task.                                          *
+ * @note The print queue (`q_print`) must be initialized. The task must be notified when a new         *
+ *       command is available.                                                                         *
+ * @note The main menu is displayed, and the user input is processed. Invalid inputs are handled and   *
+ * an error message is sent to the print queue.                                                        *
+ ******************************************************************************************************/
+void main_menu_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+	int option;
+
+	while(1) {
+
+		// Present the main menu to the user
+		xQueueSend(q_print, &msg_main_menu, portMAX_DELAY);
+
+		// Wait for user to select a menu option
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		if(msg->len == 1) {
+			// Get user option, convert from ASCII to number
+			option = msg->payload[0] - 48;
+			switch(option) {
+				case 0:
+					curr_state = sLedMenu;
+					xTaskNotify(handle_led_task, 0, eNoAction);
+					break;
+				case 1:
+					break;
+				case 2:
+					break;
+				default:
+					xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+					continue;
+			}
+		}
+		// Handle invalid entry
+		else {
+			xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+			continue;
+		}
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Task to handle messages from the user.                                                       *
+ *                                                                                                     *
+ * This FreeRTOS task waits for notifications indicating that a new message is available in the data   *
+ * queue (`q_data`). Upon notification, it processes the message and sends the result to the print     *
+ * queue (`q_print`).                                                                                  *
+ *                                                                                                     *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void                                                                                        *
+ *                                                                                                     *
+ * @note This function is intended to run as a FreeRTOS task. It is notified by the UART receive       *
+ *       interrupt handler when a new message is available.                                            *
+ * @note The data queue (`q_data`) and print queue (`q_print`) must be initialized. The task must be   *
+ *       notified when a new message is available.                                                     *
+ * @note The processed message is sent to the print queue (`q_print`).                                 *
+ ******************************************************************************************************/
+void message_handler_task(void *param)
+{
+	BaseType_t ret;
+	message_t msg;
+
+	while(1) {
+
+		// Wait until task is notified
+		ret = xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		if(pdTRUE == ret) {
+			// Process the message stored in the input data queue
+			process_message(&msg);
+		}
+
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Task to print messages via UART.                                                             *
+ *                                                                                                     *
+ * This FreeRTOS task waits for messages to be available in the print queue (`q_print`). When a        *
+ * message is received, it is transmitted via UART.                                                    *
+ *                                                                                                     *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void                                                                                        *
+ *                                                                                                     *
+ * @note This function is intended to run as a FreeRTOS task.                                          *
+ * @note The print queue (`q_print`) must be initialized and contain messages to print.                *
+ * @note The received message is transmitted via UART.                                                 *
+ ******************************************************************************************************/
+void print_task(void *param)
+{
+	uint32_t *msg;
+
+	// Wait for data in the print queue, then send over UART when available
+	while(1){
+		xQueueReceive(q_print, &msg, portMAX_DELAY);
+		HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen((char*)msg),HAL_MAX_DELAY);
+	}
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Processes a received message from the data queue.                                            *
+ *                                                                                                     *
+ * This function extracts a message from the data queue and processes it according to the user input.  *
+ *                                                                                                     *
+ * @param msg [message_t*] Pointer to a message structure to hold the processed message.               *
+ * @return void                                                                                        *
+ *                                                                                                     *
+ * @note This function is called by the `message_handler_task` when a notification is received.        *
+ * @note The data queue (`q_data`) must be initialized and contain a message to process.               *
+ ******************************************************************************************************/
+void process_message(message_t *msg) {
+
+	extract_command(msg);
+
+	switch(curr_state) {
+		case sMainMenu:
+			// Notify the main menu task and pass the message
+			xTaskNotify(handle_main_menu_task, (uint32_t)msg, eSetValueWithOverwrite);
+			break;
+		default:
+			break;
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Extracts a command from the data queue.                                                      *
+ *                                                                                                     *
+ * This function extracts a complete command message from the data queue (`q_data`). It reads bytes    *
+ * from the queue until it encounters a newline character, which signifies the end of the message.     *
+ * The extracted message is stored in the provided `message_t` structure.                              *
+ *                                                                                                     *
+ * @param msg [message_t*] Pointer to a message structure to hold the extracted command.               *
+ * @return int                                                                                         *
+ * @retval 0 if the command was successfully extracted.                                                *
+ * @retval -1 if the data queue was empty or an error occurred during extraction.                      *
+ *                                                                                                     *
+ * @note This function is called by `process_message` to parse the incoming command message.           *
+ * @note The data queue (`q_data`) must be initialized and contain a message to extract.               *
+ * @note The extracted command is stored in the `msg` structure, with its payload and length fields    *
+ *       populated.                                                                                    *
+ ******************************************************************************************************/
+int extract_command(message_t *msg) {
+
+	uint8_t item;
+	BaseType_t status;
+
+	// Check if there is data in the data queue
+	status = uxQueueMessagesWaiting(q_data);
+	if(!status) {
+		return -1;
+	}
+
+	// If data is available in the data queue, load it to the msg payload
+	uint8_t i=0;
+	do {
+		status = xQueueReceive(q_data, &item, 0);
+		if(pdTRUE == status) {
+			msg->payload[i++] = item;
+		}
+	} while (item != '\n');
+
+	// Set final character in message payload to null character
+	msg->payload[i-1] = '\0';
+	// Save length of message without null character
+	msg->len = i-1;
+
+	return 0;
+}

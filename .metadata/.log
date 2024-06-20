@@ -42,3 +42,6 @@ org.eclipse.core.runtime.CoreException: Target not available.
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
 !SUBENTRY 1 org.eclipse.cdt.dsf 4 10001 2024-06-18 15:22:44.248
 !MESSAGE Target not available.
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-06-19 21:13:03.977
+!MESSAGE Indexed 'FreeRTOSDemoProject' (33 sources, 104 headers) in 2.38 sec: 8,219 declarations; 49,954 references; 0 unresolved inclusions; 1 syntax errors; 10 unresolved names (0.017%)

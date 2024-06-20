@@ -1,0 +1,36 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 19th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 19th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ LedManager ]                                                            |
+| FILE:       LedManager.c                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `LedManager` module is responsible for handling user input and all effects     |
+|    pertaining to the on-board LEDs.                                                   |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "LedManager.h"
+
+const char *msg_inv_uart = "**** Invalid option ****\n";
+const char *msg_main_menu = "\n======================================\n"
+							  "|              Main Menu             |\n"
+						      "======================================\n\n"
+							  " Start or modify an LED effect ---> 0\n\n"
+							  " Enter your selection here: ";
+
+void led_task(void *param)
+{
+
+}
+
+void led_callback(TimerHandle_t xTimer)
+{
+
+}

@@ -11,7 +11,6 @@
 |    The `UartManager` task is responsible for handling all UART transmission and       |
 |    reception operations. This task manages communication between the microcontroller  |
 |    and external devices via the UART interface.                                       |
-| --------------------------------------------------------------------------------------|
 \*=====================================================================================*/
 
 #ifndef UARTMANAGER_H_

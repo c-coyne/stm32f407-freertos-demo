@@ -1,0 +1,216 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 19th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 19th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ LedManager ]                                                            |
+| FILE:       LedManager.c                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `LedManager` module is responsible for handling user input and all effects     |
+|    pertaining to the on-board LEDs.                                                   |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "LedManager.h"
+#include "Config_LedManager.h"
+#include "main.h"
+#include <string.h>
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+void set_led_timer(led_effect_t effect);
+void control_all_leds(int state);
+void control_led_group(int led_mode);
+void execute_led_effect(int effect);
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv_led = "\n***** Invalid LED effect option ******\n";
+const char *msg_led_menu = "\n======================================\n"
+				  		     "|               LED Menu             |\n"
+						     "======================================\n\n"
+							 " None ---> Turn all effects off\n"
+							 " E1   ---> Blink all LEDs in unison\n"
+		 	 	 	 	 	 " E2   ---> Oscillate even and odd LEDs\n"
+		 	 	 	 	 	 " E3   ---> Description of effect E3\n"
+		 	 	 	 	 	 " E4   ---> Description of effect E4\n"
+							 " FXXX ---> Change frequency of effect to XXX Hz\n"
+							 " Main ---> Return to main menu\n\n"
+							 " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+led_state_t curr_led_state = sNone;
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+void led_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+	int freq = 2; // Frequency in Hz
+
+	while(1) {
+		// Wait for notification from another task
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		// Display LED menu for the user
+		xQueueSend(q_print, &msg_led_menu, portMAX_DELAY);
+
+		// Wait for the user to select their desired LED effect
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		// Process command, adjust LED state, and set software timers accordingly
+		if(msg->len <= 4) {
+			if(!strcmp((char*)msg->payload, "None"))
+			{
+				set_led_timer(effectNone);
+				curr_led_state = sNone;
+				control_all_leds(LED_OFF);
+			}
+			else if (!strcmp((char*)msg->payload, "E1")) {
+				curr_led_state = sEffectE1;
+				set_led_timer(effectE1);
+			}
+			else if (!strcmp((char*)msg->payload, "E2")) {
+				curr_led_state = sEffectE2;
+				set_led_timer(effectE2);
+			}
+			else if (!strcmp((char*)msg->payload, "E3")) {
+				curr_led_state = sEffectE3;
+				set_led_timer(effectE3);
+			}
+			else if (!strcmp((char*)msg->payload, "E4")) {
+				curr_led_state = sEffectE4;
+				set_led_timer(effectE4);
+			}
+			else if (parse_freq_string(msg->payload, &freq)) {
+				// Change timer frequency
+			}
+			else if (!strcmp((char*)msg->payload, "Main"))
+				// Do nothing
+				;
+			else
+				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
+		}
+		else {
+			xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
+		}
+
+		// Update the system state
+		curr_sys_state = sMainMenu;
+
+		// Notify the main menu task
+		xTaskNotify(handle_main_menu_task, 0, eNoAction);
+	}
+}
+
+void led_callback(TimerHandle_t xTimer)
+{
+	// Get timer ID
+	int id = (uint32_t)pvTimerGetTimerID(xTimer);
+
+	// LED effects correspond to timer ID's
+	int effect = id;
+	execute_led_effect(effect);
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/
+void set_led_timer(led_effect_t effect)
+{
+	// Turn off all timers
+	for(int i=0; i<NUM_LED_TIMERS; i++) {
+		xTimerStop(handle_led_timer[i], portMAX_DELAY);
+	}
+
+	// Start the selected timer
+	if(effectNone != effect) {
+		xTimerStart(handle_led_timer[effect], portMAX_DELAY);
+	}
+}
+
+void control_all_leds(int state)
+{
+	HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, state);
+	HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, state);
+	HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, state);
+	HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, state);
+}
+
+void control_led_group(int led_mode)
+{
+	if(LED_EVEN == led_mode) {
+		HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, GPIO_PIN_SET);
+	}
+	else {
+		HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, GPIO_PIN_RESET);
+	}
+}
+
+void control_single_led(int config)
+{
+	// All on-board LEDs are on the same GPIO port (GPIOD), so the same port can be used for all LEDs
+	// LED pins are numbered sequentially, starting with GREEN_LED_PIN = LD4_Pin
+	//
+	// LED			LD Pin		GPIO Pin		Address
+	// Green		LD4			GPIO_PIN_12		0x1000
+	// Orange		LD3			GPIO_PIN_13		0x2000
+	// Red			LD5			GPIO_PIN_14		0x4000
+	// Blue			LD6			GPIO_PIN_15		0x8000
+	//
+	// `config` dictates the LED states, ex. 0x05 = 0101 = Green and Red LEDs on / Orange and Blue LEDs off
+	//
+	for(int i=0; i<NUM_LED_TIMERS; i++) {
+		HAL_GPIO_WritePin(GREEN_LED_PORT, (GREEN_LED_PIN << i), ((config >> i) & 0x1));
+	}
+}
+
+void execute_led_effect(int effect)
+{
+	// Flag used for effects E1 and E2
+	static int flag = 1;
+	// i and used for effects E3 and E4
+	static int i = 0;
+
+	switch(effect) {
+		case effectE1:
+			// Flash all LEDs in unison
+			(flag ^= 1) ? control_all_leds(LED_OFF) : control_all_leds(LED_ON);
+			break;
+		case effectE2:
+			// Flash even and odd LEDs back and forth
+			(flag ^= 1) ? control_led_group(LED_EVEN) : control_led_group(LED_ODD);
+		case effectE3:
+			// Move the illuminated LED around the circle of on-board LEDs
+			control_single_led(0x1 << (i++ % 4));
+			break;
+		case effectE4:
+			// Move the illuminated LED around the circle of on-board LEDs in opposite direction of effect E3
+			control_single_led(0x08 >> (i++ % 4));
+			break;
+		default:
+			break;
+	}
+}
