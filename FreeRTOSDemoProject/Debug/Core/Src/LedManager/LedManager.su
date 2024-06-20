@@ -1,0 +1,3 @@
+../Core/Src/LedManager/LedManager.c:49:6:led_task	32	static
+../Core/Src/LedManager/LedManager.c:95:6:led_callback	16	static
+../Core/Src/LedManager/LedManager.c:103:6:set_led_timer	16	static

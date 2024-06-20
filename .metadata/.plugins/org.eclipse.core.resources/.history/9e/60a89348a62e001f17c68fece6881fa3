@@ -1,0 +1,84 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 19th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 19th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ LedManager ]                                                            |
+| FILE:       LedManager.c                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `LedManager` module is responsible for handling user input and all effects     |
+|    pertaining to the on-board LEDs.                                                   |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "LedManager.h"
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv_led = "**** Invalid option ****\n";
+const char *msg_led_menu = "\n======================================\n"
+				  		     "|               LED Menu             |\n"
+						     "======================================\n\n"
+							 " None ---> Turn all effects off\n"
+							 " E1   ---> Description of effect E1\n"
+		 	 	 	 	 	 " E2   ---> Description of effect E2\n"
+		 	 	 	 	 	 " E3   ---> Description of effect E3\n"
+		 	 	 	 	 	 " E4   ---> Description of effect E4\n\n"
+							 " Enter your selection here: ";
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+void led_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+
+	while(1) {
+		// Wait for notification from another task
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		// Display LED menu for the user
+		xQueueSend(q_print, &msg_led_menu, portMAX_DELAY);
+
+		// Wait for the user to select their desired LED effect
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		// Process command and set software timers accordingly
+		if(msg->len <= 4) {
+			if(!strcmp((char*)msg->payload, "None"))
+				set_led_timer(effectNone);
+			else if (!strcmp((char*)msg->payload, "E1"))
+				set_led_timer(effectE1);
+			else if (!strcmp((char*)msg->payload, "E2"))
+				set_led_timer(effectE2);
+			else if (!strcmp((char*)msg->payload, "E3"))
+				set_led_timer(effectE3);
+			else if (!strcmp((char*)msg->payload, "E4"))
+				set_led_timer(effectE4);
+			else
+				xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+		}
+		else {
+			xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+		}
+	}
+}
+
+void led_callback(TimerHandle_t xTimer)
+{
+
+}

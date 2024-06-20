@@ -11,7 +11,6 @@
 |    The `UartManager` task is responsible for handling all UART transmission and       |
 |    reception operations. This task manages communication between the microcontroller  |
 |    and external devices via the UART interface.                                       |
-| --------------------------------------------------------------------------------------|
 \*=====================================================================================*/
 
 /****************************************************
@@ -33,6 +32,17 @@
 
 void process_message(message_t *msg);
 int extract_command(message_t *msg);
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv_uart = "\n******** Invalid menu option *********\n";
+const char *msg_main_menu = "\n======================================\n"
+							  "|              Main Menu             |\n"
+						      "======================================\n\n"
+							  " Start or modify an LED effect ---> 0\n\n"
+							  " Enter your selection here: ";
 
 /****************************************************
  *  Public functions                                *
@@ -62,9 +72,10 @@ void main_menu_task(void *param)
 
 	while(1) {
 
+		// Present the main menu to the user
 		xQueueSend(q_print, &msg_main_menu, portMAX_DELAY);
 
-		// Wait for menu commands
+		// Wait for user to select a menu option
 		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
 		msg = (message_t*)msg_addr;
 
@@ -73,21 +84,29 @@ void main_menu_task(void *param)
 			option = msg->payload[0] - 48;
 			switch(option) {
 				case 0:
+					// User selection: LED menu
+					curr_state = sLedMenu;
+					xTaskNotify(handle_led_task, 0, eNoAction);
 					break;
 				case 1:
-					break;
+					xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
+					continue;
 				case 2:
-					break;
+					xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
+					continue;
 				default:
-					xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+					xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
 					continue;
 			}
 		}
 		// Handle invalid entry
 		else {
-			xQueueSend(q_print, &msg_inv, portMAX_DELAY);
+			xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
 			continue;
 		}
+
+		// Wait for notification from another task before running again
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
 	}
 }
 
@@ -172,6 +191,10 @@ void process_message(message_t *msg) {
 		case sMainMenu:
 			// Notify the main menu task and pass the message
 			xTaskNotify(handle_main_menu_task, (uint32_t)msg, eSetValueWithOverwrite);
+			break;
+		case sLedMenu:
+			// Notify the led task and pass the message
+			xTaskNotify(handle_led_task, (uint32_t)msg, eSetValueWithOverwrite);
 			break;
 		default:
 			break;
