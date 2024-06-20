@@ -40,7 +40,6 @@ int freq_str_to_int(message_t *msg, int len);
 const char *msg_inv_led = "\n***** Invalid LED effect option ******\n";
 const char *msg_no_active_effect = "\n***** No active LED effect *****\n";
 const char *msg_err_freq = "\n***** Unable to change LED frequency *****\n";
-const char *msg_inv_freq = "\n***** Invalid: please choose between 1-10 Hz *****\n";
 const char *msg_led_menu = "\n======================================\n"
 				  		     "|               LED Menu             |\n"
 						     "======================================\n\n"
@@ -49,7 +48,7 @@ const char *msg_led_menu = "\n======================================\n"
 		 	 	 	 	 	 " E2   ---> Oscillate even and odd LEDs\n"
 		 	 	 	 	 	 " E3   ---> Description of effect E3\n"
 		 	 	 	 	 	 " E4   ---> Description of effect E4\n"
-							 " FXX  ---> Change frequency to (1-10) Hz\n"
+							 " FXX  ---> Change frequency to (0-10) Hz\n"
 							 " Main ---> Return to main menu\n\n"
 							 " Enter your selection here: ";
 
@@ -125,10 +124,6 @@ void led_task(void *param)
 				// Check that there is an active effect
 				if(sNone == curr_led_state) {
 					xQueueSend(q_print, &msg_no_active_effect, portMAX_DELAY);
-				}
-				// Check that frequency is between 1 and 10 Hz
-				else if(freq > 10) {
-					xQueueSend(q_print, &msg_inv_freq, portMAX_DELAY);
 				}
 				// Change timer frequency
 				else {

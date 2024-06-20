@@ -40,7 +40,6 @@ int freq_str_to_int(message_t *msg, int len);
 const char *msg_inv_led = "\n***** Invalid LED effect option ******\n";
 const char *msg_no_active_effect = "\n***** No active LED effect *****\n";
 const char *msg_err_freq = "\n***** Unable to change LED frequency *****\n";
-const char *msg_inv_freq = "\n***** Invalid: please choose between 1-10 Hz *****\n";
 const char *msg_led_menu = "\n======================================\n"
 				  		     "|               LED Menu             |\n"
 						     "======================================\n\n"
