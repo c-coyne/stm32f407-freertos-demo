@@ -35,11 +35,19 @@ void led_callback(TimerHandle_t xTimer);
 
 typedef enum
 {
-	effectNone = 0,
-	effectE1,
+	effectE1 = 0,
 	effectE2,
 	effectE3,
-	effectE4
+	effectE4,
+	effectNone
 } led_effect_t;
+
+typedef enum {
+	sEffectE1 = 0,
+	sEffectE2,
+	sEffectE3,
+	sEffectE4,
+	sNone
+} led_state_t;
 
 #endif /* SRC_LEDMANAGER_LEDMANAGER_H_ */

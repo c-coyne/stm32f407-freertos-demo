@@ -64,7 +64,7 @@ TimerHandle_t handle_led_timer[4];
 volatile uint8_t user_data;
 
 // State variable
-state_t curr_state = sMainMenu;
+system_state_t curr_sys_state = sMainMenu;
 
 /* USER CODE END PV */
 

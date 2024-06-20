@@ -10,7 +10,8 @@ Core/Src/LedManager/LedManager.o: ../Core/Src/LedManager/LedManager.c \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/task.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/list.h \
- ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+ ../Core/Src/LedManager/Config_LedManager.h ../Core/Inc/main.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -52,6 +53,7 @@ Core/Src/LedManager/LedManager.o: ../Core/Src/LedManager/LedManager.c \
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/task.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/list.h:
+../Core/Src/LedManager/Config_LedManager.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:

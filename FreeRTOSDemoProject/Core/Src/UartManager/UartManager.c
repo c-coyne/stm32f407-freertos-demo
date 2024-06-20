@@ -85,7 +85,7 @@ void main_menu_task(void *param)
 			switch(option) {
 				case 0:
 					// User selection: LED menu
-					curr_state = sLedMenu;
+					curr_sys_state = sLedMenu;
 					xTaskNotify(handle_led_task, 0, eNoAction);
 					break;
 				case 1:
@@ -187,7 +187,7 @@ void process_message(message_t *msg) {
 
 	extract_command(msg);
 
-	switch(curr_state) {
+	switch(curr_sys_state) {
 		case sMainMenu:
 			// Notify the main menu task and pass the message
 			xTaskNotify(handle_main_menu_task, (uint32_t)msg, eSetValueWithOverwrite);
