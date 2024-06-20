@@ -1,0 +1,35 @@
+# UartManager Task Documentation
+
+## Overview
+The `UartManager` task is responsible for handling all UART transmission and reception operations. This task manages communication between the microcontroller and external devices via the UART interface.
+
+## Task Description
+- **Task Name:** UartManager
+- **Priority:** [Specify priority]
+- **Stack Size:** [Specify stack size]
+- **File Location:** `Core/Src/UartManager.c`
+
+## Functionality
+### Purpose
+The `UartManager` task performs the following functions:
+- Initializes the UART peripheral.
+- Sends and receives data over UART.
+- Handles UART interrupts.
+- Manages a queue for UART messages.
+
+### Code Snippet
+```c
+void UartManager(void *pvParameters) {
+    // Task initialization code
+    UART_Init();
+    
+    for(;;) {
+        // Task main loop
+        if(xQueueReceive(UartQueue, &uartMessage, portMAX_DELAY) == pdPASS) {
+            // Process received message
+            processUartMessage(&uartMessage);
+        }
+        
+        // Other task operations
+    }
+}

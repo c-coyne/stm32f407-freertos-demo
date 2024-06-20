@@ -56,6 +56,7 @@ extern xTaskHandle handle_main_menu_task;
 extern xTaskHandle handle_message_handler_task;
 extern xTaskHandle handle_print_task;
 extern xTaskHandle handle_led_task;
+extern xTaskHandle handle_rtc_task;
 
 // Queue handles
 extern QueueHandle_t q_print;

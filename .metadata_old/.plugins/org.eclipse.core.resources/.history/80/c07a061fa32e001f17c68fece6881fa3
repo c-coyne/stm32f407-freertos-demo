@@ -1,0 +1,22 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 19th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 19th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ LedManager ]                                                            |
+| FILE:       LedManager.h                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `LedManager` module is responsible for handling user input and all effects     |
+|    pertaining to the on-board LEDs.                                                   |
+\*=====================================================================================*/
+
+#ifndef SRC_LEDMANAGER_LEDMANAGER_H_
+#define SRC_LEDMANAGER_LEDMANAGER_H_
+
+#include "timers.h"
+
+void led_callback(TimerHandle_t xTimer);
+
+#endif /* SRC_LEDMANAGER_LEDMANAGER_H_ */

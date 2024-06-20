@@ -1,4 +1,5 @@
 "./Core/Src/LedManager/LedManager.o"
+"./Core/Src/RtcManager/RtcManager.o"
 "./Core/Src/UartManager/UartManager.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32f4xx_hal_msp.o"
