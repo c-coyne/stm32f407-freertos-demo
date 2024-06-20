@@ -139,14 +139,9 @@ void led_task(void *param)
 					}
 				}
 			}
-			else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu
-				// Update the system state
-				curr_sys_state = sMainMenu;
-
-				// Notify the main menu task
-				xTaskNotify(handle_main_menu_task, 0, eNoAction);
-
-			}
+			else if (!strcmp((char*)msg->payload, "Main"))		// Back to main menu
+				// Do nothing
+				;
 			else												// Invalid response
 				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
 		}
@@ -155,9 +150,11 @@ void led_task(void *param)
 			xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
 		}
 
-		// Notify self / led task if not returning to the main menu
-		if (sLedMenu == curr_sys_state)
-			xTaskNotify(handle_led_task, 0, eNoAction);
+		// Update the system state
+		curr_sys_state = sMainMenu;
+
+		// Notify the main menu task
+		xTaskNotify(handle_main_menu_task, 0, eNoAction);
 	}
 }
 

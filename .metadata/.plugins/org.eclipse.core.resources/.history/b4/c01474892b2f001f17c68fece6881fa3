@@ -145,7 +145,6 @@ void led_task(void *param)
 
 				// Notify the main menu task
 				xTaskNotify(handle_main_menu_task, 0, eNoAction);
-
 			}
 			else												// Invalid response
 				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
@@ -154,10 +153,6 @@ void led_task(void *param)
 			// If user input is longer than 4 characters, notify user of invalid response
 			xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
 		}
-
-		// Notify self / led task if not returning to the main menu
-		if (sLedMenu == curr_sys_state)
-			xTaskNotify(handle_led_task, 0, eNoAction);
 	}
 }
 
