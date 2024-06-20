@@ -153,21 +153,6 @@ void led_task(void *param)
 	}
 }
 
-/*******************************************************************************************************
- * @brief Callback function invoked by FreeRTOS timer expiration to execute LED effects. 			   *
- *																									   *
- * This function is registered as a callback for FreeRTOS timers associated with LED effects. When a   *
- * timer associated with an LED effect expires, this callback function retrieves the timer's ID, 	   *
- * which corresponds to the specific LED effect. It then calls the function `execute_led_effect` to    *
- * perform the corresponding LED effect based on the timer ID.										   *
- *																									   *
- * @param xTimer [TimerHandle_t] The handle of the FreeRTOS timer that triggered the callback.	 	   *
- * @return void																						   *
- *																									   *
- * @note The function assumes that the timer IDs correspond directly to the LED effects to be executed *
- *       and relies on proper timer setup and management by the calling code.						   *
- ******************************************************************************************************/
-
 void led_callback(TimerHandle_t xTimer)
 {
 	// Get timer ID
@@ -235,24 +220,20 @@ void control_all_leds(int state)
  * This function sets the state of groups of LEDs based on the provided `led_mode` (either LED_EVEN	   *
  * or LED_ODD).																					       *
  *																									   *
- * @param led_mode [int] The selected group of LEDs that should be turned on. 						   *
+ * @param state [int] The intended state for all LEDs (LED_ON or LED_OFF)							   *
  * @return void																						   *
  * 																									   *
  * @note This function assumes that the macros for each on-board LED are configured correctly.	       *
- * @note The provided `led_mode` specifies which LED group should be turned on (ex. LED_EVEN). The	   *
- *       other LED group (ex. LED_ODD) will be turned off.											   *
  ******************************************************************************************************/
 
 void control_led_group(int led_mode)
 {
-	// Turn on even LEDs
 	if(LED_EVEN == led_mode) {
 		HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, GPIO_PIN_SET);
 	}
-	// Turn on odd LEDs
 	else {
 		HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_RESET);
@@ -261,53 +242,23 @@ void control_led_group(int led_mode)
 	}
 }
 
-/*******************************************************************************************************
- * @brief Allows for more specific control of individual LEDs.										   *
- * 																									   *
- * This function sets the state of each individual LED based on the provided `config`, which is		   *
- * simply a bit map for the on-board LEDs (ex. 0101 = LEDs #1 and #3 turned on, #2 and #4 turned	   *
- * off).																						       *
- *																									   *
- * @param config [int] The configuration (4 bits) specifying the state of each LED.					   *
- * @return void																						   *
- * 																									   *
- * @note This function assumes that the macros for each on-board LED are configured correctly.	       *
- * @note All on-board LEDs are on the same GPIO port (GPIOD), so the same port can be used for		   *
- * 		 all LEDs.																					   *
- * @note LED pins are numbered sequentially, starting with GREEN_LED_PIN = LD4_Pin. This facilitates   *
- *       addressing with a for loop. See the table below for details.								   *
- * @note `config` dictates the LED states, ex. 0x05 = 0101 = Green and Red LEDs on, Orange and Blue    *
- *       LEDs off.																					   *
- ******************************************************************************************************/
-
 void control_single_led(int config)
 {
-	//////////////////////////////////////////////////////
-	// LED			LD Pin		GPIO Pin		Address //
-	// Green		LD4			GPIO_PIN_12		0x1000  //
-	// Orange		LD3			GPIO_PIN_13		0x2000  //
-	// Red			LD5			GPIO_PIN_14		0x4000  //
-	// Blue			LD6			GPIO_PIN_15		0x8000  //
-	//////////////////////////////////////////////////////
-
+	// All on-board LEDs are on the same GPIO port (GPIOD), so the same port can be used for all LEDs
+	// LED pins are numbered sequentially, starting with GREEN_LED_PIN = LD4_Pin
+	//
+	// LED			LD Pin		GPIO Pin		Address
+	// Green		LD4			GPIO_PIN_12		0x1000
+	// Orange		LD3			GPIO_PIN_13		0x2000
+	// Red			LD5			GPIO_PIN_14		0x4000
+	// Blue			LD6			GPIO_PIN_15		0x8000
+	//
+	// `config` dictates the LED states, ex. 0x05 = 0101 = Green and Red LEDs on / Orange and Blue LEDs off
+	//
 	for(int i=0; i<NUM_LED_TIMERS; i++) {
 		HAL_GPIO_WritePin(GREEN_LED_PORT, (GREEN_LED_PIN << i), ((config >> i) & 0x1));
 	}
 }
-
-/*******************************************************************************************************
- * @brief Executes the specified LED effect.														   *
- * 																									   *
- * This function executes different LED effects based on the provided effect identifier. It uses 	   *
- * static variables to maintain state across function calls for effects that require alternating 	   *
- * behavior or sequential LED control.																   *
- *																									   *
- * @param effect [int] The identifier of the LED effect to be executed.								   *
- * @return void																						   *
- * 																									   *
- * @note This function assumes that functions `control_all_leds()`, `control_led_group()`, and 		   *
- *       `control_single_led()` are implemented to control the LEDs accordingly.			 		   *
- ******************************************************************************************************/
 
 void execute_led_effect(int effect)
 {
@@ -338,24 +289,6 @@ void execute_led_effect(int effect)
 	}
 }
 
-/*******************************************************************************************************
- * @brief Parses a frequency string from a message payload and converts it to an integer frequency.    *
- *																									   *
- * This function checks the provided message payload to determine if it contains a valid frequency     *
- * command in the format "F<number>". It ensures that the input is at least 2 characters long, starts  *
- * with 'F', and the remaining characters are digits. If the input meets these criteria, it converts   *
- * the numeric part of the string to an integer frequency value.									   *
- *																									   *
- * @param msg [message_t*] A pointer to the message structure containing the payload.				   *
- * @param freq_Hz [int*] A pointer to an integer where the parsed frequency value will be stored.	   *
- * @return int Returns 1 if the parsing was successful and the frequency value was extracted; 		   *
- *             otherwise, returns 0 indicating an invalid format.									   *
- *																								       *
- * @note The function assumes that the payload contains a well-formed frequency command and does not   *
- *       validate the value range explicitly. It relies on other components to handle invalid values.  *
- ******************************************************************************************************/
-
-
 int parse_freq_string(message_t *msg, int *freq_Hz)
 {
     // Check if the input string is at least 2 characters long (F and one digit)
@@ -375,22 +308,6 @@ int parse_freq_string(message_t *msg, int *freq_Hz)
     *freq_Hz = freq_str_to_int(msg, len);
     return 1;
 }
-
-/*******************************************************************************************************
- * @brief Converts a numeric string (excluding 'F') from a message payload to an integer.			   *
- *																									   *
- * This function converts the numeric part of a frequency command string (excluding the initial 'F')   *
- * into an integer. It iterates through each digit character in the payload, converts it from ASCII    *
- * to its corresponding integer value, and constructs the final integer representation.				   *
- *																									   *
- * @param msg [message_t*] A pointer to the message structure containing the payload.				   *
- * @param len [int] The length of the payload string, including the initial 'F'.					   *
- * @return int The integer representation of the frequency value extracted from the payload.		   *
- *																									   *
- * @note The function assumes that the payload string follows the correct format and does not handle   *
- *       invalid formats or edge cases (e.g., non-numeric characters). It relies on proper validation  *
- *       by the calling function.																	   *
- ******************************************************************************************************/
 
 int freq_str_to_int(message_t *msg, int len)
 {

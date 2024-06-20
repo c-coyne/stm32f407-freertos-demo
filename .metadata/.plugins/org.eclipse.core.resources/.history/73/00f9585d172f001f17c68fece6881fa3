@@ -153,21 +153,6 @@ void led_task(void *param)
 	}
 }
 
-/*******************************************************************************************************
- * @brief Callback function invoked by FreeRTOS timer expiration to execute LED effects. 			   *
- *																									   *
- * This function is registered as a callback for FreeRTOS timers associated with LED effects. When a   *
- * timer associated with an LED effect expires, this callback function retrieves the timer's ID, 	   *
- * which corresponds to the specific LED effect. It then calls the function `execute_led_effect` to    *
- * perform the corresponding LED effect based on the timer ID.										   *
- *																									   *
- * @param xTimer [TimerHandle_t] The handle of the FreeRTOS timer that triggered the callback.	 	   *
- * @return void																						   *
- *																									   *
- * @note The function assumes that the timer IDs correspond directly to the LED effects to be executed *
- *       and relies on proper timer setup and management by the calling code.						   *
- ******************************************************************************************************/
-
 void led_callback(TimerHandle_t xTimer)
 {
 	// Get timer ID

@@ -2,7 +2,7 @@
 
 ## MainMenu: main menu task
 ### Overview
-The `Main Menu` task is responsible for presenting the main menu to the user and handling the user response. The main menu task will then pass control to the appropriate sub-menu.
+The `main_menu_task` is responsible for presenting the main menu to the user and handling the user response. The main menu task will then pass control to the appropriate sub-menu.
 
 ### Task Description
 - **Task Name:** main_menu_task
