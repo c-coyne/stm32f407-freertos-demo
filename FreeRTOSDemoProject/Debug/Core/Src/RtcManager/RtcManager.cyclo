@@ -1,6 +1,6 @@
-../Core/Src/RtcManager/RtcManager.c:76:6:rtc_task	20
-../Core/Src/RtcManager/RtcManager.c:227:9:getnumber	2
-../Core/Src/RtcManager/RtcManager.c:232:5:validate_rtc_information	11
-../Core/Src/RtcManager/RtcManager.c:246:6:rtc_configure_time	1
-../Core/Src/RtcManager/RtcManager.c:254:6:rtc_configure_date	1
-../Core/Src/RtcManager/RtcManager.c:259:6:show_time_date	9
+../Core/Src/RtcManager/RtcManager.c:77:6:rtc_task	21
+../Core/Src/RtcManager/RtcManager.c:231:9:getnumber	2
+../Core/Src/RtcManager/RtcManager.c:236:5:validate_rtc_information	11
+../Core/Src/RtcManager/RtcManager.c:250:6:rtc_configure_time	1
+../Core/Src/RtcManager/RtcManager.c:258:6:rtc_configure_date	1
+../Core/Src/RtcManager/RtcManager.c:263:6:show_time_date	9

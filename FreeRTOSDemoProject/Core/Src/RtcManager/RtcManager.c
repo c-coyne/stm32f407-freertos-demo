@@ -58,6 +58,7 @@ const char *msg_rtc_menu_1 = "\n======================================\n"
 						       "======================================\n";
 const char *msg_rtc_menu_2 = "\n Date ---> Configure date\n"
 							 " Time ---> Configure time\n"
+							 " Rfsh ---> Refresh the time and date\n"
 							 " Main ---> Return to main menu\n\n"
 							 " Enter your selection here: ";
 
@@ -105,6 +106,9 @@ void rtc_task(void *param)
 						else if (!strcmp((char*)msg->payload, "Time")) {	// Configure time
 							curr_sys_state = sRtcTimeConfig;
 							xQueueSend(q_print, &msg_rtc_hh, portMAX_DELAY);
+						}
+						else if (!strcmp((char*)msg->payload, "Rfsh")) {	// Refresh the date and time
+							curr_sys_state = sRtcMenu;
 						}
 						else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu
 							// Update the system state
