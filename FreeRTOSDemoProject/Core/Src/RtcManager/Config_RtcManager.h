@@ -18,6 +18,7 @@
 #define HH_CONFIG		0
 #define MM_CONFIG		1
 #define SS_CONFIG		2
+#define AMPM_CONFIG		3
 
 #define MONTH_CONFIG	0
 #define DATE_CONFIG		1

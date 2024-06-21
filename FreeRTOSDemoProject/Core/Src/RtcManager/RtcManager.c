@@ -46,9 +46,10 @@ const char *msg_conf = "\nRTC configuration successful\n";
 const char *msg_rtc_hh = "\nEnter hour (1-12): ";
 const char *msg_rtc_mm = "Enter minutes (0-59): ";
 const char *msg_rtc_ss = "Enter seconds (0-59): ";
+const char *msg_rtc_ampm = "Enter (0) AM or (1) PM: ";
 
-const char *msg_rtc_dd = "Enter date (1-31): ";
 const char *msg_rtc_mo = "\nEnter month (1-12): ";
+const char *msg_rtc_dd = "Enter date (1-31): ";
 const char *msg_rtc_yr = "Enter year (0-99): ";
 const char *msg_rtc_dow = "Enter day of the week (1-7, Sun=1): ";
 
@@ -82,18 +83,19 @@ void rtc_task(void *param)
 		// Wait for notification from another task
 		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
 
-		// Display RTC menu for the user
-		xQueueSend(q_print, &msg_rtc_menu_1, portMAX_DELAY);
-		show_time_date();
-		xQueueSend(q_print, &msg_rtc_menu_2, portMAX_DELAY);
-
 		while(curr_sys_state != sMainMenu) {
-			// Wait for the user to select their desired LED effect
-			xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
-			msg = (message_t*)msg_addr;
 
 			switch(curr_sys_state) {
 				case sRtcMenu:
+					// Display RTC menu for the user
+					xQueueSend(q_print, &msg_rtc_menu_1, portMAX_DELAY);
+					show_time_date();
+					xQueueSend(q_print, &msg_rtc_menu_2, portMAX_DELAY);
+
+					// Wait for the user to select their desired RTC configuration option
+					xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+					msg = (message_t*)msg_addr;
+
 					// Process command, update date / time accordingly
 					if(msg->len <= 4) {
 						if(!strcmp((char*)msg->payload, "Date")) {			// Configure date
@@ -121,6 +123,11 @@ void rtc_task(void *param)
 					}
 					break;
 				case sRtcDateConfig:
+					// Wait for the user to select their desired RTC configuration option
+					xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+					msg = (message_t*)msg_addr;
+
+					// Configure month, date, year, or day of week accordingly
 					switch(curr_rtc_state) {
 						case MONTH_CONFIG:
 							uint8_t m = getnumber(msg->payload, msg->len);
@@ -147,19 +154,23 @@ void rtc_task(void *param)
 							if(!validate_rtc_information(NULL, &date)) {
 								rtc_configure_date(&date);
 								xQueueSend(q_print, &msg_conf, portMAX_DELAY);
-								show_time_date();
 							}
 							else {
 								xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
 							}
 
 							// Update system state
-							curr_sys_state = sMainMenu;
+							curr_sys_state = sRtcMenu;
 							curr_rtc_state = 0;
 							break;
 					}
 					break;
 				case sRtcTimeConfig:
+					// Wait for the user to select their desired RTC configuration option
+					xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+					msg = (message_t*)msg_addr;
+
+					// Configure hours, minutes, or seconds accordingly
 					switch(curr_rtc_state) {
 						case HH_CONFIG:
 							uint8_t hour = getnumber(msg->payload, msg->len);
@@ -176,16 +187,21 @@ void rtc_task(void *param)
 						case SS_CONFIG:
 							uint8_t sec = getnumber(msg->payload, msg->len);
 							time.Seconds = sec;
+							curr_rtc_state = AMPM_CONFIG;
+							xQueueSend(q_print, &msg_rtc_ampm, portMAX_DELAY);
+							break;
+						case AMPM_CONFIG:
+							uint8_t opt = getnumber(msg->payload, msg->len);
+							time.TimeFormat = opt; // Note: 0 = RTC_HOURFORMAT12_AM, 1 = RTC_HOURFORMAT12_PM
 							if(!validate_rtc_information(&time, NULL)) {
 								rtc_configure_time(&time);
 								xQueueSend(q_print, &msg_conf, portMAX_DELAY);
-								show_time_date();
 							}
 							else {
 								xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
 							}
 							// Update system state
-							curr_sys_state = sMainMenu;
+							curr_sys_state = sRtcMenu;
 							curr_rtc_state = 0;
 							break;
 					}
@@ -216,7 +232,7 @@ uint8_t getnumber(uint8_t *p, int len)
 int validate_rtc_information(RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 {
 	if(time) {
-		if( (time->Hours > 12) || (time->Minutes > 59) || (time->Seconds > 59) )
+		if( (time->Hours > 12) || (time->Minutes > 59) || (time->Seconds > 59) || (time->TimeFormat > 1) )
 			return 1;
 	}
 	if(date) {
@@ -229,7 +245,6 @@ int validate_rtc_information(RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 
 void rtc_configure_time(RTC_TimeTypeDef *time)
 {
-	time->TimeFormat = RTC_HOURFORMAT12_AM;
 	time->DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
 	time->StoreOperation = RTC_STOREOPERATION_RESET;
 
@@ -245,6 +260,7 @@ void show_time_date(void)
 {
 	static char showtime[40];
 	static char showdate[40];
+	char* weekday;
 
 	RTC_DateTypeDef rtc_date;
 	RTC_TimeTypeDef rtc_time;
@@ -267,7 +283,30 @@ void show_time_date(void)
 	sprintf((char*)showtime, "%s:\t%02d:%02d:%02d [%s]", "\nCurrent Time & Date", rtc_time.Hours, rtc_time.Minutes, rtc_time.Seconds, format);
 	xQueueSend(q_print, &time, portMAX_DELAY);
 
-	// Display date format: date-month-year
-	sprintf((char*)showdate, "\t%02d-%02d-%02d\n", rtc_date.Month, rtc_date.Date, rtc_date.Year + 2000);
+	// Display date format: day, month-date-year
+	switch(rtc_date.WeekDay) {
+		case 1:
+			weekday = "Sunday";
+			break;
+		case 2:
+			weekday = "Monday";
+			break;
+		case 3:
+			weekday = "Tuesday";
+			break;
+		case 4:
+			weekday = "Wednesday";
+			break;
+		case 5:
+			weekday = "Thursday";
+			break;
+		case 6:
+			weekday = "Friday";
+			break;
+		case 7:
+			weekday = "Saturday";
+			break;
+	}
+	sprintf((char*)showdate, "\t%s, %02d-%02d-%02d\n", weekday, rtc_date.Month, rtc_date.Date, rtc_date.Year + 2000);
 	xQueueSend(q_print, &date, portMAX_DELAY);
 }

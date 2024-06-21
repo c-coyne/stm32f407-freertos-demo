@@ -1,4 +1,4 @@
-10:36:52 **** Build of configuration Debug for project FreeRTOSDemoProject ****
+13:24:27 **** Build of configuration Debug for project FreeRTOSDemoProject ****
 make -j4 all 
 arm-none-eabi-gcc "../ThirdParty/FreeRTOS/portable/MemMang/heap_4.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F407xx -c -I../Core/Inc -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/RtcManager" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/LedManager" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/UartManager" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"ThirdParty/FreeRTOS/portable/MemMang/heap_4.d" -MT"ThirdParty/FreeRTOS/portable/MemMang/heap_4.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/portable/MemMang/heap_4.o"
 arm-none-eabi-gcc "../ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F407xx -c -I../Core/Inc -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/RtcManager" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/LedManager" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/UartManager" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F" -I"/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include" -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.d" -MT"ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "ThirdParty/FreeRTOS/portable/GCC/ARM_CM4F/port.o"
@@ -44,15 +44,15 @@ Finished building target: FreeRTOSDemoProject.elf
 arm-none-eabi-size  FreeRTOSDemoProject.elf 
 arm-none-eabi-objdump -h -S FreeRTOSDemoProject.elf  > "FreeRTOSDemoProject.list"
    text	   data	    bss	    dec	    hex	filename
-  37624	    188	 105060	 142872	  22e18	FreeRTOSDemoProject.elf
+  37964	    192	 105064	 143220	  22f74	FreeRTOSDemoProject.elf
 Finished building: default.size.stdout
  
 Finished building: FreeRTOSDemoProject.list
  
-10:37:01 **** Incremental Build of configuration Debug for project FreeRTOSDemoProject ****
+13:24:33 **** Incremental Build of configuration Debug for project FreeRTOSDemoProject ****
 make -j4 all 
 arm-none-eabi-size  FreeRTOSDemoProject.elf 
    text	   data	    bss	    dec	    hex	filename
-  37624	    188	 105060	 142872	  22e18	FreeRTOSDemoProject.elf
+  37964	    192	 105064	 143220	  22f74	FreeRTOSDemoProject.elf
 Finished building: default.size.stdout
  
