@@ -1,0 +1,128 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 20th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 20th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ RtcManager ]                                                            |
+| FILE:       RtcManager.c                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `RtcManager` module is responsible for handling user input and configuration   |
+|    of the real time clock (RTC).                                                      |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "FreeRTOS.h"
+#include "main.h"
+#include "task.h"
+#include "queue.h"
+#include "RtcManager.h"
+#include "Config_RtcManager.h"
+#include "UartManager.h"
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv_rtc = "\n***** Invalid RTC option ******\n";
+const char *msg_conf = "RTC configuration successful\n";
+
+const char *msg_rtc_hh = "Enter hour (1-12):";
+const char *msg_rtc_mm = "Enter minutes (0-59):";
+const char *msg_rtc_ss = "Enter seconds (0-59):";
+
+const char *msg_rtc_dd = "Enter date (1-31):";
+const char *msg_rtc_mo = "Enter month (1-12):";
+const char *msg_rtc_yr = "Enter year (0-99)";
+const char *msg_rtc_dow = "Enter day of the week (1:Sun-7:Mon):";
+
+const char *msg_rtc_menu = "\n======================================\n"
+				  		     "|               RTC Menu             |\n"
+						     "======================================\n\n"
+							 " Date ---> Configure date\n"
+							 " Time ---> Configure time\n"
+							 " Main ---> Return to main menu\n\n"
+							 " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+void rtc_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+
+	while(1) {
+		// Wait for notification from another task
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		// Display RTC menu for the user
+		xQueueSend(q_print, &msg_rtc_menu, portMAX_DELAY);
+		// show_time_date();
+		// xQueueSend(q_print, "second half of the RTC menu", portMAX_DELAY);
+
+		while(curr_sys_state != sMainMenu) {
+			// Wait for the user to select their desired LED effect
+			xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+			msg = (message_t*)msg_addr;
+
+			switch(curr_state) {
+				case sRtcMenu:
+					// Process command, update date / time accordingly
+					if(msg->len <= 4) {
+						if(!strcmp((char*)msg->payload, "Date")) {			// Configure date
+							curr_sys_state = sRtcDateConfig;
+							xQueueSend(q_print, &msg_rtc_dd, portMAX_DELAY);
+						}
+						else if (!strcmp((char*)msg->payload, "Time")) {	// Configure time
+							curr_sys_state = sRtcTimeConfig;
+							xQueueSend(q_print, &msg_rtc_hh, portMAX_DELAY);
+						}
+						else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu
+							// Update the system state
+							curr_sys_state = sMainMenu;
+						}
+						else {												// Invalid response
+							// Update the system state
+							curr_sys_state = sMainMenu;
+							xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+						}
+					}
+					else {
+						// If user input is longer than 4 characters, notify user of invalid response
+						xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+					}
+					break;
+				case sRtcDateConfig:
+					break;
+				case sRtcTimeConfig:
+					break;
+				default:
+					curr_sys_state = sMainMenu;
+					xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+					break;
+			}
+
+		}
+
+		// Notify the main menu task
+		xTaskNotify(handle_menu_task, 0, eNoAction);
+	}
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/

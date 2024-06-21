@@ -1,0 +1,6 @@
+../Core/Src/RtcManager/RtcManager.c:75:6:rtc_task	40	static
+../Core/Src/RtcManager/RtcManager.c:211:9:getnumber	16	static
+../Core/Src/RtcManager/RtcManager.c:216:5:validate_rtc_information	16	static
+../Core/Src/RtcManager/RtcManager.c:230:6:rtc_configure_time	16	static
+../Core/Src/RtcManager/RtcManager.c:239:6:rtc_configure_date	16	static
+../Core/Src/RtcManager/RtcManager.c:244:6:show_time_date	56	static

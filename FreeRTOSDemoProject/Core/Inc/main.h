@@ -46,7 +46,10 @@ extern "C" {
 // Typedefs
 typedef enum {
 	sMainMenu = 0,
-	sLedMenu
+	sLedMenu,
+	sRtcMenu,
+	sRtcDateConfig,
+	sRtcTimeConfig
 } system_state_t;
 
 extern system_state_t curr_sys_state;
@@ -64,6 +67,7 @@ extern QueueHandle_t q_data;
 
 // Timer handles
 extern TimerHandle_t handle_led_timer[4];
+extern RTC_HandleTypeDef hrtc;
 
 // UART handles
 extern UART_HandleTypeDef huart2;

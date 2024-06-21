@@ -145,7 +145,6 @@ void led_task(void *param)
 
 				// Notify the main menu task
 				xTaskNotify(handle_main_menu_task, 0, eNoAction);
-
 			}
 			else												// Invalid response
 				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
