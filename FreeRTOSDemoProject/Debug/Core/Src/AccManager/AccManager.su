@@ -1,1 +1,4 @@
-../Core/Src/AccManager/AccManager.c:48:6:acc_task	32	static
+../Core/Src/AccManager/AccManager.c:52:6:acc_task	40	static
+../Core/Src/AccManager/AccManager.c:98:6:accelerometer_init	16	static
+../Core/Src/AccManager/AccManager.c:117:6:accelerometer_read	40	static
+../Core/Src/AccManager/AccManager.c:140:6:show_acc_data	32	static

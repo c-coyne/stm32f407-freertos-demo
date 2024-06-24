@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value=""/>
+		<item key="selection" value="SCL"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="RTC_Time"/>
-			<item value="curr_led_state"/>
-			<item value="sMainMenu"/>
+			<item value="SDA"/>
+			<item value="SCL"/>
+			<item value="audio"/>
+			<item value="GPIO_PIN_6"/>
+			<item value="GPIO_SPEED_FREQ_HIGH"/>
+			<item value="uart"/>
+			<item value="i2c"/>
+			<item value="I2C"/>
+			<item value="main_menu"/>
+			<item value="msg_conf"/>
+			<item value="conf"/>
+			<item value="RTC_AM_PM_Definitions"/>
+			<item value="validate_rtc_information"/>
+			<item value="msg_rtc_menu"/>
+			<item value="rtc_config"/>
 		</list>
 		<list key="replacehistory">
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item key="DIALOG_X_ORIGIN" value="747"/>
-		<item key="DIALOG_Y_ORIGIN" value="236"/>
+		<item key="DIALOG_X_ORIGIN" value="1008"/>
+		<item key="DIALOG_Y_ORIGIN" value="288"/>
 		<item key="DIALOG_WIDTH" value="357"/>
 		<item key="DIALOG_HEIGHT" value="408"/>
 		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>

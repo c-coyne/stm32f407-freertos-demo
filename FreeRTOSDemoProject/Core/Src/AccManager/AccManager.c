@@ -20,10 +20,14 @@
 #include "Config_AccManager.h"
 #include "main.h"
 #include <string.h>
+#include <stdio.h>
 
 /****************************************************
  *  Function prototypes                             *
  ****************************************************/
+
+void show_acc_data(int16_t *x, int16_t *y, int16_t *z);
+void accelerometer_read(int16_t *x, int16_t *y, int16_t *z);
 
 /****************************************************
  *  Messages                                        *
@@ -49,6 +53,7 @@ void acc_task(void* param)
 {
 	uint32_t msg_addr;
 	message_t *msg;
+	int16_t x, y, z;
 
 	while(1) {
 		// Wait for notification from another task
@@ -65,6 +70,8 @@ void acc_task(void* param)
 		if(msg->len <= 4) {
 			if(!strcmp((char*)msg->payload, "Read")) {
 				// Take an accelerometer reading
+				accelerometer_read(&x, &y, &z);
+				show_acc_data(&x, &y, &z);
 			}
 			else if (!strcmp((char*)msg->payload, "Main")) {
 				// Update the system state
@@ -86,4 +93,55 @@ void acc_task(void* param)
 		if (sAccMenu == curr_sys_state)
 			xTaskNotify(handle_acc_task, 0, eNoAction);
 	}
+}
+
+void accelerometer_init(void)
+{
+	// Configure CTRL_REG1_A: 100Hz, normal power mode, all axes enabled
+	uint8_t configData = 0x57; // 0b01010111: 100Hz, normal power mode, all axes enabled
+
+	// Pull CS low to select the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
+
+	// Send the register address
+	uint8_t reg = LSM303DLHC_CTRL_REG1_A;
+	HAL_SPI_Transmit(&hspi1, &reg, 1, HAL_MAX_DELAY);
+
+	// Send the configuration data
+	HAL_SPI_Transmit(&hspi1, &configData, 1, HAL_MAX_DELAY);
+
+	// Pull CS high to deselect the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_SET);
+}
+
+void accelerometer_read(int16_t *x, int16_t *y, int16_t *z)
+{
+	uint8_t accelData[6];
+	uint8_t reg = ACC_X_ADDR;
+
+	// Pull CS low to select the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
+
+	// Send the register address
+	HAL_SPI_Transmit(&hspi1, &reg, 1, HAL_MAX_DELAY);
+
+	// Receive the data
+	HAL_SPI_Receive(&hspi1, accelData, 6, HAL_MAX_DELAY);
+
+	// Pull CS high to de-select the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_SET);
+
+	// Convert the data
+	*x = (int16_t)(accelData[1] << 8 | accelData[0]);
+	*y = (int16_t)(accelData[3] << 8 | accelData[2]);
+	*z = (int16_t)(accelData[5] << 8 | accelData[4]);
+}
+
+void show_acc_data(int16_t *x, int16_t *y, int16_t *z)
+{
+	static char showacc[40];
+	static char* acc = showacc;
+
+	sprintf((char*)showacc, "Accel: X=%d, Y=%d, Z=%d\r\n", *x, *y, *z);
+	xQueueSend(q_print, &acc, portMAX_DELAY);
 }

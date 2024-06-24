@@ -1,0 +1,22 @@
+/*
+ * Config_AccManager.h
+ *
+ *  Created on: Jun 24, 2024
+ *      Author: chris
+ */
+
+#ifndef SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_
+#define SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_
+
+/****************************************************
+ *  Macros                                          *
+ ****************************************************/
+
+// LSM303DLHC Accelerometer I2C address
+#define ACC_I2C_ADDRESS		0x32
+
+// LSM303DLHC Registers
+#define LSM303DLHC_CTRL_REG1_A 0x20
+#define LSM303DLHC_OUT_X_L_A   0x28 | 0x80  // Auto-increment enabled
+
+#endif /* SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_ */

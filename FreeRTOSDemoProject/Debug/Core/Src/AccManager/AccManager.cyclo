@@ -1,1 +1,4 @@
-../Core/Src/AccManager/AccManager.c:48:6:acc_task	5
+../Core/Src/AccManager/AccManager.c:52:6:acc_task	5
+../Core/Src/AccManager/AccManager.c:98:6:accelerometer_init	1
+../Core/Src/AccManager/AccManager.c:117:6:accelerometer_read	1
+../Core/Src/AccManager/AccManager.c:140:6:show_acc_data	1

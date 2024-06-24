@@ -71,6 +71,9 @@ extern QueueHandle_t q_data;
 extern TimerHandle_t handle_led_timer[4];
 extern RTC_HandleTypeDef hrtc;
 
+// SPI handles
+extern SPI_HandleTypeDef hspi1;
+
 // UART handles
 extern UART_HandleTypeDef huart2;
 
