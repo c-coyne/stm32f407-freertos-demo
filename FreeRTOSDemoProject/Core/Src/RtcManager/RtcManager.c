@@ -40,19 +40,23 @@ void show_time_date(void);
  *  Messages                                        *
  ****************************************************/
 
+// General system messages
 const char *msg_inv_rtc = "\n***** Invalid RTC option ******\n";
 const char *msg_conf = "\nRTC configuration successful\n";
 
+// Time messages
 const char *msg_rtc_hh = "\nEnter hour (1-12): ";
 const char *msg_rtc_mm = "Enter minutes (0-59): ";
 const char *msg_rtc_ss = "Enter seconds (0-59): ";
 const char *msg_rtc_ampm = "Enter (0) AM or (1) PM: ";
 
+// Date messages
 const char *msg_rtc_mo = "\nEnter month (1-12): ";
 const char *msg_rtc_dd = "Enter date (1-31): ";
 const char *msg_rtc_yr = "Enter year (0-99): ";
 const char *msg_rtc_dow = "Enter day of the week (1-7, Sun=1): ";
 
+// RTC menu (split up to be able to show the current date in between)
 const char *msg_rtc_menu_1 = "\n======================================\n"
 				  		       "|               RTC Menu             |\n"
 						       "======================================\n";
@@ -74,6 +78,22 @@ RTC_DateTypeDef date;
  *  Public functions                                *
  ****************************************************/
 
+/*******************************************************************************************************
+ * @brief Task to handle RTC configuration and display.												   *
+ *  																								   *
+ * This FreeRTOS task handles the Real-Time Clock (RTC) menu and configuration. It waits for           *
+ * notifications from other tasks and processes RTC-related commands from the user, updating the       *
+ * date and time accordingly.																		   *
+ * 																									   *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void																						   *
+ * 																									   *
+ * @note The print queue (`q_print`) and other required queues must be initialized.				 	   *
+ * @note The task must be notified when a new command is available.									   *
+ * @note There are multiple state machines handled here: the overall system state machine and the	   *
+ *       RTC-specific state machine.																   *
+ ******************************************************************************************************/
+
 void rtc_task(void *param)
 {
 	uint32_t msg_addr;
@@ -87,8 +107,9 @@ void rtc_task(void *param)
 		while(curr_sys_state != sMainMenu) {
 
 			switch(curr_sys_state) {
+				/***** RTC main menu state *****/
 				case sRtcMenu:
-					// Display RTC menu for the user
+					// Display RTC menu for the user, show current time and date
 					xQueueSend(q_print, &msg_rtc_menu_1, portMAX_DELAY);
 					show_time_date();
 					xQueueSend(q_print, &msg_rtc_menu_2, portMAX_DELAY);
@@ -100,14 +121,17 @@ void rtc_task(void *param)
 					// Process command, update date / time accordingly
 					if(msg->len <= 4) {
 						if(!strcmp((char*)msg->payload, "Date")) {			// Configure date
+							// Update the system state
 							curr_sys_state = sRtcDateConfig;
 							xQueueSend(q_print, &msg_rtc_mo, portMAX_DELAY);
 						}
 						else if (!strcmp((char*)msg->payload, "Time")) {	// Configure time
+							// Update the system state
 							curr_sys_state = sRtcTimeConfig;
 							xQueueSend(q_print, &msg_rtc_hh, portMAX_DELAY);
 						}
 						else if (!strcmp((char*)msg->payload, "Rfsh")) {	// Refresh the date and time
+							// Update the system state
 							curr_sys_state = sRtcMenu;
 						}
 						else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu
@@ -126,6 +150,7 @@ void rtc_task(void *param)
 						xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
 					}
 					break;
+				/***** RTC date configuration state *****/
 				case sRtcDateConfig:
 					// Wait for the user to select their desired RTC configuration option
 					xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
@@ -133,28 +158,29 @@ void rtc_task(void *param)
 
 					// Configure month, date, year, or day of week accordingly
 					switch(curr_rtc_state) {
-						case MONTH_CONFIG:
+						case MONTH_CONFIG:									// Month config
 							uint8_t m = getnumber(msg->payload, msg->len);
 							date.Month = m;
 							curr_rtc_state = DATE_CONFIG;
 							xQueueSend(q_print, &msg_rtc_dd, portMAX_DELAY);
 							break;
-						case DATE_CONFIG:
+						case DATE_CONFIG:									// Date config
 							uint8_t d = getnumber(msg->payload, msg->len);
 							date.Date = d;
 							curr_rtc_state = YEAR_CONFIG;
 							xQueueSend(q_print, &msg_rtc_yr, portMAX_DELAY);
 							break;
-						case YEAR_CONFIG:
+						case YEAR_CONFIG:									// Year config
 							uint8_t y = getnumber(msg->payload, msg->len);
 							date.Year = y;
 							curr_rtc_state = DAY_CONFIG;
 							xQueueSend(q_print, &msg_rtc_dow, portMAX_DELAY);
 							break;
-						case DAY_CONFIG:
+						case DAY_CONFIG:									// Day of week config
 							uint8_t day = getnumber(msg->payload, msg->len);
 							date.WeekDay = day;
 
+							// Check that the user entered a valid date entry, configure date
 							if(!validate_rtc_information(NULL, &date)) {
 								rtc_configure_date(&date);
 								xQueueSend(q_print, &msg_conf, portMAX_DELAY);
@@ -163,12 +189,13 @@ void rtc_task(void *param)
 								xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
 							}
 
-							// Update system state
+							// Update system state, send control back to RTC menu
 							curr_sys_state = sRtcMenu;
 							curr_rtc_state = 0;
 							break;
 					}
 					break;
+				/***** RTC time configuration state *****/
 				case sRtcTimeConfig:
 					// Wait for the user to select their desired RTC configuration option
 					xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
@@ -197,6 +224,8 @@ void rtc_task(void *param)
 						case AMPM_CONFIG:
 							uint8_t opt = getnumber(msg->payload, msg->len);
 							time.TimeFormat = opt; // Note: 0 = RTC_HOURFORMAT12_AM, 1 = RTC_HOURFORMAT12_PM
+							
+							// Check that the user entered a valid date entry, configure time
 							if(!validate_rtc_information(&time, NULL)) {
 								rtc_configure_time(&time);
 								xQueueSend(q_print, &msg_conf, portMAX_DELAY);
@@ -204,13 +233,14 @@ void rtc_task(void *param)
 							else {
 								xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
 							}
-							// Update system state
+							// Update system state, send control back to RTC menu
 							curr_sys_state = sRtcMenu;
 							curr_rtc_state = 0;
 							break;
 					}
 					break;
 				default:
+					// Return control to the main menu task
 					curr_sys_state = sMainMenu;
 					xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
 					break;
@@ -228,10 +258,50 @@ void rtc_task(void *param)
  *  Private functions                               *
  ****************************************************/
 
+/*******************************************************************************************************
+ * @brief Converts an array of one- or two-digit string into a number.								   *
+ * 																									   *
+ * This function takes a pointer to an array of numerical characters and its length, and converts the  *
+ * one or two digits (as characters) into a single number.											   *
+ * 																									   *
+ * @param p Pointer to an array of digits in ASCII format.											   *
+ * @param len Length of the array. If len is greater than 1, it converts the two digits into a         *
+ *            number; otherwise, it converts just one.												   *
+ * @return The converted number from the array of digits.											   *
+ * 																									   *
+ * @note This function assumes that the input array contains valid digit characters. There's no error  *
+ *       checking done here.																		   *
+ * @note This function assumes only one or two digits in the ASCII number. If there are more than	   *
+ *       two digits, it will only convert the first two to a number.								   *
+  ******************************************************************************************************/
+
 uint8_t getnumber(uint8_t *p, int len)
 {
 	return (len > 1) ? ( ((p[0]-48) * 10) + (p[1]-48) ) : (p[0]-48);
 }
+
+/*******************************************************************************************************
+ * @brief Validates the RTC date and time information.												   *
+ * 																									   *
+ * This function checks if the given RTC date and time structures contain valid values according 	   *
+ * to typical RTC constraints.																		   *
+ * 																									   *
+ * @param time Pointer to an RTC_TimeTypeDef structure containing time information. If time is NULL,   *
+ * 			   the function does not perform time validation.										   *
+ * @param date Pointer to an RTC_DateTypeDef structure containing date information. If date is NULL,   *
+ * 			   the function does not perform date validation.										   *
+ * @return 0 if the RTC date and time information is valid, 1 otherwise.							   *
+ * 																									   *
+ * @note This function assumes that the input structures are properly initialized.					   *
+ *       The validation rules are as follows:														   *
+ *       - Hours should be in the range 0-12.														   *
+ *       - Minutes and seconds should be in the range 0-59.											   *
+ *       - TimeFormat should be either 0 (AM) or 1 (PM).											   *
+ *       - Date should be in the range 1-31.														   *
+ *       - WeekDay should be in the range 1 (Sunday) to 7 (Monday).									   *
+ *       - Year should be in the range 0-99 (assumption is 21st century).							   *
+ *       - Month should be in the range 1-12.														   *
+  ******************************************************************************************************/
 
 int validate_rtc_information(RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 {
@@ -247,6 +317,20 @@ int validate_rtc_information(RTC_TimeTypeDef *time, RTC_DateTypeDef *date)
 	return 0;
 }
 
+/*******************************************************************************************************
+ * @brief Uses the HAL to set configure the RTC time.												   *
+ * 																									   *
+ * This function sets up the Real-Time Clock (RTC) time with the specified parameters, disables 	   *
+ * daylight saving, and resets the store operation.													   *
+ * 																									   *
+ * @param time Pointer to an RTC_TimeTypeDef structure containing the time information to be set.	   *
+ * @return None							   														 	   *
+ * 																									   *
+ * @note This function uses the HAL library to set the RTC time in binary format (RTC_FORMAT_BIN). 	   *
+ * @note The DayLightSaving defaults to RTC_DAYLIGHTSAVING_NONE (disable daylight saving).			   *
+ * @note The StoreOperation defaults to RTC_STOREOPERATION_RESET.									   *														   *
+  ******************************************************************************************************/
+
 void rtc_configure_time(RTC_TimeTypeDef *time)
 {
 	time->DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
@@ -255,10 +339,35 @@ void rtc_configure_time(RTC_TimeTypeDef *time)
 	HAL_RTC_SetTime(&hrtc, time, RTC_FORMAT_BIN);
 }
 
+/*******************************************************************************************************
+ * @brief Uses the HAL to set configure the RTC date.												   *
+ * 																									   *
+ * This function sets up the Real-Time Clock (RTC) date with the specified parameters.				   *
+ * 																									   *
+ * @param date Pointer to an RTC_DateTypeDef structure containing the time information to be set.	   *
+ * @return None							   														 	   *
+ * 																									   *
+ * @note This function uses the HAL library to set the RTC date in binary format (RTC_FORMAT_BIN). 	   *
+  ******************************************************************************************************/
+
 void rtc_configure_date(RTC_DateTypeDef *date)
 {
 	HAL_RTC_SetDate(&hrtc, date, RTC_FORMAT_BIN);
 }
+
+/*******************************************************************************************************
+ * @brief Displays the current RTC time and date.													   *
+ * 																									   *
+ * This function retrieves the current time and date from the RTC and formats them into strings. 	   *
+ * The formatted strings are then sent to a printing queue for display.								   *
+ * 																									   *
+ * @return None																						   *
+ * 																									   *
+ * @note This function uses the HAL library to get the RTC time and date.							   *
+ * @note The time is displayed in the format "hh:mm:ss [AM/PM]" and the date is displayed in the 	   *
+ * 		 format "day, month-date-year". 															   *
+ * @note The function assumes the presence of a queue `q_print` to send the formatted strings.		   *
+  ******************************************************************************************************/
 
 void show_time_date(void)
 {
@@ -277,9 +386,11 @@ void show_time_date(void)
 
 	// Get the RTC current time
 	HAL_RTC_GetTime(&hrtc, &rtc_time, RTC_FORMAT_BIN);
+
 	// Get the RTC current date
 	HAL_RTC_GetDate(&hrtc, &rtc_date, RTC_FORMAT_BIN);
 
+	// Get AM / PM
 	char *format;
 	format = (rtc_time.TimeFormat == RTC_HOURFORMAT12_AM) ? "AM" : "PM";
 
@@ -287,7 +398,7 @@ void show_time_date(void)
 	sprintf((char*)showtime, "%s:\t%02d:%02d:%02d [%s]", "\nCurrent Time & Date", rtc_time.Hours, rtc_time.Minutes, rtc_time.Seconds, format);
 	xQueueSend(q_print, &time, portMAX_DELAY);
 
-	// Display date format: day, month-date-year
+	// Convert the user input day of the week from a number to a string
 	switch(rtc_date.WeekDay) {
 		case 1:
 			weekday = "Sunday";
@@ -311,6 +422,8 @@ void show_time_date(void)
 			weekday = "Saturday";
 			break;
 	}
+	
+	// Display date format: day, month-date-year
 	sprintf((char*)showdate, "\t%s, %02d-%02d-%02d\n", weekday, rtc_date.Month, rtc_date.Date, rtc_date.Year + 2000);
 	xQueueSend(q_print, &date, portMAX_DELAY);
 }

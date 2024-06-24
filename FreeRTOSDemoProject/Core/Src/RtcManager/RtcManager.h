@@ -21,6 +21,10 @@
 
 #include "FreeRTOS.h"
 
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
 void rtc_task(void *param);
 
 #endif /* SRC_RTCMANAGER_RTCMANAGER_H_ */
