@@ -1,0 +1,13 @@
+/*
+ * Config_RtcManager.h
+ *
+ *  Created on: Jun 20, 2024
+ *      Author: chris
+ */
+
+#ifndef SRC_RTCMANAGER_CONFIG_RTCMANAGER_H_
+#define SRC_RTCMANAGER_CONFIG_RTCMANAGER_H_
+
+
+
+#endif /* SRC_RTCMANAGER_CONFIG_RTCMANAGER_H_ */

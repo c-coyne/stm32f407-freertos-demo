@@ -1,9 +1,9 @@
 ../Core/Src/LedManager/LedManager.c:82:6:led_task	13
-../Core/Src/LedManager/LedManager.c:179:6:led_callback	1
-../Core/Src/LedManager/LedManager.c:207:6:set_led_timer	3
-../Core/Src/LedManager/LedManager.c:232:6:control_all_leds	1
-../Core/Src/LedManager/LedManager.c:254:6:control_led_group	2
-../Core/Src/LedManager/LedManager.c:291:6:control_single_led	2
-../Core/Src/LedManager/LedManager.c:320:6:execute_led_effect	7
-../Core/Src/LedManager/LedManager.c:367:5:parse_freq_string	6
-../Core/Src/LedManager/LedManager.c:403:5:freq_str_to_int	2
+../Core/Src/LedManager/LedManager.c:178:6:led_callback	1
+../Core/Src/LedManager/LedManager.c:206:6:set_led_timer	3
+../Core/Src/LedManager/LedManager.c:231:6:control_all_leds	1
+../Core/Src/LedManager/LedManager.c:253:6:control_led_group	2
+../Core/Src/LedManager/LedManager.c:290:6:control_single_led	2
+../Core/Src/LedManager/LedManager.c:319:6:execute_led_effect	7
+../Core/Src/LedManager/LedManager.c:366:5:parse_freq_string	6
+../Core/Src/LedManager/LedManager.c:402:5:freq_str_to_int	2

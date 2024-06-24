@@ -47,8 +47,8 @@ const char *msg_led_menu = "\n======================================\n"
 							 " None ---> Turn all effects off\n"
 							 " E1   ---> Blink all LEDs in unison\n"
 		 	 	 	 	 	 " E2   ---> Oscillate even and odd LEDs\n"
-		 	 	 	 	 	 " E3   ---> Description of effect E3\n"
-		 	 	 	 	 	 " E4   ---> Description of effect E4\n"
+		 	 	 	 	 	 " E3   ---> Light LEDs clockwise\n"
+		 	 	 	 	 	 " E4   ---> Light LEDs counterclockwise\n"
 							 " FXX  ---> Change frequency to (1-10) Hz\n"
 							 " Main ---> Return to main menu\n\n"
 							 " Enter your selection here: ";
@@ -145,7 +145,6 @@ void led_task(void *param)
 
 				// Notify the main menu task
 				xTaskNotify(handle_main_menu_task, 0, eNoAction);
-
 			}
 			else												// Invalid response
 				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
