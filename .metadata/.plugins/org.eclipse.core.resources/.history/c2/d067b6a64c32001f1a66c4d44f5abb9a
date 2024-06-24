@@ -1,0 +1,158 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 24th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 24th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ AccManager ]                                                            |
+| FILE:       AccManager.c                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `AccManager` module is responsible for handling user input and all effects     |
+|    pertaining to the on-board accelerometer.                                          |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "AccManager.h"
+#include "Config_AccManager.h"
+#include "main.h"
+#include <string.h>
+#include <stdio.h>
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+void show_acc_data(int16_t *x, int16_t *y, int16_t *z);
+void accelerometer_read(int16_t *x, int16_t *y, int16_t *z);
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv_acc = "\n***** Invalid LED effect option ******\n";
+const char *msg_acc_menu = "\n======================================\n"
+				  		     "|         Accelerometer Menu         |\n"
+						     "======================================\n\n"
+							 " X    ---> Accelerometer X-axis reading\n"
+							 " Y    ---> Accelerometer Y-axis reading\n"
+							 " Z    ---> Accelerometer Z-axis reading\n"
+							 " All  ---> Accelerometer readings from all axes\n"
+							 " Main ---> Return to main menu\n\n"
+							 " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+void acc_task(void* param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+	int16_t x, y, z;
+	int16_t *const px = &x;
+	int16_t *const py = &y;
+	int16_t *const pz = &z;
+
+	while(1) {
+		// Wait for notification from another task
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		// Display Accelerometer menu for the user
+		xQueueSend(q_print, &msg_acc_menu, portMAX_DELAY);
+
+		// Wait for the user to make a selection
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		// Initialize readings to NULL
+		x = NULL;
+		y = NULL;
+		z = NULL;
+
+		// Process command
+		if(msg->len <= 4) {
+			if(!strcmp((char*)msg->payload, "Read")) {
+				// Take an accelerometer reading
+				accelerometer_read(x, y, z);
+				show_acc_data(x, y, z);
+			}
+			else if (!strcmp((char*)msg->payload, "Main")) {
+				// Update the system state
+				curr_sys_state = sMainMenu;
+
+				// Notify the main menu task
+				xTaskNotify(handle_main_menu_task, 0, eNoAction);
+			}
+			else {
+				xQueueSend(q_print, &msg_inv_acc, portMAX_DELAY);
+			}
+		}
+		else {
+			// If user input is longer than 4 characters, notify user of invalid response
+			xQueueSend(q_print, &msg_inv_acc, portMAX_DELAY);
+		}
+
+		// Notify self / accelerometer task if not returning to the main menu
+		if (sAccMenu == curr_sys_state)
+			xTaskNotify(handle_acc_task, 0, eNoAction);
+	}
+}
+
+void accelerometer_init(void)
+{
+	// Configure CTRL_REG1_A: 100Hz, normal power mode, all axes enabled
+	uint8_t configData = 0x57; // 0b01010111: 100Hz, normal power mode, all axes enabled
+
+	// Pull CS low to select the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
+
+	// Send the register address
+	uint8_t reg = LSM303DLHC_CTRL_REG1_A;
+	HAL_SPI_Transmit(&hspi1, &reg, 1, HAL_MAX_DELAY);
+
+	// Send the configuration data
+	HAL_SPI_Transmit(&hspi1, &configData, 1, HAL_MAX_DELAY);
+
+	// Pull CS high to deselect the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_SET);
+}
+
+void accelerometer_read(int16_t *x, int16_t *y, int16_t *z)
+{
+	uint8_t accelData[6];
+	uint8_t reg = ACC_X_ADDR;
+
+	// Pull CS low to select the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
+
+	// Send the register address
+	HAL_SPI_Transmit(&hspi1, &reg, 1, HAL_MAX_DELAY);
+
+	// Receive the data
+	HAL_SPI_Receive(&hspi1, accelData, 6, HAL_MAX_DELAY);
+
+	// Pull CS high to de-select the device
+	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_SET);
+
+	// Convert the data
+	*x = (int16_t)(accelData[1] << 8 | accelData[0]);
+	*y = (int16_t)(accelData[3] << 8 | accelData[2]);
+	*z = (int16_t)(accelData[5] << 8 | accelData[4]);
+}
+
+void show_acc_data(int16_t *x, int16_t *y, int16_t *z)
+{
+	static char showacc[40];
+	static char* acc = showacc;
+
+	sprintf((char*)showacc, "Accel: X=%d, Y=%d, Z=%d\r\n", *x, *y, *z);
+	xQueueSend(q_print, &acc, portMAX_DELAY);
+}

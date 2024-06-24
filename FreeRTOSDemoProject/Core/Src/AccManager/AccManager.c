@@ -21,23 +21,28 @@
 #include "main.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /****************************************************
  *  Function prototypes                             *
  ****************************************************/
 
-void show_acc_data(int16_t *x, int16_t *y, int16_t *z);
-void accelerometer_read(int16_t *x, int16_t *y, int16_t *z);
+void show_acc_data(int16_t *acc_data, char *acc_flag);
+void accelerometer_read(int16_t *acc_data);
+void split_integer(int value, char* sign, int *thousands_part, int *hundreds_part);
 
 /****************************************************
  *  Messages                                        *
  ****************************************************/
 
-const char *msg_inv_acc = "\n***** Invalid LED effect option ******\n";
+const char *msg_inv_acc = "\n***** Invalid accelerometer option ******\n";
 const char *msg_acc_menu = "\n======================================\n"
 				  		     "|         Accelerometer Menu         |\n"
 						     "======================================\n\n"
-							 " Read ---> Take accelerometer reading\n"
+							 " X    ---> Accelerometer X-axis reading\n"
+							 " Y    ---> Accelerometer Y-axis reading\n"
+							 " Z    ---> Accelerometer Z-axis reading\n"
+							 " All  ---> Read all axes\n"
 							 " Main ---> Return to main menu\n\n"
 							 " Enter your selection here: ";
 
@@ -53,7 +58,8 @@ void acc_task(void* param)
 {
 	uint32_t msg_addr;
 	message_t *msg;
-	int16_t x, y, z;
+	int16_t acc_data[3];		// Array to hold accelerometer values
+	char acc_flag[3] = {0};		// Array to hold new data flags
 
 	while(1) {
 		// Wait for notification from another task
@@ -66,12 +72,35 @@ void acc_task(void* param)
 		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
 		msg = (message_t*)msg_addr;
 
+		// Set all new data flags to 0
+		for(int i=0; i<3; i++) {
+			acc_flag[i] = 0;
+		}
+
 		// Process command
 		if(msg->len <= 4) {
-			if(!strcmp((char*)msg->payload, "Read")) {
-				// Take an accelerometer reading
-				accelerometer_read(&x, &y, &z);
-				show_acc_data(&x, &y, &z);
+			if(!strcmp((char*)msg->payload, "X")) {
+				// Read accelerometer for X-axis only
+				accelerometer_read(acc_data);			// Read data
+				acc_flag[0] = 1; 						// Set X-axis new data flag
+				show_acc_data(acc_data, acc_flag);		// Show data
+			}
+			else if(!strcmp((char*)msg->payload, "Y")) {
+				// Read accelerometer for X-axis only
+				accelerometer_read(acc_data);			// Read data
+				acc_flag[1] = 1; 						// Set Y-axis new data flag
+				show_acc_data(acc_data, acc_flag);		// Show data
+			}
+			else if(!strcmp((char*)msg->payload, "Z")) {
+				// Read accelerometer for X-axis only
+				accelerometer_read(acc_data);			// Read data
+				acc_flag[2] = 1; 						// Set Z-axis new data flag
+				show_acc_data(acc_data, acc_flag);		// Show data
+			}
+			else if(!strcmp((char*)msg->payload, "All")) {
+				accelerometer_read(acc_data);			// Read data
+				for(int i=0; i<3; i++) acc_flag[i] = 1; // Set new data flags for all axes
+				show_acc_data(acc_data, acc_flag);		// Show data
 			}
 			else if (!strcmp((char*)msg->payload, "Main")) {
 				// Update the system state
@@ -114,9 +143,9 @@ void accelerometer_init(void)
 	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_SET);
 }
 
-void accelerometer_read(int16_t *x, int16_t *y, int16_t *z)
+void accelerometer_read(int16_t *acc_data)
 {
-	uint8_t accelData[6];
+	uint8_t sensor_reading[6];
 	uint8_t reg = ACC_X_ADDR;
 
 	// Pull CS low to select the device
@@ -126,22 +155,84 @@ void accelerometer_read(int16_t *x, int16_t *y, int16_t *z)
 	HAL_SPI_Transmit(&hspi1, &reg, 1, HAL_MAX_DELAY);
 
 	// Receive the data
-	HAL_SPI_Receive(&hspi1, accelData, 6, HAL_MAX_DELAY);
+	HAL_SPI_Receive(&hspi1, sensor_reading, 6, HAL_MAX_DELAY);
 
 	// Pull CS high to de-select the device
 	HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_SET);
 
-	// Convert the data
-	*x = (int16_t)(accelData[1] << 8 | accelData[0]);
-	*y = (int16_t)(accelData[3] << 8 | accelData[2]);
-	*z = (int16_t)(accelData[5] << 8 | accelData[4]);
+	// Convert the sensor reading
+	acc_data[0] = (int16_t)(sensor_reading[1] << 8 | sensor_reading[0]); // x
+	acc_data[1] = (int16_t)(sensor_reading[3] << 8 | sensor_reading[2]); // y
+	acc_data[2] = (int16_t)(sensor_reading[5] << 8 | sensor_reading[4]); // z
 }
 
-void show_acc_data(int16_t *x, int16_t *y, int16_t *z)
+void show_acc_data(int16_t *acc_data, char *acc_flag)
 {
-	static char showacc[40];
+	// Set up buffer
+	static char showacc[80];
 	static char* acc = showacc;
 
-	sprintf((char*)showacc, "Accel: X=%d, Y=%d, Z=%d\r\n", *x, *y, *z);
+	// Convert from raw sensor value to milli-g's [mg]
+	int16_t x_mg = acc_data[0] * 2000 / 32768;
+	int16_t y_mg = acc_data[1] * 2000 / 32768;
+	int16_t z_mg = acc_data[2] * 2000 / 32768;
+
+	// Variables to simulate floating point numbers
+	int x_i, x_d, y_i, y_d, z_i, z_d;
+	char x_s[2] = {"+"};
+	char y_s[2] = {"+"};
+	char z_s[2] = {"+"};
+
+	// Display the data that's available
+	// All axes
+	if((acc_flag[0] == 1) && (acc_flag[1] == 1) && (acc_flag[2] == 1)) {
+		split_integer(x_mg, x_s, &x_i, &x_d);
+		split_integer(y_mg, y_s, &y_i, &y_d);
+		split_integer(z_mg, z_s, &z_i, &z_d);
+		sprintf((char*)showacc, "\nAccelerometer reading: X = %s%d.%d g, Y = %s%d.%d g, Z = %s%d.%d g\r\n", x_s, x_i, x_d, y_s, y_i, y_d, z_s, z_i, z_d);
+	}
+	// X-axis only
+	else if (acc_flag[0] == 1) {
+		split_integer(x_mg, x_s, &x_i, &x_d);
+		sprintf((char*)showacc, "\nAccelerometer reading: X = %s%d.%d g\r\n", x_s, x_i, x_d);
+	}
+	// Y-axis only
+	else if (acc_flag[1] == 1) {
+		split_integer(y_mg, y_s, &y_i, &y_d);
+		sprintf((char*)showacc, "\nAccelerometer reading: Y = %s%d.%d g\r\n", y_s, y_i, y_d);
+	}
+	// Z-axis only
+	else if (acc_flag[2] == 1) {
+		split_integer(z_mg, z_s, &z_i, &z_d);
+		sprintf((char*)showacc, "\nAccelerometer reading: Z = %s%d.%d g\r\n", z_s, z_i, z_d);
+	}
+
+	// Populate the print queue
 	xQueueSend(q_print, &acc, portMAX_DELAY);
+}
+
+void split_integer(int value, char* sign, int *thousands_part, int *hundreds_part)
+{
+	// Evaluate the sign
+	if(value < 0) {
+		strcpy(sign, "-");
+	}
+	else {
+		strcpy(sign, "+");
+	}
+
+	// Calculate how many thousands
+    *thousands_part = abs(value / 1000);
+
+    // Calculate remaining hundreds
+    int remainder = value % 1000;
+
+    // Ensure hundreds_part is positive
+    *hundreds_part = abs((int)(remainder / 100.0));
+
+    // Adjust thousands_part if rounding up results in exactly 1000
+    if (*hundreds_part == 10) {
+        *thousands_part += 1;
+        *hundreds_part = 0;
+    }
 }
