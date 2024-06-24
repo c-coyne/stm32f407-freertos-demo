@@ -128,22 +128,8 @@ void led_task(void *param)
 			else if (!strcmp((char*)msg->payload, "Tor")) {		// Toggle orange LED
 				set_led_timer(effectNone);
 				curr_led_state = sNone;
+				control_all_leds(LED_OFF);
 				HAL_GPIO_TogglePin(ORANGE_LED_PORT, ORANGE_LED_PIN);
-			}
-			else if (!strcmp((char*)msg->payload, "Tgr")) {		// Toggle green LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(GREEN_LED_PORT, GREEN_LED_PIN);
-			}
-			else if (!strcmp((char*)msg->payload, "Tbl")) {		// Toggle blue LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(BLUE_LED_PORT, BLUE_LED_PIN);
-			}
-			else if (!strcmp((char*)msg->payload, "Tre")) {		// Toggle red LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(RED_LED_PORT, RED_LED_PIN);
 			}
 			else if (parse_freq_string(msg, &freq)) {			// Frequency adjustment
 				// Check that there is an active effect
