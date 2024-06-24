@@ -25,6 +25,7 @@
 #include "LedManager.h"
 #include "Config_LedManager.h"
 #include "RtcManager.h"
+#include "AccManager.h"
 
 /* USER CODE END Includes */
 
@@ -56,6 +57,7 @@ xTaskHandle handle_message_handler_task;
 xTaskHandle handle_print_task;
 xTaskHandle handle_led_task;
 xTaskHandle handle_rtc_task;
+xTaskHandle handle_acc_task;
 
 // Queue handles
 QueueHandle_t q_print;
@@ -139,6 +141,10 @@ int main(void)
 
   // Create RTC task and check that it was created successfully
   status = xTaskCreate(rtc_task, "rtc_task", 250, NULL, 2, &handle_rtc_task);
+  configASSERT(pdPASS == status);
+
+  // Create RTC task and check that it was created successfully
+  status = xTaskCreate(acc_task, "accelerometer_task", 250, NULL, 2, &handle_acc_task);
   configASSERT(pdPASS == status);
 
   // Create data queue and check that it was created successfully

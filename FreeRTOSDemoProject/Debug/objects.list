@@ -1,3 +1,4 @@
+"./Core/Src/AccManager/AccManager.o"
 "./Core/Src/LedManager/LedManager.o"
 "./Core/Src/RtcManager/RtcManager.o"
 "./Core/Src/UartManager/UartManager.o"

@@ -1,0 +1,13 @@
+/*
+ * AccManager.h
+ *
+ *  Created on: Jun 24, 2024
+ *      Author: chris
+ */
+
+#ifndef SRC_ACCMANAGER_ACCMANAGER_H_
+#define SRC_ACCMANAGER_ACCMANAGER_H_
+
+void acc_task(void* param);
+
+#endif /* SRC_ACCMANAGER_ACCMANAGER_H_ */

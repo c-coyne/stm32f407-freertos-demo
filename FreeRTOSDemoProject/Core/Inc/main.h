@@ -47,6 +47,7 @@ extern "C" {
 typedef enum {
 	sMainMenu = 0,
 	sLedMenu,
+	sAccMenu,
 	sRtcMenu,
 	sRtcDateConfig,
 	sRtcTimeConfig
@@ -60,6 +61,7 @@ extern xTaskHandle handle_message_handler_task;
 extern xTaskHandle handle_print_task;
 extern xTaskHandle handle_led_task;
 extern xTaskHandle handle_rtc_task;
+extern xTaskHandle handle_acc_task;
 
 // Queue handles
 extern QueueHandle_t q_print;
