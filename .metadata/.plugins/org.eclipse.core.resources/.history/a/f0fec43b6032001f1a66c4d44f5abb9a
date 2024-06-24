@@ -39,9 +39,9 @@ const char *msg_inv_acc = "\n***** Invalid accelerometer option ******\n";
 const char *msg_acc_menu = "\n======================================\n"
 				  		     "|         Accelerometer Menu         |\n"
 						     "======================================\n\n"
-							 " X    ---> Read X-axis\n"
-							 " Y    ---> Read Y-axis\n"
-							 " Z    ---> Read Z-axis\n"
+							 " X    ---> Accelerometer X-axis reading\n"
+							 " Y    ---> Accelerometer Y-axis reading\n"
+							 " Z    ---> Accelerometer Z-axis reading\n"
 							 " All  ---> Read all axes\n"
 							 " Main ---> Return to main menu\n\n"
 							 " Enter your selection here: ";

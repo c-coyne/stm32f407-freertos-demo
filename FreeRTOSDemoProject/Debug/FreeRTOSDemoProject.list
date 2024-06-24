@@ -7,19 +7,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         00009d5c  08000190  08000190  00001190  2**4
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       00000a84  08009eec  08009eec  0000aeec  2**2
+  2 .rodata       00000a50  08009eec  08009eec  0000aeec  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  0800a970  0800a970  0000c0cc  2**0
+  3 .ARM.extab    00000000  0800a93c  0800a93c  0000c0cc  2**0
                   CONTENTS
-  4 .ARM          00000008  0800a970  0800a970  0000b970  2**2
+  4 .ARM          00000008  0800a93c  0800a93c  0000b93c  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  0800a978  0800a978  0000c0cc  2**0
+  5 .preinit_array 00000000  0800a944  0800a944  0000c0cc  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .init_array   00000004  0800a978  0800a978  0000b978  2**2
+  6 .init_array   00000004  0800a944  0800a944  0000b944  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  7 .fini_array   00000004  0800a97c  0800a97c  0000b97c  2**2
+  7 .fini_array   00000004  0800a948  0800a948  0000b948  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  8 .data         000000cc  20000000  0800a980  0000c000  2**2
+  8 .data         000000cc  20000000  0800a94c  0000c000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
   9 .ccmram       00000000  10000000  10000000  0000c0cc  2**0
                   CONTENTS
@@ -1333,14 +1333,14 @@ void acc_task(void* param)
  8000f2e:	f007 f8e1 	bl	80080f4 <xTaskGenericNotify>
 		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
  8000f32:	e72c      	b.n	8000d8e <acc_task+0x12>
- 8000f34:	0800a078 	.word	0x0800a078
+ 8000f34:	0800a044 	.word	0x0800a044
  8000f38:	20000280 	.word	0x20000280
  8000f3c:	20000004 	.word	0x20000004
- 8000f40:	0800a060 	.word	0x0800a060
- 8000f44:	0800a064 	.word	0x0800a064
- 8000f48:	0800a068 	.word	0x0800a068
- 8000f4c:	0800a06c 	.word	0x0800a06c
- 8000f50:	0800a070 	.word	0x0800a070
+ 8000f40:	0800a02c 	.word	0x0800a02c
+ 8000f44:	0800a030 	.word	0x0800a030
+ 8000f48:	0800a034 	.word	0x0800a034
+ 8000f4c:	0800a038 	.word	0x0800a038
+ 8000f50:	0800a03c 	.word	0x0800a03c
  8000f54:	20000299 	.word	0x20000299
  8000f58:	20000268 	.word	0x20000268
  8000f5c:	20000000 	.word	0x20000000
@@ -1443,9 +1443,6 @@ void accelerometer_read(int16_t *acc_data)
  8000fec:	2108      	movs	r1, #8
  8000fee:	4812      	ldr	r0, [pc, #72]	@ (8001038 <accelerometer_read+0x84>)
  8000ff0:	f002 f9ee 	bl	80033d0 <HAL_GPIO_WritePin>
-//	*x = (int16_t)(accelData[1] << 8 | accelData[0]);
-//	*y = (int16_t)(accelData[3] << 8 | accelData[2]);
-//	*z = (int16_t)(accelData[5] << 8 | accelData[4]);
 
 	// Convert the sensor reading
 	acc_data[0] = (int16_t)(sensor_reading[1] << 8 | sensor_reading[0]); // x
@@ -1697,11 +1694,11 @@ void show_acc_data(int16_t *acc_data, char *acc_flag)
  80011ea:	373c      	adds	r7, #60	@ 0x3c
  80011ec:	46bd      	mov	sp, r7
  80011ee:	bdf0      	pop	{r4, r5, r6, r7, pc}
- 80011f0:	0800a07c 	.word	0x0800a07c
+ 80011f0:	0800a048 	.word	0x0800a048
  80011f4:	200000e8 	.word	0x200000e8
- 80011f8:	0800a0c4 	.word	0x0800a0c4
- 80011fc:	0800a0ec 	.word	0x0800a0ec
- 8001200:	0800a114 	.word	0x0800a114
+ 80011f8:	0800a090 	.word	0x0800a090
+ 80011fc:	0800a0b8 	.word	0x0800a0b8
+ 8001200:	0800a0e0 	.word	0x0800a0e0
  8001204:	20000280 	.word	0x20000280
  8001208:	20000008 	.word	0x20000008
 
@@ -1806,8 +1803,8 @@ void split_integer(int value, char* sign, int *thousands_part, int *hundreds_par
  80012b2:	3718      	adds	r7, #24
  80012b4:	46bd      	mov	sp, r7
  80012b6:	bd80      	pop	{r7, pc}
- 80012b8:	0800a13c 	.word	0x0800a13c
- 80012bc:	0800a140 	.word	0x0800a140
+ 80012b8:	0800a108 	.word	0x0800a108
+ 80012bc:	0800a10c 	.word	0x0800a10c
  80012c0:	10624dd3 	.word	0x10624dd3
  80012c4:	40590000 	.word	0x40590000
 
@@ -2120,12 +2117,12 @@ void led_task(void *param)
  80014e2:	bf00      	nop
  80014e4:	20000280 	.word	0x20000280
  80014e8:	2000001c 	.word	0x2000001c
- 80014ec:	0800a38c 	.word	0x0800a38c
+ 80014ec:	0800a358 	.word	0x0800a358
  80014f0:	20000020 	.word	0x20000020
- 80014f4:	0800a394 	.word	0x0800a394
- 80014f8:	0800a398 	.word	0x0800a398
- 80014fc:	0800a39c 	.word	0x0800a39c
- 8001500:	0800a3a0 	.word	0x0800a3a0
+ 80014f4:	0800a360 	.word	0x0800a360
+ 80014f8:	0800a364 	.word	0x0800a364
+ 80014fc:	0800a368 	.word	0x0800a368
+ 8001500:	0800a36c 	.word	0x0800a36c
  8001504:	20000010 	.word	0x20000010
  8001508:	20000018 	.word	0x20000018
  800150c:	3ff00000 	.word	0x3ff00000
@@ -2133,7 +2130,7 @@ void led_task(void *param)
  8001514:	20000288 	.word	0x20000288
  8001518:	10624dd3 	.word	0x10624dd3
  800151c:	20000014 	.word	0x20000014
- 8001520:	0800a3a4 	.word	0x0800a3a4
+ 8001520:	0800a370 	.word	0x0800a370
  8001524:	20000299 	.word	0x20000299
  8001528:	20000268 	.word	0x20000268
  800152c:	2000000c 	.word	0x2000000c
@@ -2600,7 +2597,7 @@ int parse_freq_string(message_t *msg, int *freq_Hz)
  800181a:	46bd      	mov	sp, r7
  800181c:	bd80      	pop	{r7, pc}
  800181e:	bf00      	nop
- 8001820:	0800a83c 	.word	0x0800a83c
+ 8001820:	0800a808 	.word	0x0800a808
 
 08001824 <freq_str_to_int>:
  *       invalid formats or edge cases (e.g., non-numeric characters). It relies on proper validation  *
@@ -3091,12 +3088,12 @@ void rtc_task(void *param)
  8001b60:	20000280 	.word	0x20000280
  8001b64:	20000050 	.word	0x20000050
  8001b68:	20000054 	.word	0x20000054
- 8001b6c:	0800a5cc 	.word	0x0800a5cc
+ 8001b6c:	0800a598 	.word	0x0800a598
  8001b70:	20000040 	.word	0x20000040
- 8001b74:	0800a5d4 	.word	0x0800a5d4
+ 8001b74:	0800a5a0 	.word	0x0800a5a0
  8001b78:	20000030 	.word	0x20000030
- 8001b7c:	0800a5dc 	.word	0x0800a5dc
- 8001b80:	0800a5e4 	.word	0x0800a5e4
+ 8001b7c:	0800a5a8 	.word	0x0800a5a8
+ 8001b80:	0800a5b0 	.word	0x0800a5b0
  8001b84:	20000028 	.word	0x20000028
  8001b88:	2000013c 	.word	0x2000013c
  8001b8c:	20000154 	.word	0x20000154
@@ -3583,21 +3580,21 @@ void show_time_date(void)
  8001e94:	46bd      	mov	sp, r7
  8001e96:	bd80      	pop	{r7, pc}
  8001e98:	200001a8 	.word	0x200001a8
- 8001e9c:	0800a5ec 	.word	0x0800a5ec
- 8001ea0:	0800a5f0 	.word	0x0800a5f0
- 8001ea4:	0800a5f4 	.word	0x0800a5f4
- 8001ea8:	0800a60c 	.word	0x0800a60c
+ 8001e9c:	0800a5b8 	.word	0x0800a5b8
+ 8001ea0:	0800a5bc 	.word	0x0800a5bc
+ 8001ea4:	0800a5c0 	.word	0x0800a5c0
+ 8001ea8:	0800a5d8 	.word	0x0800a5d8
  8001eac:	20000158 	.word	0x20000158
  8001eb0:	20000280 	.word	0x20000280
  8001eb4:	20000058 	.word	0x20000058
- 8001eb8:	0800a624 	.word	0x0800a624
- 8001ebc:	0800a62c 	.word	0x0800a62c
- 8001ec0:	0800a634 	.word	0x0800a634
- 8001ec4:	0800a63c 	.word	0x0800a63c
- 8001ec8:	0800a648 	.word	0x0800a648
- 8001ecc:	0800a654 	.word	0x0800a654
- 8001ed0:	0800a65c 	.word	0x0800a65c
- 8001ed4:	0800a668 	.word	0x0800a668
+ 8001eb8:	0800a5f0 	.word	0x0800a5f0
+ 8001ebc:	0800a5f8 	.word	0x0800a5f8
+ 8001ec0:	0800a600 	.word	0x0800a600
+ 8001ec4:	0800a608 	.word	0x0800a608
+ 8001ec8:	0800a614 	.word	0x0800a614
+ 8001ecc:	0800a620 	.word	0x0800a620
+ 8001ed0:	0800a628 	.word	0x0800a628
+ 8001ed4:	0800a634 	.word	0x0800a634
  8001ed8:	20000180 	.word	0x20000180
  8001edc:	2000005c 	.word	0x2000005c
 
@@ -4330,27 +4327,27 @@ int main(void)
  800235c:	e7fd      	b.n	800235a <main+0x1f6>
  800235e:	bf00      	nop
  8002360:	20000268 	.word	0x20000268
- 8002364:	0800a7ac 	.word	0x0800a7ac
+ 8002364:	0800a778 	.word	0x0800a778
  8002368:	08001ee1 	.word	0x08001ee1
  800236c:	2000026c 	.word	0x2000026c
- 8002370:	0800a7bc 	.word	0x0800a7bc
+ 8002370:	0800a788 	.word	0x0800a788
  8002374:	08001fdd 	.word	0x08001fdd
  8002378:	20000270 	.word	0x20000270
- 800237c:	0800a7c8 	.word	0x0800a7c8
+ 800237c:	0800a794 	.word	0x0800a794
  8002380:	0800200d 	.word	0x0800200d
  8002384:	20000274 	.word	0x20000274
- 8002388:	0800a7d4 	.word	0x0800a7d4
+ 8002388:	0800a7a0 	.word	0x0800a7a0
  800238c:	080012c9 	.word	0x080012c9
  8002390:	20000278 	.word	0x20000278
- 8002394:	0800a7e0 	.word	0x0800a7e0
+ 8002394:	0800a7ac 	.word	0x0800a7ac
  8002398:	08001871 	.word	0x08001871
  800239c:	2000027c 	.word	0x2000027c
- 80023a0:	0800a7ec 	.word	0x0800a7ec
+ 80023a0:	0800a7b8 	.word	0x0800a7b8
  80023a4:	08000d7d 	.word	0x08000d7d
  80023a8:	20000284 	.word	0x20000284
  80023ac:	20000280 	.word	0x20000280
  80023b0:	08001535 	.word	0x08001535
- 80023b4:	0800a800 	.word	0x0800a800
+ 80023b4:	0800a7cc 	.word	0x0800a7cc
  80023b8:	20000288 	.word	0x20000288
  80023bc:	20000298 	.word	0x20000298
  80023c0:	20000220 	.word	0x20000220
@@ -6128,7 +6125,7 @@ LoopFillZerobss:
   ldr r1, =_edata
  8002d18:	200000cc 	.word	0x200000cc
   ldr r2, =_sidata
- 8002d1c:	0800a980 	.word	0x0800a980
+ 8002d1c:	0800a94c 	.word	0x0800a94c
   ldr r2, =_sbss
  8002d20:	200000cc 	.word	0x200000cc
   ldr r4, =_ebss
@@ -8563,7 +8560,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  8003aaa:	bf00      	nop
  8003aac:	40023c00 	.word	0x40023c00
  8003ab0:	40023800 	.word	0x40023800
- 8003ab4:	0800a824 	.word	0x0800a824
+ 8003ab4:	0800a7f0 	.word	0x0800a7f0
  8003ab8:	20000068 	.word	0x20000068
  8003abc:	2000006c 	.word	0x2000006c
 
@@ -8865,7 +8862,7 @@ uint32_t HAL_RCC_GetPCLK1Freq(void)
  8003d00:	4618      	mov	r0, r3
  8003d02:	bd80      	pop	{r7, pc}
  8003d04:	40023800 	.word	0x40023800
- 8003d08:	0800a834 	.word	0x0800a834
+ 8003d08:	0800a800 	.word	0x0800a800
 
 08003d0c <HAL_RCC_GetPCLK2Freq>:
   * @note   Each time PCLK2 changes, this function must be called to update the
@@ -8891,7 +8888,7 @@ uint32_t HAL_RCC_GetPCLK2Freq(void)
  8003d28:	4618      	mov	r0, r3
  8003d2a:	bd80      	pop	{r7, pc}
  8003d2c:	40023800 	.word	0x40023800
- 8003d30:	0800a834 	.word	0x0800a834
+ 8003d30:	0800a800 	.word	0x0800a800
 
 08003d34 <HAL_RCC_GetClockConfig>:
   * will be configured.
@@ -19129,7 +19126,7 @@ void vTaskStartScheduler( void )
  8007718:	46bd      	mov	sp, r7
  800771a:	bd80      	pop	{r7, pc}
  800771c:	20000428 	.word	0x20000428
- 8007720:	0800a80c 	.word	0x0800a80c
+ 8007720:	0800a7d8 	.word	0x0800a7d8
  8007724:	08007d5d 	.word	0x08007d5d
  8007728:	20000424 	.word	0x20000424
  800772c:	20000410 	.word	0x20000410
@@ -21793,7 +21790,7 @@ static void prvAddCurrentTaskToDelayedList( TickType_t xTicksToWait,
  80085ea:	bf00      	nop
  80085ec:	20000460 	.word	0x20000460
  80085f0:	20000464 	.word	0x20000464
- 80085f4:	0800a814 	.word	0x0800a814
+ 80085f4:	0800a7e0 	.word	0x0800a7e0
  80085f8:	080087f1 	.word	0x080087f1
 
 080085fc <xTimerCreate>:
@@ -22998,7 +22995,7 @@ static void prvAddCurrentTaskToDelayedList( TickType_t xTicksToWait,
  8008c7c:	20000444 	.word	0x20000444
  8008c80:	20000458 	.word	0x20000458
  8008c84:	2000045c 	.word	0x2000045c
- 8008c88:	0800a81c 	.word	0x0800a81c
+ 8008c88:	0800a7e8 	.word	0x0800a7e8
 
 08008c8c <pvTimerGetTimerID>:
         return xReturn;
@@ -24687,10 +24684,10 @@ static void prvInsertBlockIntoFreeList( BlockLink_t * pxBlockToInsert ) /* PRIVI
  8009622:	4798      	blx	r3
  8009624:	3601      	adds	r6, #1
  8009626:	e7f2      	b.n	800960e <__libc_init_array+0x1e>
- 8009628:	0800a978 	.word	0x0800a978
- 800962c:	0800a978 	.word	0x0800a978
- 8009630:	0800a978 	.word	0x0800a978
- 8009634:	0800a97c 	.word	0x0800a97c
+ 8009628:	0800a944 	.word	0x0800a944
+ 800962c:	0800a944 	.word	0x0800a944
+ 8009630:	0800a944 	.word	0x0800a944
+ 8009634:	0800a948 	.word	0x0800a948
 
 08009638 <__retarget_lock_acquire_recursive>:
  8009638:	4770      	bx	lr
@@ -25209,11 +25206,11 @@ static void prvInsertBlockIntoFreeList( BlockLink_t * pxBlockToInsert ) /* PRIVI
  8009adc:	4638      	mov	r0, r7
  8009ade:	f000 f879 	bl	8009bd4 <_printf_i>
  8009ae2:	e7ed      	b.n	8009ac0 <_svfiprintf_r+0x1c0>
- 8009ae4:	0800a93d 	.word	0x0800a93d
- 8009ae8:	0800a947 	.word	0x0800a947
+ 8009ae4:	0800a909 	.word	0x0800a909
+ 8009ae8:	0800a913 	.word	0x0800a913
  8009aec:	00000000 	.word	0x00000000
  8009af0:	08009849 	.word	0x08009849
- 8009af4:	0800a943 	.word	0x0800a943
+ 8009af4:	0800a90f 	.word	0x0800a90f
 
 08009af8 <_printf_common>:
  8009af8:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -25544,8 +25541,8 @@ static void prvInsertBlockIntoFreeList( BlockLink_t * pxBlockToInsert ) /* PRIVI
  8009e04:	f104 0619 	add.w	r6, r4, #25
  8009e08:	e7f5      	b.n	8009df6 <_printf_i+0x222>
  8009e0a:	bf00      	nop
- 8009e0c:	0800a94e 	.word	0x0800a94e
- 8009e10:	0800a95f 	.word	0x0800a95f
+ 8009e0c:	0800a91a 	.word	0x0800a91a
+ 8009e10:	0800a92b 	.word	0x0800a92b
 
 08009e14 <memmove>:
  8009e14:	4288      	cmp	r0, r1
