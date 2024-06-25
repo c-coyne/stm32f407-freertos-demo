@@ -71,6 +71,10 @@ TimerHandle_t handle_led_timer[4];
 // Event group handles
 EventGroupHandle_t ledEventGroup;
 
+// Semaphore handles
+SemaphoreHandle_t rtcSemaphore;
+SemaphoreHandle_t ledOffSemaphore;
+
 // UART buffer
 volatile uint8_t user_data;
 
@@ -166,6 +170,14 @@ int main(void)
   // Create an event group to synchronize accelerometer readings and LED triggers
   ledEventGroup = xEventGroupCreate();
   configASSERT(NULL != ledEventGroup);
+
+  // Create a binary semaphore to synchronize RTC configuration and LED triggers
+  rtcSemaphore = xSemaphoreCreateBinary();
+  configASSERT(NULL != rtcSemaphore);
+
+  // Create a binary semaphore to synchronize LEDs off after exiting RTC menu
+  ledOffSemaphore = xSemaphoreCreateBinary();
+  configASSERT(NULL != ledOffSemaphore);
 
   // Create software timers for LED effects
   for(int i=0; i<NUM_LED_TIMERS; i++) {

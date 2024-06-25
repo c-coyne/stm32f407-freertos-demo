@@ -95,7 +95,7 @@ void led_task(void *param)
 	int period = 500; // Period in ms
 
 	// FreeRTOS variables
-	const TickType_t xTicksToWait = pdMS_TO_TICKS(LED_WAIT_TIME); // Wait period for the event group
+	const TickType_t xTicksToWait = pdMS_TO_TICKS(EVENT_GROUP_WAIT_TIME); // Wait period for the event group
 	uint32_t notificationValue;
 	EventBits_t eventBits;
 
@@ -199,7 +199,7 @@ void led_task(void *param)
 		             pdFALSE, // Wait for any bit to be set																//
 		             0);      // Do not block																			//
 																														//
-		if (eventBits & ACCEL_READ_X_BIT && eventBits & ACCEL_READ_Y_BIT && eventBits & ACCEL_READ_Z_BIT) {				//
+		if ((eventBits & ACCEL_READ_X_BIT) && (eventBits & ACCEL_READ_Y_BIT) && (eventBits & ACCEL_READ_Z_BIT)) {		//
 			// Light all LED for x-, y-, and z-axis success																//
 			set_led_timer(effectNone);																					//
 			curr_led_state = sNone;																						//
@@ -207,36 +207,49 @@ void led_task(void *param)
 			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, SET);														//
 			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, SET);														//
 		}																												//
-		else if (eventBits & TURN_OFF_LEDS_BIT) {																		//
-			// Turn off all LEDs																						// E
-			set_led_timer(effectNone);																					// V
-			curr_led_state = sNone;																						// E
-			control_all_leds(LED_OFF);																					// N
-		}																												// T
-		else if (eventBits & ACCEL_READ_X_BIT) {																		//
-			// Light orange LED for x-axis success																		// G
-			set_led_timer(effectNone);																					// R
-			curr_led_state = sNone;																						// O
-			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, SET);													// U
-			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, RESET);														// P
-			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, RESET);													//
+		else if (eventBits & TURN_OFF_LEDS_BIT) {																		// E
+			// Turn off all LEDs																						// V
+			set_led_timer(effectNone);																					// E
+			curr_led_state = sNone;																						// N
+			control_all_leds(LED_OFF);																					// T
+		}																												//
+		else if (eventBits & ACCEL_READ_X_BIT) {																		// G
+			// Light orange LED for x-axis success																		// R
+			set_led_timer(effectNone);																					// O
+			curr_led_state = sNone;																						// U
+			control_all_leds(LED_OFF);																					// P
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, SET);													//
 		}																												//
 		else if (eventBits & ACCEL_READ_Y_BIT) {																		//
 			// Light blue LED for y-axis success																		//
 			set_led_timer(effectNone);																					//
 			curr_led_state = sNone;																						//
-			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, RESET);													//
+			control_all_leds(LED_OFF);																					//
 			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, SET);														//
-			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, RESET);													//
 		}																												//
 		else if (eventBits & ACCEL_READ_Z_BIT) {																		//
 			// Light green LED for z-axis success																		//
 			set_led_timer(effectNone);																					//
 			curr_led_state = sNone;																						//
-			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, RESET);													//
-			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, RESET);														//
+			control_all_leds(LED_OFF);																					//
 			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, SET);														//
 		}	// -----------------------------------------------------------------------------------------------------------
+		// ===============================================================================================================
+		// Check if rtcSemaphore is available																			//
+		if (xSemaphoreTake(rtcSemaphore, RTC_SEMAPHORE_WAIT_TIME) == pdTRUE) {											//
+			// Light red LED to indicate successful RTC configuration													//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			control_all_leds(LED_OFF);																					//
+			HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, SET);															//
+		} 																												//
+		if (xSemaphoreTake(ledOffSemaphore, RTC_SEMAPHORE_WAIT_TIME) == pdTRUE) {										//
+			// Turn off all LEDs																						//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			control_all_leds(LED_OFF);																					//
+		} // =============================================================================================================
+
 
 	} // end while super loop
 }
