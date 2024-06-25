@@ -1,0 +1,5 @@
+../Core/Src/AccManager/AccManager.c:70:6:acc_task	10
+../Core/Src/AccManager/AccManager.c:164:6:accelerometer_init	1
+../Core/Src/AccManager/AccManager.c:206:6:accelerometer_read	1
+../Core/Src/AccManager/AccManager.c:247:6:show_acc_data	10
+../Core/Src/AccManager/AccManager.c:309:6:split_integer	3

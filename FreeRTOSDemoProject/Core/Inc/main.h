@@ -37,6 +37,7 @@ extern "C" {
 #include "queue.h"
 #include "UartManager.h"
 #include "timers.h"
+#include "event_groups.h"
 
 /* USER CODE END Includes */
 
@@ -47,6 +48,7 @@ extern "C" {
 typedef enum {
 	sMainMenu = 0,
 	sLedMenu,
+	sAccMenu,
 	sRtcMenu,
 	sRtcDateConfig,
 	sRtcTimeConfig
@@ -60,6 +62,7 @@ extern xTaskHandle handle_message_handler_task;
 extern xTaskHandle handle_print_task;
 extern xTaskHandle handle_led_task;
 extern xTaskHandle handle_rtc_task;
+extern xTaskHandle handle_acc_task;
 
 // Queue handles
 extern QueueHandle_t q_print;
@@ -68,6 +71,12 @@ extern QueueHandle_t q_data;
 // Timer handles
 extern TimerHandle_t handle_led_timer[4];
 extern RTC_HandleTypeDef hrtc;
+
+// Event group handles
+extern EventGroupHandle_t ledEventGroup;
+
+// SPI handles
+extern SPI_HandleTypeDef hspi1;
 
 // UART handles
 extern UART_HandleTypeDef huart2;

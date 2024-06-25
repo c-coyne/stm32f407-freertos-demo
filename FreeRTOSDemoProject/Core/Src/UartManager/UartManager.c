@@ -42,7 +42,8 @@ const char *msg_main_menu = "\n======================================\n"
 							  "|              Main Menu             |\n"
 						      "======================================\n\n"
 							  " 0 --> Start or modify an LED effect\n"
-							  " 1 --> Configure date and/or time\n\n"
+							  " 1 --> Configure date and/or time\n"
+							  " 2 --> Interface with accelerometer\n\n"
 							  " Enter your selection here: ";
 
 /****************************************************
@@ -94,8 +95,9 @@ void main_menu_task(void *param)
 					xTaskNotify(handle_rtc_task, 0, eNoAction);
 					break;
 				case 2:
-					xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
-					continue;
+					curr_sys_state = sAccMenu;
+					xTaskNotify(handle_acc_task, 0, eNoAction);
+					break;
 				default:
 					xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
 					continue;
@@ -197,6 +199,10 @@ void process_message(message_t *msg) {
 		case sLedMenu:
 			// Notify the led task and pass the message
 			xTaskNotify(handle_led_task, (uint32_t)msg, eSetValueWithOverwrite);
+			break;
+		case sAccMenu:
+			// Notify the ACC task and pass the message
+			xTaskNotify(handle_acc_task, (uint32_t)msg, eSetValueWithOverwrite);
 			break;
 		case sRtcMenu:
 		case sRtcTimeConfig:

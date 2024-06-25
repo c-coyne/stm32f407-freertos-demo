@@ -44,4 +44,7 @@
 #define RED_LED_PORT		LD5_GPIO_Port
 #define RED_LED_PIN			LD5_Pin
 
+// FreeRTOS task wait time [ms]
+#define LED_WAIT_TIME		100
+
 #endif /* SRC_LEDMANAGER_CONFIG_LEDMANAGER_H_ */

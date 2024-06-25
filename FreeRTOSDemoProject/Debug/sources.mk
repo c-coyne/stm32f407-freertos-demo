@@ -22,6 +22,7 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
+Core/Src/AccManager \
 Core/Src/LedManager \
 Core/Src/RtcManager \
 Core/Src/UartManager \
