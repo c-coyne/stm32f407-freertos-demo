@@ -115,3 +115,25 @@ void print_task(void *param)
 2. **Message Handling:** `message_handler_task` processes the received data from `q_data`.
 3. **Message Processing:** The processed message is then sent to the `q_print` queue.
 4. **Data Transmission:** `print_task` reads the message from `q_print` and transmits it via UART.
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+    participant UART Interrupt
+    participant q_data
+    participant message_handler_task
+    participant process_message
+    participant q_print
+    participant print_task
+    participant UART Transmit
+
+    UART Interrupt->>q_data: xQueueSendFromISR(data byte)
+    q_data->>message_handler_task: xQueueReceive(data byte)
+    message_handler_task->>process_message: process(data byte)
+    process_message->>q_print: xQueueSend(processed message)
+    q_print->>print_task: xQueueReceive(processed message)
+    print_task->>UART Transmit: HAL_UART_Transmit(processed message)
+
+
+```

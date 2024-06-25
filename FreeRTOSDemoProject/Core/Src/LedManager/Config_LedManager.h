@@ -20,31 +20,32 @@
  ****************************************************/
 
 // Number of configured software timers
-#define NUM_LED_TIMERS		4
+#define NUM_LED_TIMERS				4
 
 // LED states
-#define LED_OFF				GPIO_PIN_RESET
-#define LED_ON				GPIO_PIN_SET
+#define LED_OFF						GPIO_PIN_RESET
+#define LED_ON						GPIO_PIN_SET
 
 // LED groups
-#define LED_EVEN			0
-#define LED_ODD				1
+#define LED_EVEN					0
+#define LED_ODD						1
 
 // LEDs
 // Top
-#define ORANGE_LED_PORT		LD3_GPIO_Port
-#define ORANGE_LED_PIN		LD3_Pin
+#define ORANGE_LED_PORT				LD3_GPIO_Port
+#define ORANGE_LED_PIN				LD3_Pin
 // Left
-#define GREEN_LED_PORT		LD4_GPIO_Port
-#define GREEN_LED_PIN		LD4_Pin
+#define GREEN_LED_PORT				LD4_GPIO_Port
+#define GREEN_LED_PIN				LD4_Pin
 // Bottom
-#define BLUE_LED_PORT		LD6_GPIO_Port
-#define BLUE_LED_PIN		LD6_Pin
+#define BLUE_LED_PORT				LD6_GPIO_Port
+#define BLUE_LED_PIN				LD6_Pin
 // Right
-#define RED_LED_PORT		LD5_GPIO_Port
-#define RED_LED_PIN			LD5_Pin
+#define RED_LED_PORT				LD5_GPIO_Port
+#define RED_LED_PIN					LD5_Pin
 
 // FreeRTOS task wait time [ms]
-#define LED_WAIT_TIME		100
+#define EVENT_GROUP_WAIT_TIME		100
+#define RTC_SEMAPHORE_WAIT_TIME		10
 
 #endif /* SRC_LEDMANAGER_CONFIG_LEDMANAGER_H_ */

@@ -38,6 +38,7 @@ extern "C" {
 #include "UartManager.h"
 #include "timers.h"
 #include "event_groups.h"
+#include "semphr.h"
 
 /* USER CODE END Includes */
 
@@ -74,6 +75,10 @@ extern RTC_HandleTypeDef hrtc;
 
 // Event group handles
 extern EventGroupHandle_t ledEventGroup;
+
+// Semaphore handles
+extern SemaphoreHandle_t rtcSemaphore;
+extern SemaphoreHandle_t ledOffSemaphore;
 
 // SPI handles
 extern SPI_HandleTypeDef hspi1;

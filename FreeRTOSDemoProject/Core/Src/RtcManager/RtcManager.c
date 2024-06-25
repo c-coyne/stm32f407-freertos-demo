@@ -137,11 +137,15 @@ void rtc_task(void *param)
 						else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu
 							// Update the system state
 							curr_sys_state = sMainMenu;
+							// Give semaphore for led_task to turn LEDs off
+							xSemaphoreGive(ledOffSemaphore);
 						}
 						else {												// Invalid response
 							// Update the system state
 							curr_sys_state = sMainMenu;
 							xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+							// Give semaphore for led_task to turn LEDs off
+							xSemaphoreGive(ledOffSemaphore);
 						}
 					}
 					else {
@@ -182,11 +186,14 @@ void rtc_task(void *param)
 
 							// Check that the user entered a valid date entry, configure date
 							if(!validate_rtc_information(NULL, &date)) {
-								rtc_configure_date(&date);
-								xQueueSend(q_print, &msg_conf, portMAX_DELAY);
+								rtc_configure_date(&date); // Configure date
+								xQueueSend(q_print, &msg_conf, portMAX_DELAY); // Send confirmation to print queue
+								xSemaphoreGive(rtcSemaphore); // Give rtcSemaphore for led_task to light LED
 							}
 							else {
 								xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+								// Give semaphore for led_task to turn LEDs off
+								xSemaphoreGive(ledOffSemaphore);
 							}
 
 							// Update system state, send control back to RTC menu
@@ -227,11 +234,14 @@ void rtc_task(void *param)
 							
 							// Check that the user entered a valid date entry, configure time
 							if(!validate_rtc_information(&time, NULL)) {
-								rtc_configure_time(&time);
-								xQueueSend(q_print, &msg_conf, portMAX_DELAY);
+								rtc_configure_time(&time); // Configure time
+								xQueueSend(q_print, &msg_conf, portMAX_DELAY); // Send confirmation to print queue
+								xSemaphoreGive(rtcSemaphore); // Give rtcSemaphore for led_task to light LED
 							}
 							else {
 								xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+								// Give semaphore for led_task to turn LEDs off
+								xSemaphoreGive(ledOffSemaphore);
 							}
 							// Update system state, send control back to RTC menu
 							curr_sys_state = sRtcMenu;
@@ -243,6 +253,8 @@ void rtc_task(void *param)
 					// Return control to the main menu task
 					curr_sys_state = sMainMenu;
 					xQueueSend(q_print, &msg_inv_rtc, portMAX_DELAY);
+					// Give semaphore for led_task to turn LEDs off
+					xSemaphoreGive(ledOffSemaphore);
 					break;
 			}
 
@@ -265,9 +277,8 @@ void rtc_task(void *param)
  * one or two digits (as characters) into a single number.											   *
  * 																									   *
  * @param p Pointer to an array of digits in ASCII format.											   *
- * @param len Length of the array. If len is greater than 1, it converts the two digits into a         *
- *            number; otherwise, it converts just one.												   *
- * @return The converted number from the array of digits.											   *
+ * @param len Length of the array. 																	   *
+ * @return retVal The converted number from the array of digits.									   *
  * 																									   *
  * @note This function assumes that the input array contains valid digit characters. There's no error  *
  *       checking done here.																		   *
