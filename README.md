@@ -1,16 +1,17 @@
 # STM32F407 FreeRTOS Demo Project
 
 ## Overview
-This project is intended to demonstrate a variety of the features available within FreeRTOS. It's intentionally limited to the STM32F407 discovery board to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
+This project is intended to demonstrate a variety of the features available within FreeRTOS and the STM32F407 discovery board, such as on-board LEDs, the real-time clock, and the accelerometer. The project is intentionally limited to the STM32F407 discovery board to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
 
 ## Features
 - **Task Management:** Demonstrates the creation and management of multiple FreeRTOS tasks.
-- **Inter-Task Communication:** Utilizes queues, semaphores, and other FreeRTOS synchronization mechanisms.
-- **Peripheral Control:** Interfaces with GPIO, UART, and RTC peripherals.
+- **Queue Management:** Demonstrates the creation and management of multiple FreeRTOS queues, one a "data queue" and the other a "print queue".
+- **Inter-Task Communication:** Utilizes queues, semaphores, event groups, and other FreeRTOS synchronization mechanisms.
+- **Peripheral Control:** Interfaces with GPIO, UART, STM32F407DISC-1 accelerometer (SPI), and RTC peripherals.
 
 ## Hardware and Software Requirements
-- **Hardware:** STM32F407 Discovery Board, FTDI USB-to-UART converter
-- **Software:** STM32CubeIDE, FreeRTOS
+- **Hardware:** STM32F407 Discovery Board, FTDI USB-to-UART converter, USB cables
+- **Software:** STM32CubeIDE, FreeRTOS library, HAL drivers for STM32
 
 ## Project Structure
 ```
@@ -24,6 +25,18 @@ FreeRTOSDemoProject/
 │ │ ├── stm32f4xx_hal_conf.h
 │ │ └── stm32f4xx_it.h
 │ ├── Src/
+│ │ ├── AccManager/
+| | | ├── Config_AccManager.h
+| | | ├── AccManager.h
+| | | └── AccManager.c
+│ │ ├── LedManager/
+| | | ├── Config_LedManager.h
+| | | ├── LedManager.h
+| | | └── LedManager.c
+│ │ ├── RtcManager/
+| | | ├── Config_RtcManager.h
+| | | ├── RtcManager.h
+| | | └── RtcManager.c
 │ │ ├── UartManager/
 | | | ├── Config_UartManager.h
 | | | ├── UartManager.h
@@ -36,6 +49,7 @@ FreeRTOSDemoProject/
 │ │ ├── sysmem.c
 │ │ └── system_stm32f4xx.c
 | ├── Startup/
+├── Debug/
 ├── Drivers/
 │ ├── CMSIS/
 │ └── STM32F4XX_HAL_Driver/
@@ -43,11 +57,14 @@ FreeRTOSDemoProject/
 │ └── FreeRTOS/
 ├── Debug/
 ├── Docs/
-│ ├── Overview/
-│ │ └── README.md
-│ ├── Diagrams/
 │ ├── Communication/
+│ │ ├── EventGroups.md
+│ │ ├── Queues.md
+│ │ └── Semaphores.md
 │ └── Tasks/
+│ │ ├── AccManager.md
+│ │ ├── LedManager.md
+│ │ ├── RtcManager.md
 │ │ └── UartManager.md
 └── README.md
 ```
@@ -63,27 +80,85 @@ FreeRTOSDemoProject/
    ```bash
    git clone https://github.com/yourusername/STM32F407_FreeRTOS_Project.git
 2. **Open the project in STM32CubeIDE.**
+- Open the generated project in STM32CubeIDE or your preferred IDE.
 3. **Build the project by clicking on the build icon or using the menu Project -> Build All.**
+- Compile the project to generate the binary file.
 4. **Flash the firmware to your STM32F407 Discovery board using the debug icon or menu Run -> Debug.**
+- Connect the board to your PC via USB.
+- Flash the binary using the IDE's built-in programmer or any other programming tool.
+
+### Hardware setup
+This project handles all user communication via UART (**USART2** in the STM32CubeIDE Device Configuration Tool). This uses pins **PA2 (USART2_TX)** and **PA3 (USART2_RX)**, which must be connected to the RX and TX pins of your FTDI USB-to-UART converter. You must also ensure the FTDI USB-to-UART converter and the STM32F407 discovery board share a ground, so you'll need to add an additional jumper wire to ensure a common ground.
+
+### Terminal setup
+For this project, I used Tera Term on a Windows machine for all communication to / from the board, however any terminal emulator will work (for instance, I also tested this using picocom on a Linux machine running Ubuntu). You'll want to set up the terminal emulator the following way to facilitate UART communication:
+- Turn on line feed (LF) for both _Receive_ and _Transmit_. In Tera Term, you can find this at `Setup > Terminal...`, then select `LF` for _Receive_ and `LF` for _Transmit_
+- Turn on a local echo. In Tera Term, you can find this at `Setup > Terminal...`, then check the box for _Local echo_
+- Set the baud rate to 115,200. In Tera Term, you can find this at `Setup > Serial port...`, then use the drop-down menu to change _Speed_ to **115200**
+
+### Running the Application
+Upon powering the STM32F407 Discovery board, the FreeRTOS scheduler will start, and the tasks will begin execution as described below. You can tell if you've set up UART communication correctly if you're presented with a main menu upon powering up the board. If you don't see the main menu, try resetting the board while the FTDI connector is already connected.
 
 ## Task Descriptions
-### UART Manager
+
+### Accelerometer Manager _______________________________________________
+
+    File: Core/Src/AccManager/AccManager.c
+    Description: Handles interaction with the STM32F407 discovery board accelerometer via SPI communication.
+    Documentation: AccManager.md
+
+#### Accelerometer Task (`acc_task`)
+- Processes accelerometer data and triggers related events.
+
+### LED Manager __________________________________________________________
+
+    File: Core/Src/LedManager/LedManager.c
+    Description: Handles management of the four on-board LEDs.
+    Documentation: LedManager.md
+
+#### LED Task (`led_task`)
+- Manages LED states and effects based on notifications, user input, events, and semaphores.
+
+### RTC Manager __________________________________________________________
+
+    File: Core/Src/RtcManager/RtcManager.c
+    Description: Handles configuration of the real time clock.
+    Documentation: RtcManager.md
+
+#### RTC Task (`rtc_task`)
+- Manages RTC configurations and synchronization events.
+
+### UART Manager _________________________________________________________
 
     File: Core/Src/UartManager/UartManager.c
     Description: Handles UART transmission and reception.
     Documentation: UartManager.md
 
-### Communication Mechanisms
+#### Main Menu Task (`main_menu_task`)
+- Handles the main menu interactions and state transitions.
 
-    Queues: Used for task-to-task communication.
-        Documentation: TODO
-    Semaphores: Used for synchronization between tasks.
-        Documentation: TODO
+#### Message Handler Task (`message_handler_task`)
+- Processes incoming UART messages and notifies other tasks accordingly.
 
-### Diagrams
+#### Print Task (`print_task`)
+- Handles print operations to the UART for debugging and user messages.
 
-    Block Diagram: BlockDiagram.png
-    Sequence Diagram: SequenceDiagram.png
+## Communication Mechanisms
+
+- **Queues:**
+    - `q_print`: Used for handling print operations.
+    - `q_data`: Used for managing UART data reception.
+- **Event Groups:**
+    - `ledEventGroup`: Synchronizes accelerometer readings with LED triggers.
+- **Semaphores:**
+    - `rtcSemaphore`: Ensures safe access to RTC configurations.
+    - `ledOffSemaphore`: Coordinates turning off LEDs after exiting the RTC menu.
+- **Timers:**
+    `handle_led_timer[]`: Software timers for controlling LED effects.
+
+## Diagrams
+
+See [task](FreeRTOSDemoProject/Docs/Tasks) and [communication](FreeRTOSDemoProject/Docs/Communication) documentation for data flow and sequence diagrams.
 
 ## License
 
@@ -96,6 +171,9 @@ Project Link: https://github.com/c-coyne/stm32f407-freertos-demo
 
 ## Acknowledgements
 
-    FreeRTOS: FreeRTOS.org
-    STM32CubeIDE: STMicroelectronics
+**FreeRTOS:** FreeRTOS.org
+
+**STM32CubeIDE:** STMicroelectronics
+
+**FastBit Embedded Brain Academy:** This project is a modified and extended version of one of the many projects in their [_Mastering FreeRTOS: Hands on FreeRTOS and STM32Fx with Debugging_](https://www.udemy.com/course/mastering-rtos-hands-on-with-freertos-arduino-and-stm32fx/?couponCode=ST18MT62524) course.
 
