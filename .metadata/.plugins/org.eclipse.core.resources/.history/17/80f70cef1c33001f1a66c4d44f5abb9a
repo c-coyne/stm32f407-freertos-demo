@@ -236,16 +236,16 @@ void led_task(void *param)
 		}	// -----------------------------------------------------------------------------------------------------------
 		// ===============================================================================================================
 		// Check if rtcSemaphore is available																			//
-		if (xSemaphoreTake(rtcSemaphore, RTC_SEMAPHORE_WAIT_TIME) == pdTRUE) {											// S
-			// Light red LED to indicate successful RTC configuration													// E
-			set_led_timer(effectNone);																					// M
-			curr_led_state = sNone;																						// A
-			control_all_leds(LED_OFF);																					// P
-			HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, SET);															// H
-		} 																												// O
-		if (xSemaphoreTake(ledOffSemaphore, RTC_SEMAPHORE_WAIT_TIME) == pdTRUE) {										// R
-			// Turn off all LEDs																						// E
-			set_led_timer(effectNone);																					// S
+		if (xSemaphoreTake(rtcSemaphore, RTC_SEMAPHORE_WAIT_TIME) == pdTRUE) {											//
+			// Light red LED to indicate successful RTC configuration													//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			control_all_leds(LED_OFF);																					//
+			HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, SET);															//
+		} 																												//
+		if (xSemaphoreTake(ledOffSemaphore, RTC_SEMAPHORE_WAIT_TIME) == pdTRUE) {										//
+			// Turn off all LEDs																						//
+			set_led_timer(effectNone);																					//
 			curr_led_state = sNone;																						//
 			control_all_leds(LED_OFF);																					//
 		} // =============================================================================================================
