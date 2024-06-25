@@ -68,6 +68,9 @@ QueueHandle_t q_data;
 // Software timer handles
 TimerHandle_t handle_led_timer[4];
 
+// Event group handles
+EventGroupHandle_t ledEventGroup;
+
 // UART buffer
 volatile uint8_t user_data;
 
@@ -159,6 +162,9 @@ int main(void)
   // Create print queue and check that it was created successfully
   q_print = xQueueCreate(10, sizeof(size_t));
   configASSERT(NULL != q_print);
+
+  // Create an event group to synchronize accelerometer readings and LED triggers
+  ledEventGroup = xEventGroupCreate();
 
   // Create software timers for LED effects
   for(int i=0; i<NUM_LED_TIMERS; i++) {

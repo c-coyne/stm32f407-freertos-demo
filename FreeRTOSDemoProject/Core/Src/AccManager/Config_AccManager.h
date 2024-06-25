@@ -29,4 +29,10 @@
 #define ACC_Y_ADDR				LSM303DLHC_OUT_Y_L_A
 #define ACC_Z_ADDR				LSM303DLHC_OUT_Z_L_A
 
+// Event group bits for synchronization
+#define ACCEL_READ_X_BIT 		(1 << 0)
+#define ACCEL_READ_Y_BIT 		(1 << 1)
+#define ACCEL_READ_Z_BIT 		(1 << 2)
+#define TURN_OFF_LEDS_BIT		(1 << 3)
+
 #endif /* SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_ */

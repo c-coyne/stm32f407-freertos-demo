@@ -1,0 +1,486 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                          June 19th, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     June 19th, 2024                                                             |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ LedManager ]                                                            |
+| FILE:       LedManager.c                                                              |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `LedManager` module is responsible for handling user input and all effects     |
+|    pertaining to the on-board LEDs.                                                   |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "LedManager.h"
+#include "Config_LedManager.h"
+#include "main.h"
+#include "Config_AccManager.h"
+#include <string.h>
+#include <ctype.h>
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+void set_led_timer(led_effect_t effect);
+void control_all_leds(int state);
+void control_led_group(int led_mode);
+void execute_led_effect(int effect);
+int parse_freq_string(message_t *msg, int *freq_Hz);
+int freq_str_to_int(message_t *msg, int len);
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+const char *msg_inv_led = "\n***** Invalid LED effect option ******\n";
+const char *msg_no_active_effect = "\n***** No active LED effect *****\n";
+const char *msg_err_freq = "\n***** Unable to change LED frequency *****\n";
+const char *msg_inv_freq = "\n***** Invalid: please choose between 1-10 Hz *****\n";
+const char *msg_led_menu = "\n======================================\n"
+				  		     "|               LED Menu             |\n"
+						     "======================================\n\n"
+							 " None ---> Turn all effects off\n"
+							 " E1   ---> Blink all LEDs in unison\n"
+		 	 	 	 	 	 " E2   ---> Oscillate even and odd LEDs\n"
+		 	 	 	 	 	 " E3   ---> Light LEDs clockwise\n"
+		 	 	 	 	 	 " E4   ---> Light LEDs counterclockwise\n"
+							 " FXX  ---> Change frequency to (1-10) Hz\n"
+							 " Tor  ---> Toggle orange LED\n"
+							 " Tgr  ---> Toggle green LED\n"
+							 " Tbl  ---> Toggle blue LED\n"
+							 " Tre  ---> Toggle red LED\n"
+							 " Main ---> Return to main menu\n\n"
+							 " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+led_state_t curr_led_state = sNone;
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Task to handle LED menu selection and apply LED effects.									   *
+ *																									   *
+ * This FreeRTOS task waits for notifications from other tasks to display the LED menu and process     *
+ * user input to apply different LED effects. It handles user selections for various predefined LED    *
+ * effects, frequency adjustments, and sends messages for invalid selections or errors. The task also  *
+ * updates the system state and notifies the main menu task upon completion.                           *
+ *																									   *
+ * @param param [void*] Parameter passed during task creation (not used in this task).				   *
+ * @return void																						   *
+ *																									   *
+ * @note The print queue (`q_print`) and other required queues must be initialized.				 	   *
+ * @note The task must be notified when a new command is available.									   *
+ * @note The function utilizes software timers to control LED effects.								   *
+ ******************************************************************************************************/
+
+void led_task(void *param)
+{
+	// Communication variables
+	uint32_t msg_addr;
+	message_t *msg;
+
+	// LED timer parameters
+	int freq = 2; // Frequency in Hz
+	int period = 500; // Period in ms
+
+	// FreeRTOS variables
+	const TickType_t xTicksToWait = pdMS_TO_TICKS(LED_WAIT_TIME); // Wait period for the event group
+	uint32_t notificationValue;
+	EventBits_t eventBits;
+
+	while(1) {
+		// Wait for task notification or timeout =========================================================================
+		if (xTaskNotifyWait(0, 0, &notificationValue, xTicksToWait) == pdPASS) {										//
+																														//
+			// Display LED menu for the user																			//
+			xQueueSend(q_print, &msg_led_menu, portMAX_DELAY);															//
+																														//
+			// Wait for the user to select their desired LED effect														//
+			xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);															//
+			msg = (message_t*)msg_addr;																					//
+																														//
+			// Process command, adjust LED state, and set software timers accordingly									//
+			if(msg->len <= 4) {																							//
+				if(!strcmp((char*)msg->payload, "None"))			// No effect										//
+				{																										//
+					set_led_timer(effectNone);																			//
+					curr_led_state = sNone;																				//
+					control_all_leds(LED_OFF);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E1")) {		// E1 effect										//
+					curr_led_state = sEffectE1;																			//
+					set_led_timer(effectE1);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E2")) {		// E2 effect										//
+					curr_led_state = sEffectE2;																			//
+					set_led_timer(effectE2);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E3")) {		// E3 effect										//
+					curr_led_state = sEffectE3;																			//
+					set_led_timer(effectE3);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E4")) {		// E4 effect										//
+					curr_led_state = sEffectE4;																			//
+					set_led_timer(effectE4);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "Tor")) {		// Toggle orange LED								//
+					set_led_timer(effectNone);																			//
+					curr_led_state = sNone;																				//
+					HAL_GPIO_TogglePin(ORANGE_LED_PORT, ORANGE_LED_PIN);												//
+				}																										// N
+				else if (!strcmp((char*)msg->payload, "Tgr")) {		// Toggle green LED									// O
+					set_led_timer(effectNone);																			// T
+					curr_led_state = sNone;																				// I
+					HAL_GPIO_TogglePin(GREEN_LED_PORT, GREEN_LED_PIN);													// F
+				}																										// I
+				else if (!strcmp((char*)msg->payload, "Tbl")) {		// Toggle blue LED									// C
+					set_led_timer(effectNone);																			// A
+					curr_led_state = sNone;																				// T
+					HAL_GPIO_TogglePin(BLUE_LED_PORT, BLUE_LED_PIN);													// I
+				}																										// O
+				else if (!strcmp((char*)msg->payload, "Tre")) {		// Toggle red LED									// N
+					set_led_timer(effectNone);																			//
+					curr_led_state = sNone;																				//
+					HAL_GPIO_TogglePin(RED_LED_PORT, RED_LED_PIN);														//
+				}																										//
+				else if (parse_freq_string(msg, &freq)) {			// Frequency adjustment								//
+					// Check that there is an active effect																//
+					if(sNone == curr_led_state) {																		//
+						xQueueSend(q_print, &msg_no_active_effect, portMAX_DELAY);										//
+					}																									//
+					// Check that frequency is between 1 and 10 Hz														//
+					else if(freq > 10) {																				//
+						xQueueSend(q_print, &msg_inv_freq, portMAX_DELAY);												//
+					}																									//
+					// Change timer frequency																			//
+					else {																								//
+						period = (1.0 / freq) * 1000;																	//
+						if (xTimerChangePeriod(handle_led_timer[curr_led_state], pdMS_TO_TICKS(period), 0) != pdPASS) {	//
+							// If frequency update was not successful, notify the user									//
+							xQueueSend(q_print, &msg_err_freq, portMAX_DELAY);											//
+						}																								//
+					}																									//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu								//
+					// Update the system state																			//
+					curr_sys_state = sMainMenu;																			//
+																														//
+					// Notify the main menu task																		//
+					xTaskNotify(handle_main_menu_task, 0, eNoAction);													//
+				}																										//
+				else												// Invalid response									//
+					xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);													//
+			}																											//
+			else {																										//
+				// If user input is longer than 4 characters, notify user of invalid response							//
+				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);														//
+			}																											//
+																														//
+			// Notify self / led task if not returning to the main menu													//
+			if (sLedMenu == curr_sys_state)																				//
+				xTaskNotify(handle_led_task, 0, eNoAction);																//
+		}	// ===========================================================================================================
+		// If timeout, check for any LED event group bits set ------------------------------------------------------------
+		eventBits =  xEventGroupWaitBits(																				//
+				 	 ledEventGroup,																						//
+		             ACCEL_READ_X_BIT | ACCEL_READ_Y_BIT | ACCEL_READ_Z_BIT,											//
+		             pdTRUE,  // Clear bits on exit																		//
+		             pdFALSE, // Wait for any bit to be set																//
+		             0);      // Do not block																			//
+																														//
+		if (eventBits & ACCEL_READ_X_BIT && eventBits & ACCEL_READ_Y_BIT && eventBits & ACCEL_READ_Z_BIT) {				//
+			// Light all LED for x-, y-, and z-axis success																//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, SET);													//
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, SET);														//
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, SET);														// E
+		}																												// V
+		else if (eventBits & ACCEL_READ_X_BIT) {																		// E
+			// Light orange LED for x-axis success																		// N
+			set_led_timer(effectNone);																					// T
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, SET);													// G
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, RESET);														// R
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, RESET);													// O
+		}																												// U
+		else if (eventBits & ACCEL_READ_Y_BIT) {																		// P
+			// Light blue LED for y-axis success																		//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, RESET);													//
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, SET);														//
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, RESET);													//
+		}																												//
+		else if (eventBits & ACCEL_READ_Z_BIT) {																		//
+			// Light green LED for z-axis success																		//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, RESET);													//
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, RESET);														//
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, SET);														//
+		}	// -----------------------------------------------------------------------------------------------------------
+
+	} // end while super loop
+}
+
+/*******************************************************************************************************
+ * @brief Callback function invoked by FreeRTOS timer expiration to execute LED effects. 			   *
+ *																									   *
+ * This function is registered as a callback for FreeRTOS timers associated with LED effects. When a   *
+ * timer associated with an LED effect expires, this callback function retrieves the timer's ID, 	   *
+ * which corresponds to the specific LED effect. It then calls the function `execute_led_effect` to    *
+ * perform the corresponding LED effect based on the timer ID.										   *
+ *																									   *
+ * @param xTimer [TimerHandle_t] The handle of the FreeRTOS timer that triggered the callback.	 	   *
+ * @return void																						   *
+ *																									   *
+ * @note The function assumes that the timer IDs correspond directly to the LED effects to be executed *
+ *       and relies on proper timer setup and management by the calling code.						   *
+ ******************************************************************************************************/
+
+void led_callback(TimerHandle_t xTimer)
+{
+	// Get timer ID
+	int id = (uint32_t)pvTimerGetTimerID(xTimer);
+
+	// LED effects correspond to timer ID's
+	int effect = id;
+	execute_led_effect(effect);
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Sets the timer for the specified LED effect.												   *
+ * 																									   *
+ * This function stops all currently active LED timers and starts the timer corresponding to the       *
+ * specified LED effect. If the effect provided is `effectNone`, all LED timers are stopped to turn    *
+ * off all LED effects.																				   *
+ *																									   *
+ * @param effect [led_effect_t] The LED effect to set the timer for.								   *
+ * @return void																						   *
+ * 																									   *
+ * @note This function assumes that `handle_led_timer[]` array is properly initialized and contains    *
+ *       valid FreeRTOS software timer handles for each LED effect.									   *
+ ******************************************************************************************************/
+
+void set_led_timer(led_effect_t effect)
+{
+	// Turn off all timers
+	for(int i=0; i<NUM_LED_TIMERS; i++) {
+		xTimerStop(handle_led_timer[i], portMAX_DELAY);
+	}
+
+	// Start the selected timer
+	if(effectNone != effect) {
+		xTimerStart(handle_led_timer[effect], portMAX_DELAY);
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Allows for control of all LEDs at once.													   *
+ * 																									   *
+ * This function sets the state of all LEDs to the provided `state` (either all LEDs on or all		   *
+ * LEDs off).																					       *
+ *																									   *
+ * @param state [int] The intended state for all LEDs (LED_ON or LED_OFF)							   *
+ * @return void																						   *
+ * 																									   *
+ * @note This function assumes that the macros for each on-board LED are configured correctly.	       *
+ ******************************************************************************************************/
+
+void control_all_leds(int state)
+{
+	HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, state);
+	HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, state);
+	HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, state);
+	HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, state);
+}
+
+/*******************************************************************************************************
+ * @brief Allows for control of LED groups (even or odd LEDs).										   *
+ * 																									   *
+ * This function sets the state of groups of LEDs based on the provided `led_mode` (either LED_EVEN	   *
+ * or LED_ODD).																					       *
+ *																									   *
+ * @param led_mode [int] The selected group of LEDs that should be turned on. 						   *
+ * @return void																						   *
+ * 																									   *
+ * @note This function assumes that the macros for each on-board LED are configured correctly.	       *
+ * @note The provided `led_mode` specifies which LED group should be turned on (ex. LED_EVEN). The	   *
+ *       other LED group (ex. LED_ODD) will be turned off.											   *
+ ******************************************************************************************************/
+
+void control_led_group(int led_mode)
+{
+	// Turn on even LEDs
+	if(LED_EVEN == led_mode) {
+		HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, GPIO_PIN_SET);
+	}
+	// Turn on odd LEDs
+	else {
+		HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(RED_LED_PORT, RED_LED_PIN, GPIO_PIN_RESET);
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Allows for more specific control of individual LEDs.										   *
+ * 																									   *
+ * This function sets the state of each individual LED based on the provided `config`, which is		   *
+ * simply a bit map for the on-board LEDs (ex. 0101 = LEDs #1 and #3 turned on, #2 and #4 turned	   *
+ * off).																						       *
+ *																									   *
+ * @param config [int] The configuration (4 bits) specifying the state of each LED.					   *
+ * @return void																						   *
+ * 																									   *
+ * @note This function assumes that the macros for each on-board LED are configured correctly.	       *
+ * @note All on-board LEDs are on the same GPIO port (GPIOD), so the same port can be used for		   *
+ * 		 all LEDs.																					   *
+ * @note LED pins are numbered sequentially, starting with GREEN_LED_PIN = LD4_Pin. This facilitates   *
+ *       addressing with a for loop. See the table below for details.								   *
+ * @note `config` dictates the LED states, ex. 0x05 = 0101 = Green and Red LEDs on, Orange and Blue    *
+ *       LEDs off.																					   *
+ ******************************************************************************************************/
+
+void control_single_led(int config)
+{
+	//////////////////////////////////////////////////////
+	// LED			LD Pin		GPIO Pin		Address //
+	// Green		LD4			GPIO_PIN_12		0x1000  //
+	// Orange		LD3			GPIO_PIN_13		0x2000  //
+	// Red			LD5			GPIO_PIN_14		0x4000  //
+	// Blue			LD6			GPIO_PIN_15		0x8000  //
+	//////////////////////////////////////////////////////
+
+	for(int i=0; i<NUM_LED_TIMERS; i++) {
+		HAL_GPIO_WritePin(GREEN_LED_PORT, (GREEN_LED_PIN << i), ((config >> i) & 0x1));
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Executes the specified LED effect.														   *
+ * 																									   *
+ * This function executes different LED effects based on the provided effect identifier. It uses 	   *
+ * static variables to maintain state across function calls for effects that require alternating 	   *
+ * behavior or sequential LED control.																   *
+ *																									   *
+ * @param effect [int] The identifier of the LED effect to be executed.								   *
+ * @return void																						   *
+ * 																									   *
+ * @note This function assumes that functions `control_all_leds()`, `control_led_group()`, and 		   *
+ *       `control_single_led()` are implemented to control the LEDs accordingly.			 		   *
+ ******************************************************************************************************/
+
+void execute_led_effect(int effect)
+{
+	// Flag used for effects E1 and E2
+	static int flag = 1;
+	// i and used for effects E3 and E4
+	static int i = 0;
+
+	switch(effect) {
+		case effectE1:
+			// Flash all LEDs in unison
+			(flag ^= 1) ? control_all_leds(LED_OFF) : control_all_leds(LED_ON);
+			break;
+		case effectE2:
+			// Flash even and odd LEDs back and forth
+			(flag ^= 1) ? control_led_group(LED_EVEN) : control_led_group(LED_ODD);
+			break;
+		case effectE3:
+			// Move the illuminated LED around the circle of on-board LEDs
+			control_single_led(0x1 << (i++ % 4));
+			break;
+		case effectE4:
+			// Move the illuminated LED around the circle of on-board LEDs in opposite direction of effect E3
+			control_single_led(0x08 >> (i++ % 4));
+			break;
+		default:
+			break;
+	}
+}
+
+/*******************************************************************************************************
+ * @brief Parses a frequency string from a message payload and converts it to an integer frequency.    *
+ *																									   *
+ * This function checks the provided message payload to determine if it contains a valid frequency     *
+ * command in the format "F<number>". It ensures that the input is at least 2 characters long, starts  *
+ * with 'F', and the remaining characters are digits. If the input meets these criteria, it converts   *
+ * the numeric part of the string to an integer frequency value.									   *
+ *																									   *
+ * @param msg [message_t*] A pointer to the message structure containing the payload.				   *
+ * @param freq_Hz [int*] A pointer to an integer where the parsed frequency value will be stored.	   *
+ * @return int Returns 1 if the parsing was successful and the frequency value was extracted; 		   *
+ *             otherwise, returns 0 indicating an invalid format.									   *
+ *																								       *
+ * @note The function assumes that the payload contains a well-formed frequency command and does not   *
+ *       validate the value range explicitly. It relies on other components to handle invalid values.  *
+ ******************************************************************************************************/
+
+
+int parse_freq_string(message_t *msg, int *freq_Hz)
+{
+    // Check if the input string is at least 2 characters long (F and one digit)
+    int len = strlen((char *)msg->payload);
+    if (len < 2 || len > 4) return 0;
+
+    // Check if the first character is 'F'
+    if (msg->payload[0] != 'F') return 0;
+
+    // Check if the remaining characters are digits
+    for (int i = 1; i < len; i++)
+    {
+        if (!isdigit(msg->payload[i])) return 0;
+    }
+
+    // Convert the numeric part to an integer
+    *freq_Hz = freq_str_to_int(msg, len);
+    return 1;
+}
+
+/*******************************************************************************************************
+ * @brief Converts a numeric string (excluding 'F') from a message payload to an integer.			   *
+ *																									   *
+ * This function converts the numeric part of a frequency command string (excluding the initial 'F')   *
+ * into an integer. It iterates through each digit character in the payload, converts it from ASCII    *
+ * to its corresponding integer value, and constructs the final integer representation.				   *
+ *																									   *
+ * @param msg [message_t*] A pointer to the message structure containing the payload.				   *
+ * @param len [int] The length of the payload string, including the initial 'F'.					   *
+ * @return int The integer representation of the frequency value extracted from the payload.		   *
+ *																									   *
+ * @note The function assumes that the payload string follows the correct format and does not handle   *
+ *       invalid formats or edge cases (e.g., non-numeric characters). It relies on proper validation  *
+ *       by the calling function.																	   *
+ ******************************************************************************************************/
+
+int freq_str_to_int(message_t *msg, int len)
+{
+	int ret = 0;
+
+	for(int i=1; i<len; i++) {
+		ret = ret * 10 + (msg->payload[i] - '0'); // Convert from ASCII to an integer
+	}
+
+	return ret;
+}

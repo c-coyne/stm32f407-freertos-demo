@@ -37,6 +37,7 @@ extern "C" {
 #include "queue.h"
 #include "UartManager.h"
 #include "timers.h"
+#include "event_groups.h"
 
 /* USER CODE END Includes */
 
@@ -70,6 +71,9 @@ extern QueueHandle_t q_data;
 // Timer handles
 extern TimerHandle_t handle_led_timer[4];
 extern RTC_HandleTypeDef hrtc;
+
+// Event group handles
+extern EventGroupHandle_t ledEventGroup;
 
 // SPI handles
 extern SPI_HandleTypeDef hspi1;

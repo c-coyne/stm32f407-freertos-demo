@@ -19,6 +19,7 @@
 #include "LedManager.h"
 #include "Config_LedManager.h"
 #include "main.h"
+#include "Config_AccManager.h"
 #include <string.h>
 #include <ctype.h>
 
@@ -85,103 +86,159 @@ led_state_t curr_led_state = sNone;
 
 void led_task(void *param)
 {
+	// Communication variables
 	uint32_t msg_addr;
 	message_t *msg;
+
+	// LED timer parameters
 	int freq = 2; // Frequency in Hz
 	int period = 500; // Period in ms
 
+	// FreeRTOS variables
+	const TickType_t xTicksToWait = pdMS_TO_TICKS(LED_WAIT_TIME); // Wait period for the event group
+	uint32_t notificationValue;
+	EventBits_t eventBits;
+
 	while(1) {
-		// Wait for notification from another task
-		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+		// Wait for task notification or timeout =========================================================================
+		if (xTaskNotifyWait(0, 0, &notificationValue, xTicksToWait) == pdPASS) {										//
+																														//
+			// Display LED menu for the user																			//
+			xQueueSend(q_print, &msg_led_menu, portMAX_DELAY);															//
+																														//
+			// Wait for the user to select their desired LED effect														//
+			xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);															//
+			msg = (message_t*)msg_addr;																					//
+																														//
+			// Process command, adjust LED state, and set software timers accordingly									//
+			if(msg->len <= 4) {																							//
+				if(!strcmp((char*)msg->payload, "None"))			// No effect										//
+				{																										//
+					set_led_timer(effectNone);																			//
+					curr_led_state = sNone;																				//
+					control_all_leds(LED_OFF);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E1")) {		// E1 effect										//
+					curr_led_state = sEffectE1;																			//
+					set_led_timer(effectE1);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E2")) {		// E2 effect										//
+					curr_led_state = sEffectE2;																			//
+					set_led_timer(effectE2);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E3")) {		// E3 effect										//
+					curr_led_state = sEffectE3;																			//
+					set_led_timer(effectE3);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "E4")) {		// E4 effect										//
+					curr_led_state = sEffectE4;																			//
+					set_led_timer(effectE4);																			//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "Tor")) {		// Toggle orange LED								//
+					set_led_timer(effectNone);																			//
+					curr_led_state = sNone;																				//
+					HAL_GPIO_TogglePin(ORANGE_LED_PORT, ORANGE_LED_PIN);												//
+				}																										// N
+				else if (!strcmp((char*)msg->payload, "Tgr")) {		// Toggle green LED									// O
+					set_led_timer(effectNone);																			// T
+					curr_led_state = sNone;																				// I
+					HAL_GPIO_TogglePin(GREEN_LED_PORT, GREEN_LED_PIN);													// F
+				}																										// I
+				else if (!strcmp((char*)msg->payload, "Tbl")) {		// Toggle blue LED									// C
+					set_led_timer(effectNone);																			// A
+					curr_led_state = sNone;																				// T
+					HAL_GPIO_TogglePin(BLUE_LED_PORT, BLUE_LED_PIN);													// I
+				}																										// O
+				else if (!strcmp((char*)msg->payload, "Tre")) {		// Toggle red LED									// N
+					set_led_timer(effectNone);																			//
+					curr_led_state = sNone;																				//
+					HAL_GPIO_TogglePin(RED_LED_PORT, RED_LED_PIN);														//
+				}																										//
+				else if (parse_freq_string(msg, &freq)) {			// Frequency adjustment								//
+					// Check that there is an active effect																//
+					if(sNone == curr_led_state) {																		//
+						xQueueSend(q_print, &msg_no_active_effect, portMAX_DELAY);										//
+					}																									//
+					// Check that frequency is between 1 and 10 Hz														//
+					else if(freq > 10) {																				//
+						xQueueSend(q_print, &msg_inv_freq, portMAX_DELAY);												//
+					}																									//
+					// Change timer frequency																			//
+					else {																								//
+						period = (1.0 / freq) * 1000;																	//
+						if (xTimerChangePeriod(handle_led_timer[curr_led_state], pdMS_TO_TICKS(period), 0) != pdPASS) {	//
+							// If frequency update was not successful, notify the user									//
+							xQueueSend(q_print, &msg_err_freq, portMAX_DELAY);											//
+						}																								//
+					}																									//
+				}																										//
+				else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu								//
+					// Update the system state																			//
+					curr_sys_state = sMainMenu;																			//
+																														//
+					// Notify the main menu task																		//
+					xTaskNotify(handle_main_menu_task, 0, eNoAction);													//
+				}																										//
+				else												// Invalid response									//
+					xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);													//
+			}																											//
+			else {																										//
+				// If user input is longer than 4 characters, notify user of invalid response							//
+				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);														//
+			}																											//
+																														//
+			// Notify self / led task if not returning to the main menu													//
+			if (sLedMenu == curr_sys_state)																				//
+				xTaskNotify(handle_led_task, 0, eNoAction);																//
+		}	// ===========================================================================================================
+		// If timeout, check for any LED event group bits set ------------------------------------------------------------
+		eventBits =  xEventGroupWaitBits(																				//
+				 	 ledEventGroup,																						//
+		             ACCEL_READ_X_BIT | ACCEL_READ_Y_BIT | ACCEL_READ_Z_BIT | TURN_OFF_LEDS_BIT,						//
+		             pdTRUE,  // Clear bits on exit																		//
+		             pdFALSE, // Wait for any bit to be set																//
+		             0);      // Do not block																			//
+																														//
+		if (eventBits & ACCEL_READ_X_BIT && eventBits & ACCEL_READ_Y_BIT && eventBits & ACCEL_READ_Z_BIT) {				//
+			// Light all LED for x-, y-, and z-axis success																//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, SET);													//
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, SET);														//
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, SET);														//
+		}																												//
+		else if (eventBits & TURN_OFF_LEDS_BIT) {																		//
+			// Turn off all LEDs																						// E
+			set_led_timer(effectNone);																					// V
+			curr_led_state = sNone;																						// E
+			control_all_leds(LED_OFF);																					// N
+		}																												// T
+		else if (eventBits & ACCEL_READ_X_BIT) {																		//
+			// Light orange LED for x-axis success																		// G
+			set_led_timer(effectNone);																					// R
+			curr_led_state = sNone;																						// O
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, SET);													// U
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, RESET);														// P
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, RESET);													//
+		}																												//
+		else if (eventBits & ACCEL_READ_Y_BIT) {																		//
+			// Light blue LED for y-axis success																		//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, RESET);													//
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, SET);														//
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, RESET);													//
+		}																												//
+		else if (eventBits & ACCEL_READ_Z_BIT) {																		//
+			// Light green LED for z-axis success																		//
+			set_led_timer(effectNone);																					//
+			curr_led_state = sNone;																						//
+			HAL_GPIO_WritePin(ORANGE_LED_PORT, ORANGE_LED_PIN, RESET);													//
+			HAL_GPIO_WritePin(BLUE_LED_PORT, BLUE_LED_PIN, RESET);														//
+			HAL_GPIO_WritePin(GREEN_LED_PORT, GREEN_LED_PIN, SET);														//
+		}	// -----------------------------------------------------------------------------------------------------------
 
-		// Display LED menu for the user
-		xQueueSend(q_print, &msg_led_menu, portMAX_DELAY);
-
-		// Wait for the user to select their desired LED effect
-		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
-		msg = (message_t*)msg_addr;
-
-		// Process command, adjust LED state, and set software timers accordingly
-		if(msg->len <= 4) {
-			if(!strcmp((char*)msg->payload, "None"))			// No effect
-			{
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				control_all_leds(LED_OFF);
-			}
-			else if (!strcmp((char*)msg->payload, "E1")) {		// E1 effect
-				curr_led_state = sEffectE1;
-				set_led_timer(effectE1);
-			}
-			else if (!strcmp((char*)msg->payload, "E2")) {		// E2 effect
-				curr_led_state = sEffectE2;
-				set_led_timer(effectE2);
-			}
-			else if (!strcmp((char*)msg->payload, "E3")) {		// E3 effect
-				curr_led_state = sEffectE3;
-				set_led_timer(effectE3);
-			}
-			else if (!strcmp((char*)msg->payload, "E4")) {		// E4 effect
-				curr_led_state = sEffectE4;
-				set_led_timer(effectE4);
-			}
-			else if (!strcmp((char*)msg->payload, "Tor")) {		// Toggle orange LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(ORANGE_LED_PORT, ORANGE_LED_PIN);
-			}
-			else if (!strcmp((char*)msg->payload, "Tgr")) {		// Toggle green LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(GREEN_LED_PORT, GREEN_LED_PIN);
-			}
-			else if (!strcmp((char*)msg->payload, "Tbl")) {		// Toggle blue LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(BLUE_LED_PORT, BLUE_LED_PIN);
-			}
-			else if (!strcmp((char*)msg->payload, "Tre")) {		// Toggle red LED
-				set_led_timer(effectNone);
-				curr_led_state = sNone;
-				HAL_GPIO_TogglePin(RED_LED_PORT, RED_LED_PIN);
-			}
-			else if (parse_freq_string(msg, &freq)) {			// Frequency adjustment
-				// Check that there is an active effect
-				if(sNone == curr_led_state) {
-					xQueueSend(q_print, &msg_no_active_effect, portMAX_DELAY);
-				}
-				// Check that frequency is between 1 and 10 Hz
-				else if(freq > 10) {
-					xQueueSend(q_print, &msg_inv_freq, portMAX_DELAY);
-				}
-				// Change timer frequency
-				else {
-					period = (1.0 / freq) * 1000;
-					if (xTimerChangePeriod(handle_led_timer[curr_led_state], pdMS_TO_TICKS(period), 0) != pdPASS) {
-						// If frequency update was not successful, notify the user
-						xQueueSend(q_print, &msg_err_freq, portMAX_DELAY);
-					}
-				}
-			}
-			else if (!strcmp((char*)msg->payload, "Main")) {	// Back to main menu
-				// Update the system state
-				curr_sys_state = sMainMenu;
-
-				// Notify the main menu task
-				xTaskNotify(handle_main_menu_task, 0, eNoAction);
-			}
-			else												// Invalid response
-				xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
-		}
-		else {
-			// If user input is longer than 4 characters, notify user of invalid response
-			xQueueSend(q_print, &msg_inv_led, portMAX_DELAY);
-		}
-
-		// Notify self / led task if not returning to the main menu
-		if (sLedMenu == curr_sys_state)
-			xTaskNotify(handle_led_task, 0, eNoAction);
-	}
+	} // end while super loop
 }
 
 /*******************************************************************************************************

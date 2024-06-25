@@ -43,6 +43,8 @@ Core/Src/RtcManager/RtcManager.o: ../Core/Src/RtcManager/RtcManager.c \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/task.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/UartManager/UartManager.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h \
+ /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/event_groups.h \
+ /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h \
  ../Core/Src/RtcManager/RtcManager.h \
  ../Core/Src/RtcManager/Config_RtcManager.h
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/FreeRTOS.h:
@@ -89,6 +91,8 @@ Core/Src/RtcManager/RtcManager.o: ../Core/Src/RtcManager/RtcManager.c \
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/queue.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/task.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/UartManager/UartManager.h:
+/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h:
+/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/event_groups.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h:
 ../Core/Src/RtcManager/RtcManager.h:
 ../Core/Src/RtcManager/Config_RtcManager.h:

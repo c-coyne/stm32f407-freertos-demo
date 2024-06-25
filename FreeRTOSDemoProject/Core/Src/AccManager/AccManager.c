@@ -81,30 +81,40 @@ void acc_task(void* param)
 		if(msg->len <= 4) {
 			if(!strcmp((char*)msg->payload, "X")) {
 				// Read accelerometer for X-axis only
-				accelerometer_read(acc_data);			// Read data
-				acc_flag[0] = 1; 						// Set X-axis new data flag
-				show_acc_data(acc_data, acc_flag);		// Show data
+				accelerometer_read(acc_data);						// Read data
+				acc_flag[0] = 1; 									// Set X-axis new data flag
+				show_acc_data(acc_data, acc_flag);					// Show data
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_X_BIT);	// Set X-axis event group bit for LED task synchronization
 			}
 			else if(!strcmp((char*)msg->payload, "Y")) {
 				// Read accelerometer for X-axis only
-				accelerometer_read(acc_data);			// Read data
-				acc_flag[1] = 1; 						// Set Y-axis new data flag
-				show_acc_data(acc_data, acc_flag);		// Show data
+				accelerometer_read(acc_data);						// Read data
+				acc_flag[1] = 1; 									// Set Y-axis new data flag
+				show_acc_data(acc_data, acc_flag);					// Show data
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Y_BIT); 	// Set Y-axis event group bit for LED task synchronization
 			}
 			else if(!strcmp((char*)msg->payload, "Z")) {
 				// Read accelerometer for X-axis only
-				accelerometer_read(acc_data);			// Read data
-				acc_flag[2] = 1; 						// Set Z-axis new data flag
-				show_acc_data(acc_data, acc_flag);		// Show data
+				accelerometer_read(acc_data);						// Read data
+				acc_flag[2] = 1; 									// Set Z-axis new data flag
+				show_acc_data(acc_data, acc_flag);					// Show data
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Z_BIT);	// Set Z-axis event group bit for LED task synchronization
 			}
 			else if(!strcmp((char*)msg->payload, "All")) {
-				accelerometer_read(acc_data);			// Read data
-				for(int i=0; i<3; i++) acc_flag[i] = 1; // Set new data flags for all axes
-				show_acc_data(acc_data, acc_flag);		// Show data
+				accelerometer_read(acc_data);						// Read data
+				for(int i=0; i<3; i++) acc_flag[i] = 1; 			// Set new data flags for all axes
+				show_acc_data(acc_data, acc_flag);					// Show data
+				// Set all event group bits for LED task synchronization
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_X_BIT);
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Y_BIT);
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Z_BIT);
 			}
 			else if (!strcmp((char*)msg->payload, "Main")) {
 				// Update the system state
 				curr_sys_state = sMainMenu;
+
+				// Set event group bit to turn off all LEDs upon exiting accelerometer menu
+				xEventGroupSetBits(ledEventGroup, TURN_OFF_LEDS_BIT);
 
 				// Notify the main menu task
 				xTaskNotify(handle_main_menu_task, 0, eNoAction);
