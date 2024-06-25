@@ -1,5 +1,5 @@
-../Core/Src/AccManager/AccManager.c:57:6:acc_task	56	static
-../Core/Src/AccManager/AccManager.c:137:6:accelerometer_init	16	static
-../Core/Src/AccManager/AccManager.c:156:6:accelerometer_read	32	static
-../Core/Src/AccManager/AccManager.c:179:6:show_acc_data	112	static
-../Core/Src/AccManager/AccManager.c:224:6:split_integer	32	static
+../Core/Src/AccManager/AccManager.c:70:6:acc_task	56	static
+../Core/Src/AccManager/AccManager.c:164:6:accelerometer_init	16	static
+../Core/Src/AccManager/AccManager.c:206:6:accelerometer_read	32	static
+../Core/Src/AccManager/AccManager.c:247:6:show_acc_data	112	static
+../Core/Src/AccManager/AccManager.c:309:6:split_integer	32	static

@@ -29,25 +29,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  0000d0cc  2**0
                   CONTENTS, READONLY
- 13 .debug_info   00019649  00000000  00000000  0000d0fc  2**0
+ 13 .debug_info   00019653  00000000  00000000  0000d0fc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00004047  00000000  00000000  00026745  2**0
+ 14 .debug_abbrev 0000409a  00000000  00000000  0002674f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00001648  00000000  00000000  0002a790  2**3
+ 15 .debug_aranges 00001648  00000000  00000000  0002a7f0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_rnglists 00001147  00000000  00000000  0002bdd8  2**0
+ 16 .debug_rnglists 00001147  00000000  00000000  0002be38  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00025459  00000000  00000000  0002cf1f  2**0
+ 17 .debug_macro  00025459  00000000  00000000  0002cf7f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0001bc5e  00000000  00000000  00052378  2**0
+ 18 .debug_line   0001bc5f  00000000  00000000  000523d8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000dd50b  00000000  00000000  0006dfd6  2**0
+ 19 .debug_str    000dd50b  00000000  00000000  0006e037  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000043  00000000  00000000  0014b4e1  2**0
+ 20 .comment      00000043  00000000  00000000  0014b542  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  000062c0  00000000  00000000  0014b524  2**2
+ 21 .debug_frame  000062c0  00000000  00000000  0014b588  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 0000007a  00000000  00000000  001517e4  2**0
+ 22 .debug_line_str 0000007a  00000000  00000000  00151848  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1082,9 +1082,9 @@ Disassembly of section .text:
  8000d7a:	bf00      	nop
 
 08000d7c <acc_task>:
-/****************************************************
- *  Public functions                                *
- ****************************************************/
+ * - xQueueSend(): Sends messages to a queue for printing messages to the user.						   *
+ * - xEventGroupSetBits(): Sets event group bits for synchronizing with the LED task.				   *
+ ******************************************************************************************************/
 
 void acc_task(void* param)
 {
@@ -1393,8 +1393,9 @@ void acc_task(void* param)
  8000fb8:	2000027c 	.word	0x2000027c
 
 08000fbc <accelerometer_init>:
-	}
-}
+ * - Sends the configuration data over SPI to set the desired settings.								   *
+ * - Pulls the chip select (CS) pin high to de-select the device.									   *
+ ******************************************************************************************************/
 
 void accelerometer_init(void)
 {
@@ -1448,6 +1449,9 @@ void accelerometer_init(void)
  8001008:	200001c8 	.word	0x200001c8
 
 0800100c <accelerometer_read>:
+ * - Converts the received byte data to 16-bit integer values for each axis and stores them in the 	   *
+ *   provided array.																				   *
+ ******************************************************************************************************/
 
 void accelerometer_read(int16_t *acc_data)
 {
@@ -1533,6 +1537,9 @@ void accelerometer_read(int16_t *acc_data)
  8001094:	200001c8 	.word	0x200001c8
 
 08001098 <show_acc_data>:
+ * - Formats and displays data in g values for the available axes based on flags.					   *
+ * - Sends the formatted data to the print queue for display.										   *
+ ******************************************************************************************************/
 
 void show_acc_data(int16_t *acc_data, char *acc_flag)
 {
@@ -1749,6 +1756,9 @@ void show_acc_data(int16_t *acc_data, char *acc_flag)
  8001260:	20000008 	.word	0x20000008
 
 08001264 <split_integer>:
+ * the hundreds part is always positive. If the hundreds part rounds up to exactly 1000, the 		   *
+ * thousands part is incremented and the hundreds part is reset to 0.								   *
+ ******************************************************************************************************/
 
 void split_integer(int value, char* sign, int *thousands_part, int *hundreds_part)
 {
@@ -1796,7 +1806,7 @@ void split_integer(int value, char* sign, int *thousands_part, int *hundreds_par
  80012a8:	687b      	ldr	r3, [r7, #4]
  80012aa:	601a      	str	r2, [r3, #0]
 
-    // Calculate remaining hundreds
+    // Calculate the remaining hundreds
     int remainder = value % 1000;
  80012ac:	68fb      	ldr	r3, [r7, #12]
  80012ae:	4a1a      	ldr	r2, [pc, #104]	@ (8001318 <split_integer+0xb4>)
