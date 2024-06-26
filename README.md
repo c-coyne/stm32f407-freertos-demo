@@ -3,6 +3,30 @@
 ## Overview
 This project is intended to demonstrate a variety of the features available within FreeRTOS and the STM32F407 discovery board, such as on-board LEDs, the real-time clock, and the accelerometer. The project is intentionally limited to the STM32F407 discovery board to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
 
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Hardware and Software Requirements](#hardware-and-software-requirements)
+4. [Project Structure](#project-structure)
+5. [Getting Started](#getting-started)
+   - [Prerequisites](#prerequisites)
+   - [Installlation](#installation)
+   - [Hardware Setup](#hardware-setup)
+   - [Terminal Setup](#terminal-setup)
+   - [Running the Application](#running-the-application)
+   - [Using the Application](#using-the-application)
+6. [Task Descriptions](#task-descriptions)
+   - [Accelerometer Manager](#accelerometer-manager-_______________________________________________)
+   - [LED Manager](#led-manager-__________________________________________________________)
+   - [RTC Manager](#rtc-manager-__________________________________________________________)
+   - [UART Manager](#uart-manager-_________________________________________________________)
+7. [Communication Mechanisms](#communication-mechanisms)
+8. [Diagrams](#diagrams)
+9. [License](#license)
+10. [Contact](#contact)
+11. [Acknowledgements](#acknowledgements)
+
 ## Features
 - **Task Management:** Demonstrates the creation and management of multiple FreeRTOS tasks.
 - **Queue Management:** Demonstrates the creation and management of multiple FreeRTOS queues, one a "data queue" and the other a "print queue".
@@ -98,6 +122,9 @@ For this project, I used Tera Term on a Windows machine for all communication to
 
 ### Running the Application
 Upon powering the STM32F407 Discovery board, the FreeRTOS scheduler will start, and the tasks will begin execution as described below. You can tell if you've set up UART communication correctly if you're presented with a main menu upon powering up the board. If you don't see the main menu, try resetting the board while the FTDI connector is already connected.
+
+### Using the Application
+The [User Manual](FreeRTOSDemoProject/Docs/UserManual.md) details how to actually use the application, including LED manipulation, RTC configuration, and accelerometer data collection.
 
 ## Task Descriptions
 
