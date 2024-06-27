@@ -3568,3 +3568,96 @@ java.lang.NullPointerException: Cannot invoke "Object.equals(Object)" because th
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:588)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1459)
 	at org.eclipse.equinox.launcher.Main.main(Main.java:1432)
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-06-27 07:22:15.034
+!MESSAGE Indexed 'FreeRTOSDemoProject' (45 sources, 129 headers) in 4.93 sec: 11,379 declarations; 67,774 references; 0 unresolved inclusions; 1 syntax errors; 12 unresolved names (0.015%)
+
+!ENTRY org.eclipse.cdt.dsf.gdb 4 4 2024-06-27 08:45:04.017
+!MESSAGE NullPointerException while trying to calculated source lookup path. This can be ignored if it occurs while terminating a debug session. See Bug 500988.
+!STACK 0
+java.lang.NullPointerException: Cannot read the array length because "containers" is null
+	at org.eclipse.cdt.dsf.gdb.launching.GdbSourceLookupDirector.collectSubstitutionsPaths(GdbSourceLookupDirector.java:102)
+	at org.eclipse.cdt.dsf.gdb.launching.GdbSourceLookupDirector.collectSubstitutionsPaths(GdbSourceLookupDirector.java:146)
+	at org.eclipse.cdt.dsf.gdb.launching.GdbSourceLookupDirector.getSubstitutionsPaths(GdbSourceLookupDirector.java:72)
+	at org.eclipse.cdt.dsf.gdb.service.GDBSourceLookup.getSubstitutionsPaths(GDBSourceLookup.java:124)
+	at org.eclipse.cdt.dsf.gdb.service.GDBSourceLookup.sourceContainersChanged(GDBSourceLookup.java:139)
+	at org.eclipse.cdt.dsf.gdb.launching.GdbSourceLookupParticipant.sourceContainersChangedOnDispatchThread(GdbSourceLookupParticipant.java:120)
+	at org.eclipse.cdt.dsf.gdb.launching.GdbSourceLookupParticipant$1.run(GdbSourceLookupParticipant.java:85)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:00:21.510
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:00:21.517
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:01:36.087
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:01:36.088
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:04:32.253
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:04:32.254
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:04:46.774
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.cdt.debug.core.memory 4 5013 2024-06-27 09:04:46.775
+!MESSAGE Failure exporting memory
+!STACK 0
+java.lang.NullPointerException: Cannot invoke "java.io.File.mkdirs()" because the return value of "java.io.File.getParentFile()" is null
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.output(FileExport.java:86)
+	at org.eclipse.cdt.debug.core.memory.transport.FileExport.run(FileExport.java:57)
+	at org.eclipse.cdt.debug.internal.core.memory.transport.TransportJob.run(TransportJob.java:39)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
