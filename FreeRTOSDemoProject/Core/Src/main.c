@@ -53,6 +53,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+#define DWT_CTRL	(*(volatile uint32_t*)0xE0001000)
+
 // Task handles
 xTaskHandle handle_main_menu_task;
 xTaskHandle handle_message_handler_task;
@@ -133,6 +135,14 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
+  // Enable the CYCCNT counter
+  DWT_CTRL |= (1 << 0);
+
+  // Start SEGGER recording
+  SEGGER_SYSVIEW_Conf();
+  SEGGER_SYSVIEW_Start();
+
+  // Initialize the accelerometer
   accelerometer_init();
 
   // Create main menu task and check that it was created successfully

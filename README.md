@@ -16,6 +16,7 @@ This project is intended to demonstrate a variety of the features available with
    - [Terminal Setup](#terminal-setup)
    - [Running the Application](#running-the-application)
    - [Using the Application](#using-the-application)
+   - [Analyzing with SEGGER SystemView](#analyzing-with-segger-systemview)
 6. [Task Descriptions](#task-descriptions)
    - [Accelerometer Manager](#accelerometer-manager-_______________________________________________)
    - [LED Manager](#led-manager-__________________________________________________________)
@@ -113,7 +114,7 @@ FreeRTOSDemoProject/
 
 ### Hardware setup
 This project handles all user communication via UART (**USART2** in the STM32CubeIDE Device Configuration Tool). This uses pins **PA2 (USART2_TX)** and **PA3 (USART2_RX)**, which must be connected to the RX and TX pins of your FTDI USB-to-UART converter. You must also ensure the FTDI USB-to-UART converter and the STM32F407 discovery board share a ground, so you'll need to add an additional jumper wire to ensure a common ground.
-
+ExpressionsView
 ### Terminal setup
 For this project, I used Tera Term on a Windows machine for all communication to / from the board, however any terminal emulator will work (for instance, I also tested this using picocom on a Linux machine running Ubuntu). You'll want to set up the terminal emulator the following way to facilitate UART communication:
 - Turn on line feed (LF) for both _Receive_ and _Transmit_. In Tera Term, you can find this at `Setup > Terminal...`, then select `LF` for _Receive_ and `LF` for _Transmit_
@@ -125,6 +126,15 @@ Upon powering the STM32F407 Discovery board, the FreeRTOS scheduler will start, 
 
 ### Using the Application
 The [User Manual](FreeRTOSDemoProject/Docs/UserManual.md) details how to actually use the application, including LED manipulation, RTC configuration, and accelerometer data collection.
+
+### Analyzing with SEGGER SystemView
+SEGGER SystemView is a real-time recording and visualization tool designed for embedded systems. It provides comprehensive insight into the runtime behavior of an application, allowing developers to analyze system performance and visualize system events in real-time, analyze task execution and interrupt handling to identify and resolve performance bottlenecks, and optimize their code for improved system efficiency and reliability.
+
+SEGGER SystemView is already integrated into this project. The [User Manual](FreeRTOSDemoProject/Docs/UserManual.md) contains instructions on how to capture data, export, and load a trace into SEGGER SystemView for analysis. Below is an example screenshot of task creation in this project, viewed in SEGGER SystemView (note: this application spends a lot of time in the Idle task).
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/SystemViewDashboard.png" />
+</p>
 
 ## Task Descriptions
 
