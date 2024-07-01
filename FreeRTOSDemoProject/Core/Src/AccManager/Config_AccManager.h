@@ -12,8 +12,8 @@
 |    pertaining to the on-board accelerometer.                                          |
 \*=====================================================================================*/
 
-#ifndef SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_
-#define SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_
+#ifndef CONFIG_ACCMANAGER_H_
+#define CONFIG_ACCMANAGER_H_
 
 /****************************************************
  *  Macros                                          *
@@ -35,4 +35,4 @@
 #define ACCEL_READ_Z_BIT 		(1 << 2)
 #define TURN_OFF_LEDS_BIT		(1 << 3)
 
-#endif /* SRC_ACCMANAGER_CONFIG_ACCMANAGER_H_ */
+#endif /* CONFIG_ACCMANAGER_H_ */

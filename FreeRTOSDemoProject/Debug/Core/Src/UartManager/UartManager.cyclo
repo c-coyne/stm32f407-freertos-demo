@@ -1,5 +1,5 @@
-../Core/Src/UartManager/UartManager.c:69:6:main_menu_task	6
-../Core/Src/UartManager/UartManager.c:133:6:message_handler_task	2
-../Core/Src/UartManager/UartManager.c:164:6:print_task	1
-../Core/Src/UartManager/UartManager.c:190:6:process_message	5
-../Core/Src/UartManager/UartManager.c:235:5:extract_command	4
+../Core/Src/UartManager/UartManager.c:70:6:main_menu_task	6
+../Core/Src/UartManager/UartManager.c:137:6:message_handler_task	2
+../Core/Src/UartManager/UartManager.c:168:6:print_task	1
+../Core/Src/UartManager/UartManager.c:194:6:process_message	6
+../Core/Src/UartManager/UartManager.c:243:5:extract_command	4

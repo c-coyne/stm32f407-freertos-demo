@@ -1,0 +1,72 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                           July 1st, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     July 1st, 2024                                                              |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ MotorManager ]                                                          |
+| FILE:       MotorManager.c                                                            |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `MotorManager` module is responsible for handling user input and speed         |
+|    control for the motor.                                                             |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "FreeRTOS.h"
+#include "main.h"
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+// General system messages
+const char *msg_inv_motor = "\n***** Invalid motor control option ******\n";
+
+// Motor menu
+const char *msg_motor_menu = "\n======================================\n"
+				  		       "|               LED Menu             |\n"
+						       "======================================\n\n"
+							   " Start ---> Start the motor\n"
+							   " Stop  ---> Stop the motor\n"
+		 	 	 	 	 	   " Algo  ---> Change motion control algorithm\n"
+							   " Speed ---> Change motor speed\n"
+							   " Main  ---> Return to main menu\n\n"
+							   " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Task to handle motion control of the DC motor.											   *
+ *  																								   *
+ * This FreeRTOS task handles ...																	   *
+ * 																									   *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void																						   *
+ * 																									   *
+ * @note The print queue (`q_print`) and other required queues must be initialized.				 	   *
+ * @note The task must be notified when a new command is available.									   *
+ ******************************************************************************************************/
+
+void motor_task(void *param)
+{
+
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/
+

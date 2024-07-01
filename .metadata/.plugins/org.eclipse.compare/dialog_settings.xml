@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="PreviewPatchPage">
+		<item key="expandPatchOptions" value="true"/>
+		<item key="generateRejects" value="false"/>
+	</section>
+	<section name="PatchWizard">
+		<item key="PatchWizardPage1.INPUT_METHOD" value="3"/>
+		<item key="PatchWizardPage1.PATCH_FILES" value=""/>
+		<item key="PatchWizardPage1.WORKSPACE_PATH" value="/FreeRTOSDemoProject/ThirdParty/SEGGER/Patch/FreeRTOSv202012.00_segger_cm4_v1.patch"/>
+		<item key="DIALOG_X_ORIGIN" value="527"/>
+		<item key="DIALOG_Y_ORIGIN" value="43"/>
+		<item key="DIALOG_WIDTH" value="797"/>
+		<item key="DIALOG_HEIGHT" value="698"/>
+		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
+		<list key="PatchWizardPage1.PATCH_FILES">
+			<item value=""/>
+		</list>
+		<list key="PatchWizardPage1.PATCH_URLS">
+			<item value=""/>
+		</list>
+	</section>
+</section>

@@ -51,6 +51,7 @@ typedef enum {
 	sLedMenu,
 	sAccMenu,
 	sRtcMenu,
+	sMotorMenu,
 	sRtcDateConfig,
 	sRtcTimeConfig
 } system_state_t;
@@ -64,6 +65,7 @@ extern xTaskHandle handle_print_task;
 extern xTaskHandle handle_led_task;
 extern xTaskHandle handle_rtc_task;
 extern xTaskHandle handle_acc_task;
+extern xTaskHandle handle_motor_task;
 
 // Queue handles
 extern QueueHandle_t q_print;

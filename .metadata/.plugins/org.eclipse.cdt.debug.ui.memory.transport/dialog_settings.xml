@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="EXPORT_DIALOG">
+		<item key="Start" value="0x200199fc"/>
+		<item key="End" value="0x2001a9fc"/>
+		<item key="Initial address" value="0x200199fc"/>
+		<item key="File" value="/home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Docs/Records/SampleSeggerTrace.SVdat"/>
+		<item key="SELECTED_EXPORTER" value="rawbinary"/>
+	</section>
+</section>

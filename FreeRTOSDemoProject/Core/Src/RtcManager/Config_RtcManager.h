@@ -12,8 +12,8 @@
 |    of the real time clock (RTC).                                                      |
 \*=====================================================================================*/
 
-#ifndef SRC_RTCMANAGER_CONFIG_RTCMANAGER_H_
-#define SRC_RTCMANAGER_CONFIG_RTCMANAGER_H_
+#ifndef CONFIG_RTCMANAGER_H_
+#define CONFIG_RTCMANAGER_H_
 
 /****************************************************
  *  Macros                                          *
@@ -31,4 +31,4 @@
 #define YEAR_CONFIG		2
 #define DAY_CONFIG		3
 
-#endif /* SRC_RTCMANAGER_CONFIG_RTCMANAGER_H_ */
+#endif /* CONFIG_RTCMANAGER_H_ */

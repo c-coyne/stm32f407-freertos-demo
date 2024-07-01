@@ -12,8 +12,8 @@
 |    pertaining to the on-board accelerometer.                                          |
 \*=====================================================================================*/
 
-#ifndef SRC_ACCMANAGER_ACCMANAGER_H_
-#define SRC_ACCMANAGER_ACCMANAGER_H_
+#ifndef ACCMANAGER_H_
+#define ACCMANAGER_H_
 
 /****************************************************
  *  Include files                                   *
@@ -29,4 +29,4 @@
 void acc_task(void* param);
 void accelerometer_init(void);
 
-#endif /* SRC_ACCMANAGER_ACCMANAGER_H_ */
+#endif /* ACCMANAGER_H_ */

@@ -12,8 +12,8 @@
 |    pertaining to the on-board LEDs.                                                   |
 \*=====================================================================================*/
 
-#ifndef SRC_LEDMANAGER_LEDMANAGER_H_
-#define SRC_LEDMANAGER_LEDMANAGER_H_
+#ifndef LEDMANAGER_H_
+#define LEDMANAGER_H_
 
 /****************************************************
  *  Include files                                   *
@@ -50,4 +50,4 @@ typedef enum {
 	sNone
 } led_state_t;
 
-#endif /* SRC_LEDMANAGER_LEDMANAGER_H_ */
+#endif /* LEDMANAGER_H_ */

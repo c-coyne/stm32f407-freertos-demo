@@ -1,0 +1,13 @@
+/*
+ * Config_MotorManager.h
+ *
+ *  Created on: Jul 1, 2024
+ *      Author: chris
+ */
+
+#ifndef CONFIG_MOTORMANAGER_H_
+#define CONFIG_MOTORMANAGER_H_
+
+
+
+#endif /* CONFIG_MOTORMANAGER_H_ */
