@@ -1,0 +1,26 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                           July 1st, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     July 1st, 2024                                                              |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ MotorManager ]                                                          |
+| FILE:       Config_MotorManager.h                                                     |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `MotorManager` module is responsible for handling user input and speed         |
+|    control for the motor.                                                             |
+\*=====================================================================================*/
+
+#ifndef CONFIG_MOTORMANAGER_H_
+#define CONFIG_MOTORMANAGER_H_
+
+/****************************************************
+ *  Macros                                          *
+ ****************************************************/
+
+#define MOTOR_GPIO_Port		GPIOC
+#define MOTOR_IN1_GPIO_Pin 	GPIO_PIN_8
+#define MOTOR_IN2_GPIO_Pin 	GPIO_PIN_9
+
+#endif /* CONFIG_MOTORMANAGER_H_ */

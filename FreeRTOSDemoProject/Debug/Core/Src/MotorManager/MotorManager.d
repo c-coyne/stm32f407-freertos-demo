@@ -1,5 +1,7 @@
 Core/Src/MotorManager/MotorManager.o: \
  ../Core/Src/MotorManager/MotorManager.c \
+ ../Core/Src/MotorManager/Config_MotorManager.h \
+ ../Core/Src/MotorManager/MotorManager.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.h \
@@ -55,6 +57,8 @@ Core/Src/MotorManager/MotorManager.o: \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/timers.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/semphr.h \
  /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/queue.h
+../Core/Src/MotorManager/Config_MotorManager.h:
+../Core/Src/MotorManager/MotorManager.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/FreeRTOS/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
 /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/ThirdParty/SEGGER/OS/SEGGER_SYSVIEW_FreeRTOS.h:

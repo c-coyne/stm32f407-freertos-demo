@@ -102,6 +102,7 @@ void main_menu_task(void *param)
 				case 3:
 					curr_sys_state = sMotorMenu;
 					xTaskNotify(handle_motor_task, 0, eNoAction);
+					break;
 				default:
 					xQueueSend(q_print, &msg_inv_uart, portMAX_DELAY);
 					continue;

@@ -16,6 +16,8 @@
  *  Include files                                   *
  ****************************************************/
 
+#include "Config_MotorManager.h"
+#include "MotorManager.h"
 #include "FreeRTOS.h"
 #include "main.h"
 #include <string.h>
@@ -33,7 +35,7 @@ const char *msg_inv_motor = "\n***** Invalid motor control option ******\n";
 
 // Motor menu
 const char *msg_motor_menu = "\n======================================\n"
-				  		       "|               LED Menu             |\n"
+				  		       "|             Motor Menu             |\n"
 						       "======================================\n\n"
 							   " Start ---> Start the motor\n"
 							   " Stop  ---> Stop the motor\n"
@@ -81,10 +83,13 @@ void motor_task(void *param)
 		// Process command
 		if(msg->len <= 5) {
 			if(!strcmp((char*)msg->payload, "Start")) {
-				// execute "Start" command
+				// Configure the H-bridge for forward rotation
+				HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(MOTOR_IN2_GPIO_Port, MOTOR_IN2_Pin, GPIO_PIN_SET);
 			}
 			else if(!strcmp((char*)msg->payload, "Stop")) {
-				// execute "Stop" command
+				// Pull both IN1 and IN2 low to stop current flow to the motor
+				HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin|MOTOR_IN2_Pin, GPIO_PIN_RESET);
 			}
 			else if(!strcmp((char*)msg->payload, "Algo")) {
 				// execute "Algo" command
