@@ -113,6 +113,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CS_I2C_SPI_Pin GPIO_PIN_3
 #define CS_I2C_SPI_GPIO_Port GPIOE
+#define ENCODER_A_Pin GPIO_PIN_4
+#define ENCODER_A_GPIO_Port GPIOE
+#define ENCODER_A_EXTI_IRQn EXTI4_IRQn
+#define ENCODER_B_Pin GPIO_PIN_6
+#define ENCODER_B_GPIO_Port GPIOE
+#define ENCODER_B_EXTI_IRQn EXTI9_5_IRQn
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
 #define PC14_OSC32_IN_GPIO_Port GPIOC
 #define PC15_OSC32_OUT_Pin GPIO_PIN_15

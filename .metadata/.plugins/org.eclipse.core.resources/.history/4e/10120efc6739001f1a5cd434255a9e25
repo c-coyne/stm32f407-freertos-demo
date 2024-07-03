@@ -1,0 +1,33 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                           July 1st, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     July 1st, 2024                                                              |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ MotorManager ]                                                          |
+| FILE:       Config_MotorManager.h                                                     |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `MotorManager` module is responsible for handling user input and speed         |
+|    control for the motor.                                                             |
+\*=====================================================================================*/
+
+#ifndef CONFIG_MOTORMANAGER_H_
+#define CONFIG_MOTORMANAGER_H_
+
+/****************************************************
+ *  Macros                                          *
+ ****************************************************/
+
+#define FULL_QUADRATURE				2 // Capture both edges of both signals for maximum resolution
+#define HALF_QUADRATURE				1
+#define ENCODER_QUADRATURE			FULL_QUADRATURE
+#define ENCODER_RAW_COUNTS_PER_REV 	64 // 64 CPR encoder
+#define GEAR_RATIO					30 // 30:1 gear ratio
+#define ENCODER_COUNTS_PER_REV		( ENCODER_RAW_COUNTS_PER_REV * GEAR_RATIO ) // 64 CPR encoder with 30:1 gear ratio
+#define ENCODER_A_GPIO_Port			GPIOE
+#define ENCODER_A_GPIO_Pin			GPIO_PIN_4
+#define ENCODER_B_GPIO_Port			GPIOE
+#define ENCODER_B_GPIO_Pin			GPIO_PIN_6
+
+#endif /* CONFIG_MOTORMANAGER_H_ */

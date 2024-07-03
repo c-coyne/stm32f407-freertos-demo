@@ -1,0 +1,39 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                           July 1st, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     July 1st, 2024                                                              |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ MotorManager ]                                                          |
+| FILE:       MotorManager.h                                                            |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `MotorManager` module is responsible for handling user input and speed         |
+|    control for the motor.                                                             |
+\*=====================================================================================*/
+
+#ifndef MOTORMANAGER_H_
+#define MOTORMANAGER_H_
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "FreeRTOS.h"
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+void motor_task(void *param);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+extern volatile int32_t encoder_count;
+extern volatile float motor_speed;
+
+#endif /* MOTORMANAGER_H_ */

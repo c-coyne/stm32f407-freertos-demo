@@ -21,10 +21,13 @@
 #include "FreeRTOS.h"
 #include "main.h"
 #include <string.h>
+#include <stdio.h>
 
 /****************************************************
  *  Function prototypes                             *
  ****************************************************/
+
+void print_motor_speed(void);
 
 /****************************************************
  *  Messages                                        *
@@ -47,6 +50,10 @@ const char *msg_motor_menu = "\n======================================\n"
 /****************************************************
  *  Variables                                       *
  ****************************************************/
+
+volatile int32_t encoder_count = 0;
+volatile float motor_speed = 0.0f; // Global variable to store speed
+volatile uint8_t last_a = 0, last_b = 0;
 
 /****************************************************
  *  Public functions                                *
@@ -95,7 +102,8 @@ void motor_task(void *param)
 				// execute "Algo" command
 			}
 			else if(!strcmp((char*)msg->payload, "Speed")) {
-				// execute "Speed" command
+				// Print current motor speed
+				print_motor_speed();
 			}
 			else if (!strcmp((char*)msg->payload, "Main")) {
 				// Update the system state
@@ -119,7 +127,56 @@ void motor_task(void *param)
 	}
 }
 
+void motor_gpio_callback(uint16_t GPIO_Pin)
+{
+    uint8_t a = HAL_GPIO_ReadPin(ENCODER_A_GPIO_Port, ENCODER_A_GPIO_Pin);
+    uint8_t b = HAL_GPIO_ReadPin(ENCODER_B_GPIO_Port, ENCODER_B_GPIO_Pin);
+
+    if (GPIO_Pin == ENCODER_A_GPIO_Pin) {
+        if (a != last_a) {
+            if (a == b) {
+                encoder_count++;
+            } else {
+                encoder_count--;
+            }
+            last_a = a;
+        }
+    } else if (GPIO_Pin == ENCODER_B_GPIO_Pin) {
+        if (b != last_b) {
+            if (a == b) {
+                encoder_count--;
+            } else {
+                encoder_count++;
+            }
+            last_b = b;
+        }
+    }
+}
+
+void motor_timer_callback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM7) {
+		static int32_t last_encoder_count = 0;
+		int32_t delta_count = encoder_count - last_encoder_count;
+
+		// Calculate motor speed in RPM
+		motor_speed = (delta_count / (float)ENCODER_COUNTS_PER_REV) * 6000.0 * (1 / (float)ENCODER_QUADRATURE);
+
+		// Update last encoder count for the next period
+		last_encoder_count = encoder_count;
+	}
+}
+
 /****************************************************
  *  Private functions                               *
  ****************************************************/
 
+void print_motor_speed(void)
+{
+	static char showspeed[40];
+	static char *speed = showspeed;
+
+	// Display speed in RPM
+	sprintf((char*)showspeed, "\nCurrent motor speed: %d RPM\n", (int)motor_speed);
+	xQueueSend(q_print, &speed, portMAX_DELAY);
+}

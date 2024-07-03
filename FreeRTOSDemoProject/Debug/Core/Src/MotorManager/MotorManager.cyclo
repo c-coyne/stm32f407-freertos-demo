@@ -1,1 +1,4 @@
-../Core/Src/MotorManager/MotorManager.c:67:6:motor_task	8
+../Core/Src/MotorManager/MotorManager.c:74:6:motor_task	8
+../Core/Src/MotorManager/MotorManager.c:130:6:motor_gpio_callback	7
+../Core/Src/MotorManager/MotorManager.c:156:6:motor_timer_callback	2
+../Core/Src/MotorManager/MotorManager.c:174:6:print_motor_speed	1

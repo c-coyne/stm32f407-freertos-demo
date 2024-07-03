@@ -20,15 +20,21 @@
  ****************************************************/
 
 #include "FreeRTOS.h"
+#include "main.h"
 
 /****************************************************
  *  Public functions                                *
  ****************************************************/
 
 void motor_task(void *param);
+void motor_gpio_callback(uint16_t GPIO_Pin);
+void motor_timer_callback(TIM_HandleTypeDef *htim);
 
 /****************************************************
  *  Variables                                       *
  ****************************************************/
+
+extern volatile int32_t encoder_count;
+extern volatile float motor_speed;
 
 #endif /* MOTORMANAGER_H_ */
