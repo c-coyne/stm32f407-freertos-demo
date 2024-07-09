@@ -30,4 +30,13 @@
 #define ENCODER_B_GPIO_Port			GPIOE
 #define ENCODER_B_GPIO_Pin			GPIO_PIN_6
 
+// sMotorMenu
+#define MOTOR_INACTIVE				0
+#define MOTOR_ACTIVE				1
+#define MOTOR_SPEED_REPORTING		2
+
+// Parameter initialization
+#define MIN_SPEED_INITIALIZATION	1000
+#define MAX_SPEED_INITIALIZATION	0
+
 #endif /* CONFIG_MOTORMANAGER_H_ */

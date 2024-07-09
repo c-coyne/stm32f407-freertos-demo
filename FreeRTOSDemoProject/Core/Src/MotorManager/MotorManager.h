@@ -29,6 +29,7 @@
 void motor_task(void *param);
 void motor_gpio_callback(uint16_t GPIO_Pin);
 void motor_timer_callback(TIM_HandleTypeDef *htim);
+void motor_report_callback(void);
 
 /****************************************************
  *  Variables                                       *

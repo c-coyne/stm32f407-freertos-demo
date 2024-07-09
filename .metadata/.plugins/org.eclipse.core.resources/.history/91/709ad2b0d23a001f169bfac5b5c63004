@@ -1,0 +1,183 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                           July 1st, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     July 1st, 2024                                                              |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ MotorManager ]                                                          |
+| FILE:       MotorManager.c                                                            |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `MotorManager` module is responsible for handling user input and speed         |
+|    control for the motor.                                                             |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "Config_MotorManager.h"
+#include "MotorManager.h"
+#include "FreeRTOS.h"
+#include "main.h"
+#include <string.h>
+#include <stdio.h>
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+void print_motor_speed(void);
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+// General system messages
+const char *msg_inv_motor = "\n***** Invalid motor control option ******\n";
+
+// Motor menu
+const char *msg_motor_menu = "\n======================================\n"
+				  		       "|             Motor Menu             |\n"
+						       "======================================\n\n"
+							   " Start ---> Start the motor\n"
+							   " Stop  ---> Stop the motor\n"
+		 	 	 	 	 	   " Algo  ---> Change motion control algorithm\n"
+							   " Speed ---> Change motor speed\n"
+							   " Main  ---> Return to main menu\n\n"
+							   " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+volatile int32_t encoder_count = 0;
+volatile float motor_speed = 0.0f; // Global variable to store speed
+volatile uint8_t last_a = 0, last_b = 0;
+char flag_print_speed = 0;
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Task to handle motion control of the DC motor.											   *
+ *  																								   *
+ * This FreeRTOS task handles ...																	   *
+ * 																									   *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void																						   *
+ * 																									   *
+ * @note The print queue (`q_print`) and other required queues must be initialized.				 	   *
+ * @note The task must be notified when a new command is available.									   *
+ ******************************************************************************************************/
+
+void motor_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+
+	while(1) {
+		// Wait for notification from another task
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		// Display motor manager menu for the user
+		xQueueSend(q_print, &msg_motor_menu, portMAX_DELAY);
+
+		// Wait for the user to make a selection
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		// Process command
+		if(msg->len <= 5) {
+			if(!strcmp((char*)msg->payload, "Start")) {
+				// Configure the H-bridge for forward rotation
+				HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(MOTOR_IN2_GPIO_Port, MOTOR_IN2_Pin, GPIO_PIN_SET);
+			}
+			else if(!strcmp((char*)msg->payload, "Stop")) {
+				// Pull both IN1 and IN2 low to stop current flow to the motor
+				HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin|MOTOR_IN2_Pin, GPIO_PIN_RESET);
+			}
+			else if(!strcmp((char*)msg->payload, "Algo")) {
+				// execute "Algo" command
+			}
+			else if(!strcmp((char*)msg->payload, "Speed")) {
+				// Print current motor speed
+				flag_print_speed = 1;
+			}
+			else if (!strcmp((char*)msg->payload, "Main")) {
+				// Update the system state
+				curr_sys_state = sMainMenu;
+
+				// Notify the main menu task
+				xTaskNotify(handle_main_menu_task, 0, eNoAction);
+			}
+			else {
+				xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
+			}
+		}
+		else {
+			// If user input is longer than 5 characters, notify user of invalid response
+			xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
+		}
+
+		// Notify self / accelerometer task if not returning to the main menu
+		if (sMotorMenu == curr_sys_state)
+			xTaskNotify(handle_motor_task, 0, eNoAction);
+	}
+}
+
+void motor_gpio_callback(uint16_t GPIO_Pin)
+{
+    uint8_t a = HAL_GPIO_ReadPin(ENCODER_A_GPIO_Port, ENCODER_A_GPIO_Pin);
+    uint8_t b = HAL_GPIO_ReadPin(ENCODER_B_GPIO_Port, ENCODER_B_GPIO_Pin);
+
+    if (GPIO_Pin == ENCODER_A_GPIO_Pin) {
+        if (a != last_a) {
+            if (a == b) {
+                encoder_count++;
+            } else {
+                encoder_count--;
+            }
+            last_a = a;
+        }
+    } else if (GPIO_Pin == ENCODER_B_GPIO_Pin) {
+        if (b != last_b) {
+            if (a == b) {
+                encoder_count--;
+            } else {
+                encoder_count++;
+            }
+            last_b = b;
+        }
+    }
+}
+
+void motor_timer_callback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM7) {
+		static int32_t last_encoder_count = 0;
+		int32_t delta_count = encoder_count - last_encoder_count;
+
+		// Calculate motor speed in RPM
+		motor_speed = (delta_count / (float)ENCODER_COUNTS_PER_REV) * 6000.0 * (1 / (float)ENCODER_QUADRATURE);
+
+		// Update last encoder count for the next period
+		last_encoder_count = encoder_count;
+	}
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/
+
+void print_motor_speed(void)
+{
+	static char showspeed[40];
+	static char *speed = showspeed;
+
+	// Display speed in RPM
+	sprintf((char*)showspeed, "\nCurrent motor speed: %d RPM\n", (int)motor_speed);
+	xQueueSend(q_print, &speed, portMAX_DELAY);
+}

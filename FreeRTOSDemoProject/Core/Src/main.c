@@ -76,6 +76,7 @@ QueueHandle_t q_data;
 
 // Software timer handles
 TimerHandle_t handle_led_timer[4];
+TimerHandle_t motor_report_timer;
 
 // Event group handles
 EventGroupHandle_t ledEventGroup;
@@ -210,6 +211,9 @@ int main(void)
   for(int i=0; i<NUM_LED_TIMERS; i++) {
 	  handle_led_timer[i] = xTimerCreate("led_timer", pdMS_TO_TICKS(500), pdTRUE, (void*)i, led_callback);
   }
+
+  // Create software timer for reporting motor speed
+  motor_report_timer = xTimerCreate("motor_report_timer", pdMS_TO_TICKS(1000), pdTRUE, NULL, (void*)motor_report_callback);
 
   // Start the timer interrupt for motor velocity calculation timer
   HAL_TIM_Base_Start_IT(&htim7);

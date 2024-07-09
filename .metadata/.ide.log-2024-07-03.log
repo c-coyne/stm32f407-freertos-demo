@@ -1,0 +1,258 @@
+2024-07-03 06:47:08,613 [INFO] Gpio:277 - dependency for GPIO [RCC, SPI1, TIM1, TIM3, USART2]
+2024-07-03 06:47:08,716 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2024-07-03 06:50:55,957 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 564538856 Bytes (835715072)
+2024-07-03 06:50:58,959 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 589178344 Bytes (835715072)
+2024-07-03 06:50:59,621 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 686695912 Bytes (835715072)
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SPI
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM6_7
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RTC
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-07-03 06:50:59,943 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-07-03 06:50:59,944 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-07-03 06:50:59,987 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-07-03 06:51:00,594 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-07-03 06:51:00,819 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-07-03 06:51:00,959 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-07-03 06:51:01,062 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-07-03 06:51:01,851 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-07-03 06:51:02,132 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-07-03 06:51:02,134 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-07-03 06:51:02,224 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-07-03 06:51:02,270 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-07-03 06:51:02,464 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-07-03 06:51:02,466 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-07-03 06:51:02,536 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-07-03 06:51:02,538 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c_save
+2024-07-03 06:51:02,627 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c
+2024-07-03 06:51:02,660 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-07-03 06:51:02,993 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-07-03 06:51:03,018 [WARN] IPConfigManager:3513 - IP not found : TIM
+2024-07-03 06:51:03,018 [WARN] CodeGenerator:3951 - IP not found : null
+2024-07-03 06:51:03,060 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-07-03 06:51:03,193 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-07-03 06:51:03,212 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-07-03 06:51:03,360 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-07-03 06:51:06,957 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 3301mS.
+2024-07-03 06:51:06,959 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-07-03 06:51:07,182 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-07-03 06:51:12,029 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 5070mS.
+2024-07-03 06:51:12,029 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 06:51:12,030 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 06:51:12,274 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2024-07-03 06:51:53,289 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 541299480 Bytes (835715072)
+2024-07-03 06:51:54,626 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 647729944 Bytes (835715072)
+2024-07-03 06:51:55,083 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 297589528 Bytes (835715072)
+2024-07-03 06:51:55,278 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SPI
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM6_7
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RTC
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-07-03 06:51:55,279 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-07-03 06:51:55,280 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-07-03 06:51:55,281 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-07-03 06:51:55,533 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-07-03 06:51:55,669 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-07-03 06:51:55,819 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-07-03 06:51:56,035 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-07-03 06:51:56,479 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-07-03 06:51:56,557 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-07-03 06:51:56,558 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-07-03 06:51:56,627 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-07-03 06:51:56,637 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-07-03 06:51:56,785 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-07-03 06:51:56,786 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-07-03 06:51:56,882 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-07-03 06:51:56,884 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c_save
+2024-07-03 06:51:56,978 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c
+2024-07-03 06:51:56,982 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-07-03 06:51:57,064 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-07-03 06:51:57,084 [WARN] IPConfigManager:3513 - IP not found : TIM
+2024-07-03 06:51:57,085 [WARN] CodeGenerator:3951 - IP not found : null
+2024-07-03 06:51:57,088 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-07-03 06:51:57,173 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-07-03 06:51:57,175 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-07-03 06:51:57,312 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-07-03 06:51:57,558 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 39mS.
+2024-07-03 06:51:57,560 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-07-03 06:51:57,686 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-07-03 06:51:58,911 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 1350mS.
+2024-07-03 06:51:58,911 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 06:51:58,912 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 06:53:06,371 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2024-07-03 06:53:11,474 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 481188384 Bytes (835715072)
+2024-07-03 06:53:12,449 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 503737464 Bytes (835715072)
+2024-07-03 06:53:12,939 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 587094560 Bytes (835715072)
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SPI
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM6_7
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RTC
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-07-03 06:53:13,104 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-07-03 06:53:13,105 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-07-03 06:53:13,106 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-07-03 06:53:13,261 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-07-03 06:53:13,410 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-07-03 06:53:13,486 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-07-03 06:53:13,664 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-07-03 06:53:14,065 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-07-03 06:53:14,151 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-07-03 06:53:14,153 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-07-03 06:53:14,239 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-07-03 06:53:14,256 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-07-03 06:53:14,427 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-07-03 06:53:14,429 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-07-03 06:53:14,532 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-07-03 06:53:14,539 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c_save
+2024-07-03 06:53:14,665 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c
+2024-07-03 06:53:14,669 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-07-03 06:53:14,788 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-07-03 06:53:14,816 [WARN] IPConfigManager:3513 - IP not found : TIM
+2024-07-03 06:53:14,817 [WARN] CodeGenerator:3951 - IP not found : null
+2024-07-03 06:53:14,821 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-07-03 06:53:14,914 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-07-03 06:53:14,916 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-07-03 06:53:15,127 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-07-03 06:53:15,417 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 38mS.
+2024-07-03 06:53:15,419 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-07-03 06:53:15,576 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-07-03 06:53:17,102 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 1683mS.
+2024-07-03 06:53:17,108 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 4mS.
+2024-07-03 06:53:17,110 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 09:09:55,066 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2024-07-03 09:09:59,164 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 442866056 Bytes (832569344)
+2024-07-03 09:10:01,591 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 468038944 Bytes (832569344)
+2024-07-03 09:10:02,106 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 566439128 Bytes (832569344)
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SPI
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM6_7
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-07-03 09:10:02,395 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RTC
+2024-07-03 09:10:02,396 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-07-03 09:10:02,396 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-07-03 09:10:02,396 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-07-03 09:10:02,430 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-07-03 09:10:02,757 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-07-03 09:10:02,905 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-07-03 09:10:03,015 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-07-03 09:10:03,131 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-07-03 09:10:03,764 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-07-03 09:10:04,020 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-07-03 09:10:04,022 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-07-03 09:10:04,090 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-07-03 09:10:04,117 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-07-03 09:10:04,295 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-07-03 09:10:04,297 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-07-03 09:10:04,371 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-07-03 09:10:04,376 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c_save
+2024-07-03 09:10:04,456 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c
+2024-07-03 09:10:04,465 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-07-03 09:10:04,546 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-07-03 09:10:04,565 [WARN] IPConfigManager:3513 - IP not found : TIM
+2024-07-03 09:10:04,565 [WARN] CodeGenerator:3951 - IP not found : null
+2024-07-03 09:10:04,590 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-07-03 09:10:04,679 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-07-03 09:10:04,711 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-07-03 09:10:04,900 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-07-03 09:10:08,477 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 3044mS.
+2024-07-03 09:10:08,479 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-07-03 09:10:08,676 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-07-03 09:10:09,744 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 1264mS.
+2024-07-03 09:10:09,744 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 09:10:09,746 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 1mS.
+2024-07-03 09:10:13,172 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2024-07-03 09:10:23,899 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 354399456 Bytes (832569344)
+2024-07-03 09:10:24,474 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 438807776 Bytes (832569344)
+2024-07-03 09:10:24,764 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SPI
+2024-07-03 09:10:24,764 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM6_7
+2024-07-03 09:10:24,764 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 09:10:24,764 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 09:10:24,778 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-07-03 09:10:24,780 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-07-03 09:10:24,780 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RTC
+2024-07-03 09:10:24,780 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-07-03 09:10:24,780 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-07-03 09:10:24,781 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-07-03 09:10:24,782 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-07-03 09:10:25,036 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-07-03 09:10:25,163 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-07-03 09:10:25,248 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-07-03 09:10:25,450 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-07-03 09:10:26,447 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-07-03 09:10:26,637 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-07-03 09:10:26,644 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-07-03 09:10:26,753 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-07-03 09:10:26,787 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-07-03 09:10:27,051 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-07-03 09:10:27,056 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-07-03 09:10:27,242 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-07-03 09:10:27,248 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c_save
+2024-07-03 09:10:27,411 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c
+2024-07-03 09:10:27,425 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-07-03 09:10:27,544 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-07-03 09:10:27,570 [WARN] IPConfigManager:3513 - IP not found : TIM
+2024-07-03 09:10:27,571 [WARN] CodeGenerator:3951 - IP not found : null
+2024-07-03 09:10:27,575 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-07-03 09:10:27,751 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-07-03 09:10:27,754 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-07-03 09:10:27,917 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-07-03 09:10:28,249 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 41mS.
+2024-07-03 09:10:28,251 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-07-03 09:10:28,384 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-07-03 09:10:29,488 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 1238mS.
+2024-07-03 09:10:29,489 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 09:10:29,491 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.
+2024-07-03 09:24:28,430 [INFO] Gpio:277 - dependency for GPIO [RCC, SPI1, TIM1, TIM3, USART2]
+2024-07-03 09:25:31,705 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 808402024 Bytes (976224256)
+2024-07-03 09:25:33,720 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 331951048 Bytes (976224256)
+2024-07-03 09:26:06,128 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 544201992 Bytes (976224256)
+2024-07-03 09:26:06,575 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SPI
+2024-07-03 09:26:06,575 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM6_7
+2024-07-03 09:26:06,575 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 09:26:06,575 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: TIM1_8
+2024-07-03 09:26:06,575 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: SYS
+2024-07-03 09:26:06,575 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RCC
+2024-07-03 09:26:06,576 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: RTC
+2024-07-03 09:26:06,576 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: NVIC
+2024-07-03 09:26:06,576 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: USART
+2024-07-03 09:26:06,576 [INFO] BlockDiagram:2759 - set Specific Code input for plugin: GPIO
+2024-07-03 09:26:06,627 [INFO] CodeGenerator:807 - code generatio: config db path: /opt/st/stm32cubeide_1.15.0/plugins/com.st.stm32cube.common.mx_6.11.0.202403141607//db/
+2024-07-03 09:26:07,174 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp_save
+2024-07-03 09:26:07,319 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/license.tmp
+2024-07-03 09:26:07,439 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp_save
+2024-07-03 09:26:07,552 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/gpio.tmp
+2024-07-03 09:26:08,648 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c_save
+2024-07-03 09:26:08,870 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_it.c
+2024-07-03 09:26:08,874 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h_save
+2024-07-03 09:26:08,946 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_it.h
+2024-07-03 09:26:08,967 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c_save
+2024-07-03 09:26:09,130 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_msp.c
+2024-07-03 09:26:09,141 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp_save
+2024-07-03 09:26:09,215 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/MXTmpFiles/system.tmp
+2024-07-03 09:26:09,222 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c_save
+2024-07-03 09:26:09,299 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/stm32f4xx_hal_timebase_tim.c
+2024-07-03 09:26:09,332 [INFO] CodeEngine:311 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h_save
+2024-07-03 09:26:09,449 [INFO] CodeEngine:335 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/stm32f4xx_hal_conf.h
+2024-07-03 09:26:09,470 [WARN] IPConfigManager:3513 - IP not found : TIM
+2024-07-03 09:26:09,471 [WARN] CodeGenerator:3951 - IP not found : null
+2024-07-03 09:26:09,491 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h_save
+2024-07-03 09:26:09,637 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Inc/main.h
+2024-07-03 09:26:09,676 [INFO] CodeEngine:255 - oldGeneratedFile, /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c_save
+2024-07-03 09:26:09,850 [INFO] CodeEngine:279 - Generated code: /home/chris/Documents/portfolio/stm32f407-freertos-demo/FreeRTOSDemoProject/Core/Src/main.c
+2024-07-03 09:26:13,703 [INFO] ProjectBuilder:3163 - Time for Copy HAL[1] : 3449mS.
+2024-07-03 09:26:13,705 [INFO] ProjectBuilder:4736 - Project Generator version: 4.3.0-B58
+2024-07-03 09:26:13,863 [INFO] ConfigFileManager:1503 - The Die is : DIE413
+2024-07-03 09:26:16,338 [INFO] ProjectBuilder:5002 - Time for Generating toolchain IDE Files: 2633mS.
+2024-07-03 09:26:16,341 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 1mS.
+2024-07-03 09:26:16,342 [INFO] ProjectBuilder:3034 - Time for Copy CMSIS : 0mS.

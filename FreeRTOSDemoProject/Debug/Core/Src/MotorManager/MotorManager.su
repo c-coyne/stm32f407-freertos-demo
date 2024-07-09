@@ -1,4 +1,11 @@
-../Core/Src/MotorManager/MotorManager.c:74:6:motor_task	32	static
-../Core/Src/MotorManager/MotorManager.c:130:6:motor_gpio_callback	24	static
-../Core/Src/MotorManager/MotorManager.c:156:6:motor_timer_callback	24	static
-../Core/Src/MotorManager/MotorManager.c:174:6:print_motor_speed	8	static
+../Core/Src/MotorManager/MotorManager.c:101:6:motor_task	40	static
+../Core/Src/MotorManager/MotorManager.c:181:6:motor_gpio_callback	24	static
+../Core/Src/MotorManager/MotorManager.c:207:6:motor_timer_callback	24	static
+../Core/Src/MotorManager/MotorManager.c:221:6:motor_report_callback	8	static
+../Core/Src/MotorManager/MotorManager.c:241:6:print_motor_speed	24	static
+../Core/Src/MotorManager/MotorManager.c:258:6:print_motor_parameters	4	static
+../Core/Src/MotorManager/MotorManager.c:263:6:initialize_parameters	4	static
+../Core/Src/MotorManager/MotorManager.c:273:6:print_summary_report	88	static
+../Core/Src/MotorManager/MotorManager.c:306:6:calculate_average	24	static
+../Core/Src/MotorManager/MotorManager.c:316:6:calculate_sd	24	static
+../Core/Src/MotorManager/MotorManager.c:324:6:split_float_into_ints	24	static

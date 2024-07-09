@@ -73,6 +73,7 @@ extern QueueHandle_t q_data;
 
 // Timer handles
 extern TimerHandle_t handle_led_timer[4];
+extern TimerHandle_t motor_report_timer;
 extern RTC_HandleTypeDef hrtc;
 extern TIM_HandleTypeDef htim3;
 
