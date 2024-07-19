@@ -23,6 +23,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 /****************************************************
  *  Function prototypes                             *
@@ -38,6 +40,7 @@ void calculate_sd(float data[], int len);
 void split_float_into_ints(int *int_val, int *dec_val, float float_val);
 void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_cycle_percent);
 float pid_controller(float setpoint, float measured_value);
+int isNumeric(const char *str);
 
 /****************************************************
  *  Messages                                        *
@@ -58,6 +61,14 @@ const char *msg_motor_menu = "\n======================================\n"
 							   " Speed ---> Change motor speed\n"
 							   " Main  ---> Return to main menu\n\n"
 							   " Enter your selection here: ";
+
+const char *msg_motor_algo = "\n Enter algorithm here (0 = None, 1 = PID): ";
+const char *msg_valid_algo = "\n Confirmed: motor speed control algorithm updated\n";
+const char *msg_inv_algo = "\n***** Invalid algorithm selection *****\n";
+const char *msg_motor_speed = "\n Enter new motor speed (RPM): ";
+const char *msg_motor_speed_max = "\n Selection exceeds threshold.\n";
+const char *msg_valid_speed = "\n Confirmed: motor speed updated\n";
+const char *msg_inv_speed = "\n***** Invalid speed selection *****\n";
 
 // Summary statistics
 const char *msg_stat_header = "************************************\n"
@@ -91,13 +102,14 @@ float speed_values[1000] = {0};
 
 // PID parameters
 static float Kp = 0.5;
-static float Ki = 0.000; // 0.075
-static float Kd = 0.000; // 0.0075
+static float Ki = 0.000;
+static float Kd = 0.000;
 static float duty_cycle = 50.0f; // Initial duty cycle (in percentage)
-static float target_speed = 225.0; // Desired motor speed in RPM
+static volatile float target_speed = 225.0; // Desired motor speed in RPM
 static float integral = 0.0;
 static float last_error = 0.0;
 static float dt = 0.01; // Time step in seconds (adjust as needed)
+static volatile motor_algo_t motor_algo = 1; // 0 for no algorithm, 1 for PID
 
 /****************************************************
  *  Public functions                                *
@@ -124,75 +136,160 @@ void motor_task(void *param)
 		// Wait for notification from another task
 		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
 
-		// Display motor manager menu for the user
-		xQueueSend(q_print, &msg_motor_menu, portMAX_DELAY);
+		switch(curr_sys_state) {
 
-		// Wait for the user to make a selection
-		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
-		msg = (message_t*)msg_addr;
+			case sMotorMenu:
+				// Display motor manager menu for the user
+				xQueueSend(q_print, &msg_motor_menu, portMAX_DELAY);
 
-		// Process command
-		if(msg->len <= 5) {
-			if(!strcmp((char*)msg->payload, "Start")) {
-				// Set the motor state
-				curr_motor_state = MOTOR_ACTIVE;
-				// Configure the H-bridge for forward rotation
-				HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(MOTOR_IN2_GPIO_Port, MOTOR_IN2_Pin, GPIO_PIN_SET);
-			}
-			else if(!strcmp((char*)msg->payload, "Stop")) {
-				// Set the motor state
-				curr_motor_state = MOTOR_INACTIVE;
-				// Pull both IN1 and IN2 low to stop current flow to the motor
-				HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin|MOTOR_IN2_Pin, GPIO_PIN_RESET);
-			}
-			else if(!strcmp((char*)msg->payload, "Algo")) {
-				// execute "Algo" command
-			}
-			else if(!strcmp((char*)msg->payload, "Rec")) {
-				// Set the motor state
-				curr_motor_state = MOTOR_SPEED_REPORTING;
-				// Display parameters
-				print_motor_on_report();
-				// Notify user of reporting
-				xQueueSend(q_print, &msg_speed_report, portMAX_DELAY);
-				// Initialize report time counter
-				report_counter = 1;
-				// Start the motor report timer
-				xTimerStart(motor_report_timer, portMAX_DELAY);
-			}
-			else if(!strcmp((char*)msg->payload, "Speed")) {
-				// execute "Speed" command
-			}
-			else if (!strcmp((char*)msg->payload, "Main")) {
-				// Update the system state
-				curr_sys_state = sMainMenu;
-
-				// Notify the main menu task
-				xTaskNotify(handle_main_menu_task, 0, eNoAction);
-			}
-			else {
-				xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
-			}
-		}
-		else {
-			// If user input is longer than 5 characters, notify user of invalid response
-			xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
-		}
-
-		// Notify self / motor task if not returning to the main menu
-		if (sMotorMenu == curr_sys_state) {
-			// Check if speed reporting is active
-			if(MOTOR_SPEED_REPORTING == curr_motor_state) {
-				// Wait for cancellation from the user before allowing next user input
+				// Wait for the user to make a selection
 				xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
-				// Stop the motor report timer
-				xTimerStop(motor_report_timer, portMAX_DELAY);
-				// Report statistics and reset parameters
-				print_summary_report();
-				initialize_parameters();
-			}
-			xTaskNotify(handle_motor_task, 0, eNoAction);
+				msg = (message_t*)msg_addr;
+
+				// Process command
+				if(msg->len <= 5) {
+					if(!strcmp((char*)msg->payload, "Start")) {
+						// Set the motor state
+						curr_motor_state = MOTOR_ACTIVE;
+						// Configure the H-bridge for forward rotation
+						HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin, GPIO_PIN_RESET);
+						HAL_GPIO_WritePin(MOTOR_IN2_GPIO_Port, MOTOR_IN2_Pin, GPIO_PIN_SET);
+					}
+					else if(!strcmp((char*)msg->payload, "Stop")) {
+						// Set the motor state
+						curr_motor_state = MOTOR_INACTIVE;
+						// Pull both IN1 and IN2 low to stop current flow to the motor
+						HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin|MOTOR_IN2_Pin, GPIO_PIN_RESET);
+					}
+					else if(!strcmp((char*)msg->payload, "Algo")) {
+						// Update the system state
+						curr_sys_state = sMotorAlgo;
+						// Prompt user for algorithm selection
+						xQueueSend(q_print, &msg_motor_algo, portMAX_DELAY);
+					}
+					else if(!strcmp((char*)msg->payload, "Rec")) {
+						// Set the motor state
+						curr_motor_state = MOTOR_SPEED_REPORTING;
+						// Display parameters
+						print_motor_on_report();
+						// Notify user of reporting
+						xQueueSend(q_print, &msg_speed_report, portMAX_DELAY);
+						// Initialize report time counter
+						report_counter = 1;
+						// Start the motor report timer
+						xTimerStart(motor_report_timer, portMAX_DELAY);
+					}
+					else if(!strcmp((char*)msg->payload, "Speed")) {
+						// Update the system state
+						curr_sys_state = sMotorSpeed;
+						// Prompt user for new speed
+						xQueueSend(q_print, &msg_motor_speed, portMAX_DELAY);
+					}
+					else if (!strcmp((char*)msg->payload, "Main")) {
+						// Update the system state
+						curr_sys_state = sMainMenu;
+
+						// Notify the main menu task
+						xTaskNotify(handle_main_menu_task, 0, eNoAction);
+					}
+					else {
+						xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
+					}
+				}
+				else {
+					// If user input is longer than 5 characters, notify user of invalid response
+					xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
+				}
+
+				// Notify self / motor task if not returning to the main menu
+				if (sMotorMenu == curr_sys_state) {
+					// Check if speed reporting is active
+					if(MOTOR_SPEED_REPORTING == curr_motor_state) {
+						// Wait for cancellation from the user before allowing next user input
+						xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+						// Stop the motor report timer
+						xTimerStop(motor_report_timer, portMAX_DELAY);
+						// Report statistics and reset parameters
+						print_summary_report();
+						initialize_parameters();
+					}
+					xTaskNotify(handle_motor_task, 0, eNoAction);
+				}
+				else if (sMotorAlgo == curr_sys_state || sMotorSpeed == curr_sys_state) {
+					xTaskNotify(handle_motor_task, 0, eNoAction);
+				}
+				break;
+			case sMotorAlgo:
+				// Wait for the user to make a selection
+				xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+				msg = (message_t*)msg_addr;
+
+				// Process command
+				if(msg->len <= 1) {
+					if(!strcmp((char*)msg->payload, "0")) { 					// None
+						// Disable all algorithms control
+						motor_algo = 0;
+						xQueueSend(q_print, &msg_valid_algo, portMAX_DELAY);
+					}
+					else if(!strcmp((char*)msg->payload, "1")) { 				// PID control
+						// Enable PID control
+						motor_algo = 1;
+						xQueueSend(q_print, &msg_valid_algo, portMAX_DELAY);
+					}
+					else {
+						xQueueSend(q_print, &msg_inv_algo, portMAX_DELAY);
+					}
+				}
+				else {
+					// If something longer than 1 digit is entered, this is incorrect
+					xQueueSend(q_print, &msg_inv_algo, portMAX_DELAY);
+				}
+				// Update system state
+				curr_sys_state = sMotorMenu;
+				// Send control back to motor task main menu
+				xTaskNotify(handle_motor_task, 0, eNoAction);
+				break;
+			case sMotorSpeed:
+				// Wait for the user to make a selection
+				xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+				msg = (message_t*)msg_addr;
+
+				// Process command
+				if(msg->len <= 6) {
+					if(isNumeric((char*)msg->payload)) {
+						// Convert speed from string to int
+						target_speed = strtof((char*)msg->payload, NULL);
+						if(target_speed > MAX_MOTOR_SPEED) {
+							// Set motor speed to configured threshold
+							target_speed = MAX_MOTOR_SPEED;
+							// Notify user that selection exceeds maximum RPM threshold
+							xQueueSend(q_print, &msg_motor_speed_max, portMAX_DELAY);
+							// Notify user of current threshold
+							static char maxspeed[40];
+							static char *max_speed = maxspeed;
+							// Display speed in RPM
+							sprintf((char*)max_speed, " Motor speed set to: %03d RPM\n", (int)MAX_MOTOR_SPEED);
+							xQueueSend(q_print, &max_speed, portMAX_DELAY);
+						}
+						else {
+							xQueueSend(q_print, &msg_valid_speed, portMAX_DELAY);
+						}
+					}
+					else {
+						xQueueSend(q_print, &msg_inv_speed, portMAX_DELAY);
+					}
+				}
+				else {
+					// If something longer than 6 digits is entered, this is incorrect
+					xQueueSend(q_print, &msg_inv_speed, portMAX_DELAY);
+				}
+				// Update system state
+				curr_sys_state = sMotorMenu;
+				// Send control back to motor task main menu
+				xTaskNotify(handle_motor_task, 0, eNoAction);
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -407,19 +504,46 @@ void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_
 
 float pid_controller(float setpoint, float measured_value)
 {
-    float error = setpoint - measured_value;
-    integral += error * dt;
-    float derivative = (error - last_error) / dt;
-    last_error = error;
-    float output = Kp * error + Ki * integral + Kd * derivative;
+    if(motor_algo == 1) {
+		float error = setpoint - measured_value;
+		integral += error * dt;
+		float derivative = (error - last_error) / dt;
+		last_error = error;
+		float output = Kp * error + Ki * integral + Kd * derivative;
 
-    // Calculate new duty cycle
-    duty_cycle += output;
+		// Calculate new duty cycle
+		duty_cycle += output;
 
-    // Ensure the duty cycle is within the range of 0 to 100 (as duty cycle percentage)
-    if (duty_cycle > 100.0f) duty_cycle = 100.0f;
-    if (duty_cycle < 0.0f) duty_cycle = 0.0f;
+		// Ensure the duty cycle is within the range of 0 to 100 (as duty cycle percentage)
+		if (duty_cycle > 100.0f) duty_cycle = 100.0f;
+		if (duty_cycle < 0.0f) duty_cycle = 0.0f;
 
-    return duty_cycle;
+		return duty_cycle;
+    }
+    else {
+    	return duty_cycle;
+    }
 }
 
+int isNumeric(const char *str) {
+    int hasDecimalPoint = 0;
+
+    // Check for empty string
+    if (*str == '\0') {
+        return 0;
+    }
+
+    // Check each character in the string
+    while (*str) {
+        if (!isdigit((unsigned char)*str)) {  // Cast to unsigned char
+            // Allow one decimal point
+            if (*str == '.' && !hasDecimalPoint) {
+                hasDecimalPoint = 1;
+            } else {
+                return 0; // Not a digit or second decimal point
+            }
+        }
+        str++;
+    }
+    return 1; // All characters are digits or one decimal point
+}

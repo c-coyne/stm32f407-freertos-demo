@@ -52,6 +52,8 @@ typedef enum {
 	sAccMenu,
 	sRtcMenu,
 	sMotorMenu,
+	sMotorAlgo,
+	sMotorSpeed,
 	sRtcDateConfig,
 	sRtcTimeConfig
 } system_state_t;

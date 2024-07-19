@@ -38,4 +38,10 @@ void motor_report_callback(void);
 extern volatile int32_t encoder_count;
 extern volatile float motor_speed;
 
+// Typedefs
+typedef enum {
+	None = 0,
+	PID
+} motor_algo_t;
+
 #endif /* MOTORMANAGER_H_ */

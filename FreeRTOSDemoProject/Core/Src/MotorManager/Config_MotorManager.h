@@ -38,5 +38,6 @@
 // Parameter initialization
 #define MIN_SPEED_INITIALIZATION	1000
 #define MAX_SPEED_INITIALIZATION	0
+#define MAX_MOTOR_SPEED				275
 
 #endif /* CONFIG_MOTORMANAGER_H_ */
