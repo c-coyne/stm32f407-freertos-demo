@@ -31,10 +31,13 @@
 void print_motor_speed(void);
 void print_motor_parameters(void);
 void initialize_parameters(void);
+void print_motor_on_report(void);
 void print_summary_report(void);
 void calculate_average(float data[], int len);
 void calculate_sd(float data[], int len);
 void split_float_into_ints(int *int_val, int *dec_val, float float_val);
+void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_cycle_percent);
+float pid_controller(float setpoint, float measured_value);
 
 /****************************************************
  *  Messages                                        *
@@ -42,7 +45,7 @@ void split_float_into_ints(int *int_val, int *dec_val, float float_val);
 
 // General system messages
 const char *msg_inv_motor = "\n***** Invalid motor control option ******\n";
-const char *msg_speed_report = "\n Starting motor speed reporting. Press any key to stop...\n";
+const char *msg_speed_report = "\n Starting motor speed reporting. Press any key to stop...\n\n";
 
 // Motor menu
 const char *msg_motor_menu = "\n======================================\n"
@@ -57,11 +60,16 @@ const char *msg_motor_menu = "\n======================================\n"
 							   " Enter your selection here: ";
 
 // Summary statistics
-const char *msg_stat_header = "\n************************************\n"
-							    "*        SUMMARY STATISTICS        *\n"
-								"*                                  *\n";
-const char *msg_stat_footer =   "*                                  *\n"
-								"************************************\n";
+const char *msg_stat_header = "************************************\n"
+							  "*        SUMMARY STATISTICS        *\n"
+							  "*                                  *\n";
+const char *msg_stat_footer = "*                                  *\n"
+							  "************************************\n";
+const char *msg_motor_on_header = "\n************************************\n"
+	    							"*            MOTOR START           *\n"
+									"*                                  *\n";
+const char *msg_motor_on_footer =   "*                                  *\n"
+									"************************************\n";
 
 /****************************************************
  *  Variables                                       *
@@ -72,7 +80,6 @@ volatile float motor_speed = 0.0f; // Global variable to store speed
 volatile uint8_t last_a = 0, last_b = 0;
 static int curr_motor_state = MOTOR_INACTIVE;
 static int report_counter = 0;
-//static float target_speed = 225;
 
 // Summary statistics
 static float min_speed = MIN_SPEED_INITIALIZATION;
@@ -81,6 +88,16 @@ static int duration = 0;
 static float average = 0.0;
 float standard_dev = 0.0;
 float speed_values[1000] = {0};
+
+// PID parameters
+static float Kp = 0.5;
+static float Ki = 0.000; // 0.075
+static float Kd = 0.000; // 0.0075
+static float duty_cycle = 50.0f; // Initial duty cycle (in percentage)
+static float target_speed = 225.0; // Desired motor speed in RPM
+static float integral = 0.0;
+static float last_error = 0.0;
+static float dt = 0.01; // Time step in seconds (adjust as needed)
 
 /****************************************************
  *  Public functions                                *
@@ -135,6 +152,8 @@ void motor_task(void *param)
 			else if(!strcmp((char*)msg->payload, "Rec")) {
 				// Set the motor state
 				curr_motor_state = MOTOR_SPEED_REPORTING;
+				// Display parameters
+				print_motor_on_report();
 				// Notify user of reporting
 				xQueueSend(q_print, &msg_speed_report, portMAX_DELAY);
 				// Initialize report time counter
@@ -215,11 +234,18 @@ void motor_timer_callback(TIM_HandleTypeDef *htim)
 
 		// Update last encoder count for the next period
 		last_encoder_count = encoder_count;
+
+		// PID control
+		float new_duty_cycle = pid_controller(target_speed, motor_speed);
+		set_pwm_duty_cycle(&htim3, TIM_CHANNEL_1, (uint8_t)new_duty_cycle);
 	}
 }
 
+// Runs every 10 ms
 void motor_report_callback(void)
 {
+//	static int flag = 0;
+
 	// Check for min speed
 	if(motor_speed < min_speed) {
 		min_speed = motor_speed;
@@ -228,10 +254,21 @@ void motor_report_callback(void)
 	if(motor_speed > max_speed) {
 		max_speed = motor_speed;
 	}
+
 	// Update time window, add data to array
 	speed_values[duration++] = motor_speed;
+
 	// Print current speed
 	print_motor_speed();
+
+//	// Update duty cycle (just alternating for testing purposes)
+//	flag = !flag;
+//	if(flag) {
+//		set_pwm_duty_cycle(&htim3, TIM_CHANNEL_1, 30);
+//	}
+//	else {
+//		set_pwm_duty_cycle(&htim3, TIM_CHANNEL_1, 50);
+//	}
 }
 
 /****************************************************
@@ -244,8 +281,6 @@ void print_motor_speed(void)
 	static char *speed = showspeed;
 
 	// Separate float into two integers
-//	int speed_i = (int)motor_speed;
-//	int speed_d = (int)((motor_speed * 100) - (speed_i * 100));
 	int speed_i = 0;
 	int speed_d = 0;
 	split_float_into_ints(&speed_i, &speed_d, motor_speed);
@@ -270,6 +305,35 @@ void initialize_parameters(void)
 	standard_dev = 0;
 }
 
+void print_motor_on_report(void)
+{
+	// Send statistics header message
+	xQueueSend(q_print, &msg_motor_on_header, portMAX_DELAY);
+
+	// Convert floats into two integer values for display
+	int target_speed_i = 0, target_speed_d = 0;
+	int kp_i = 0, kp_d = 0;
+	int ki_i = 0, ki_d = 0;
+	int kd_i = 0, kd_d = 0;
+	split_float_into_ints(&target_speed_i, &target_speed_d, target_speed);
+	split_float_into_ints(&kp_i, &kp_d, Kp);
+	split_float_into_ints(&ki_i, &ki_d, Ki);
+	split_float_into_ints(&kd_i, &kd_d, Kd);
+
+	// Print results
+	static char showparams[250];
+	static char *params = showparams;
+	sprintf((char*)showparams,   "* Target speed:      %03d.%02d  RPM   *"
+							   "\n* Kp:                  %01d.%03d       *"
+							   "\n* Ki:                  %01d.%03d       *"
+			                   "\n* Kd:                  %01d.%03d       *\n",
+							   target_speed_i, target_speed_d, kp_i, kp_d, ki_i, ki_d, kd_i, kd_d);
+	xQueueSend(q_print, &params, portMAX_DELAY);
+
+	// Send statistics footer message
+	xQueueSend(q_print, &msg_motor_on_footer, portMAX_DELAY);
+}
+
 void print_summary_report(void)
 {
 	// Send statistics header message
@@ -292,11 +356,12 @@ void print_summary_report(void)
 	// Print results
 	static char showstats[250];
 	static char *stats = showstats;
-	sprintf((char*)showstats,   "* Min speed:          %03d.%02d RPM   *"
+	sprintf((char*)showstats,   "* Elapsed time:       %03d    sec   *"
+							  "\n* Min speed:          %03d.%02d RPM   *"
 							  "\n* Max speed:          %03d.%02d RPM   *"
 			                  "\n* Average speed:      %03d.%02d RPM   *"
 			                  "\n* Standard deviation: %03d.%02d RPM   *\n",
-							  min_speed_i, min_speed_d, max_speed_i, max_speed_d, average_i, average_d, standard_dev_i, standard_dev_d);
+							  duration, min_speed_i, min_speed_d, max_speed_i, max_speed_d, average_i, average_d, standard_dev_i, standard_dev_d);
 	xQueueSend(q_print, &stats, portMAX_DELAY);
 
 	// Send statistics footer message
@@ -327,3 +392,34 @@ void split_float_into_ints(int *int_val, int *dec_val, float float_val)
 	*int_val = (int)float_val;
 	*dec_val = (int)((float_val * 100) - (*int_val * 100));
 }
+
+void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_cycle_percent)
+{
+	// Get timer auto-reload value (i.e. period)
+	uint32_t timer_period = __HAL_TIM_GET_AUTORELOAD(htim);
+
+	// Calculate the proper compare value to be loaded into the capture/compare register (CCR)
+	uint32_t compare_value = (duty_cycle_percent * timer_period) / 100;
+
+	// Set new duty cycle
+    __HAL_TIM_SET_COMPARE(htim, channel, compare_value);
+}
+
+float pid_controller(float setpoint, float measured_value)
+{
+    float error = setpoint - measured_value;
+    integral += error * dt;
+    float derivative = (error - last_error) / dt;
+    last_error = error;
+    float output = Kp * error + Ki * integral + Kd * derivative;
+
+    // Calculate new duty cycle
+    duty_cycle += output;
+
+    // Ensure the duty cycle is within the range of 0 to 100 (as duty cycle percentage)
+    if (duty_cycle > 100.0f) duty_cycle = 100.0f;
+    if (duty_cycle < 0.0f) duty_cycle = 0.0f;
+
+    return duty_cycle;
+}
+
