@@ -31,7 +31,6 @@
  ****************************************************/
 
 void print_motor_speed(void);
-void print_motor_parameters(void);
 void initialize_parameters(void);
 void print_motor_on_report(void);
 void print_summary_report(void);
@@ -330,6 +329,16 @@ void motor_task(void *param)
 	}
 }
 
+/*******************************************************************************************************
+ * @brief Callback for motor GPIO interrupt.														   *
+ * 																									   *
+ * This function handles the GPIO interrupt for motor encoders. It reads the encoder pins and updates  *
+ * the encoder count based on the state changes. This is used to keep track of the motor's speed.	   *
+ * 																									   *
+ * @param GPIO_Pin The pin that triggered the interrupt.											   *
+ * @return void																						   *
+ ******************************************************************************************************/
+
 void motor_gpio_callback(uint16_t GPIO_Pin)
 {
     uint8_t a = HAL_GPIO_ReadPin(ENCODER_A_GPIO_Port, ENCODER_A_GPIO_Pin);
@@ -356,6 +365,17 @@ void motor_gpio_callback(uint16_t GPIO_Pin)
     }
 }
 
+/*******************************************************************************************************
+ * @brief Callback for motor timer interrupt.														   *
+ * 																									   *
+ * This function runs every 10 ms and handles the timer interrupt for motor control. It calculates     *
+ * the motor speed based on the encoder count and updates the PWM duty cycle using a PID controller    *
+ * to achieve the target speed.																		   *
+ * 																									   *
+ * @param htim Pointer to the timer handle.															   *
+ * @return void																						   *
+ ******************************************************************************************************/
+
 void motor_timer_callback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM7) {
@@ -374,11 +394,18 @@ void motor_timer_callback(TIM_HandleTypeDef *htim)
 	}
 }
 
-// Runs every 10 ms
+/*******************************************************************************************************
+ * @brief Callback for motor report.																   *
+ * 																									   *
+ * This function runs every 1 sec to update motor statistics. It checks and updates the minimum and    *
+ * maximum motor speeds, adds the current speed to an array for statistical analysis, and prints the   *
+ * current motor speed.																				   *
+ * 																									   *
+ * @return void																						   *
+ ******************************************************************************************************/
+
 void motor_report_callback(void)
 {
-//	static int flag = 0;
-
 	// Check for min speed
 	if(motor_speed < min_speed) {
 		min_speed = motor_speed;
@@ -393,20 +420,21 @@ void motor_report_callback(void)
 
 	// Print current speed
 	print_motor_speed();
-
-//	// Update duty cycle (just alternating for testing purposes)
-//	flag = !flag;
-//	if(flag) {
-//		set_pwm_duty_cycle(&htim3, TIM_CHANNEL_1, 30);
-//	}
-//	else {
-//		set_pwm_duty_cycle(&htim3, TIM_CHANNEL_1, 50);
-//	}
 }
 
 /****************************************************
  *  Private functions                               *
  ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Prints the motor speed.																	   *
+ * 																									   *
+ * This function formats the current motor speed into a human-readable string and sends it to the      *
+ * print queue. It separates the floating-point motor speed into integer and decimal components for    *
+ * display.																							   *
+ * 																									   *
+ * @return void																						   *
+ ******************************************************************************************************/
 
 void print_motor_speed(void)
 {
@@ -423,10 +451,14 @@ void print_motor_speed(void)
 	xQueueSend(q_print, &speed, portMAX_DELAY);
 }
 
-void print_motor_parameters(void)
-{
-
-}
+/*******************************************************************************************************
+ * @brief Initializes motor and statistical parameters.												   *
+ * 																									   *
+ * This function sets the initial values for parameters related to motor statistics, including report  *
+ * counter, duration, minimum speed, maximum speed, average speed, and standard deviation.			   *
+ * 																									   *
+ * @return void																						   *
+ ******************************************************************************************************/
 
 void initialize_parameters(void)
 {
@@ -437,6 +469,16 @@ void initialize_parameters(void)
 	average = 0;
 	standard_dev = 0;
 }
+
+/*******************************************************************************************************
+ * @brief Prints a report of the motor's parameters upon starting a recording of motor speed.		   *
+ * 																									   *
+ * This function sends a formatted report containing the target speed, and PID controller parameters   *
+ * (Kp, Ki, Kd) to the print queue. It separates the floating-point values into integer components for *
+ * display and sends the formatted string.															   *
+ * 																									   *
+ * @return void																						   *
+ ******************************************************************************************************/
 
 void print_motor_on_report(void)
 {
@@ -466,6 +508,17 @@ void print_motor_on_report(void)
 	// Send statistics footer message
 	xQueueSend(q_print, &msg_motor_on_footer, portMAX_DELAY);
 }
+
+/*******************************************************************************************************
+ * @brief Prints a summary report of statistical calculations.										   *
+ * 																									   *
+ * This function sends a formatted summary report containing elapsed time, minimum speed, maximum 	   *
+ * speed, average speed, and standard deviation to the print queue. It first calculates the average	   *
+ * and standard deviation of speed values, splits the resulting floats into integer components, and    *
+ * then formats and sends the statistics for printing.												   *
+ * 																									   *
+ * @return void																						   *
+ ******************************************************************************************************/
 
 void print_summary_report(void)
 {
@@ -501,6 +554,17 @@ void print_summary_report(void)
 	xQueueSend(q_print, &msg_stat_footer, portMAX_DELAY);
 }
 
+/*******************************************************************************************************
+ * @brief Calculates the average value of an array of floats.										   *
+ * 																									   *
+ * This function computes the average of an array of floating-point numbers and stores the result in   *
+ * the global variable 'average'.																	   *
+ * 																									   *
+ * @param data [float[]] Array of float data to calculate the average of.							   *
+ * @param len [int] Length of the data array.														   *
+ * @return void																						   *
+ ******************************************************************************************************/
+
 void calculate_average(float data[], int len)
 {
 	float sum = 0.0;
@@ -510,7 +574,21 @@ void calculate_average(float data[], int len)
 	average = sum / len;
 }
 
-// Note: calculate_average must be run first
+/*******************************************************************************************************
+ * @brief Calculates the standard deviation of an array of floats.									   *
+ * 																									   *
+ * This function computes the standard deviation of an array of floating-point numbers and stores the  *
+ * result in the global variable 'standard_dev'. The function assumes that the 'calculate_average' 	   *
+ * function has been called first to compute the global 'average'.									   *
+ * 																									   *
+ * @param data [float[]] Array of float data to calculate the standard deviation of.				   *
+ * @param len [int] Length of the data array.														   *
+ * @return void																						   *
+ * 																									   *
+ * @note The calculate_average function must be run first, as the average is used in the calculation   *
+ * 		 of the standard deviation.																	   *
+ ******************************************************************************************************/
+
 void calculate_sd(float data[], int len)
 {
 	for(int i = 0; i < len; i++) {
@@ -519,13 +597,40 @@ void calculate_sd(float data[], int len)
 	standard_dev = sqrt(standard_dev / len);
 }
 
+/*******************************************************************************************************
+ * @brief Splits a float into integer and decimal parts.											   *
+ * 																									   *
+ * This function separates a floating-point number into its integer and decimal parts based on the 	   *
+ * specified number of decimal places. The integer and decimal parts are stored in the provided 	   *
+ * integer pointers.																				   *
+ * 																									   *
+ * @param int_val [int*] Pointer to store the integer part of the float.							   *
+ * @param dec_val [int*] Pointer to store the decimal part of the float.							   *
+ * @param float_val [float] Floating-point value to split.											   *
+ * @param dec_places [int] Number of decimal places to consider.									   *
+ * @return void																						   *
+ ******************************************************************************************************/
+
 void split_float_into_ints(int *int_val, int *dec_val, float float_val, int dec_places)
 {
-	// Separate float into two integers
 	int tens = pow(10, dec_places);
 	*int_val = (int)float_val;
 	*dec_val = (int)((float_val * tens) - (*int_val * tens));
 }
+
+/*******************************************************************************************************
+ * @brief Sets the PWM duty cycle for a specified timer channel.									   *
+ * 																									   *
+ * This function sets the PWM duty cycle by calculating the appropriate compare value based on the 	   *
+ * specified duty cycle percentage and the timer's auto-reload value (period).						   *
+ * 																									   *
+ * @param htim [TIM_HandleTypeDef*] Handle to the timer.											   *
+ * @param channel [uint32_t] Timer channel to set the duty cycle for.								   *
+ * @param duty_cycle_percent [uint8_t] Duty cycle percentage to set (0-100).						   *
+ * @return void																						   *
+ * 																									   *
+ * @note This function assumes the timer and channel have already been configured for PWM mode.		   *
+ ******************************************************************************************************/
 
 void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_cycle_percent)
 {
@@ -538,6 +643,21 @@ void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_
 	// Set new duty cycle
     __HAL_TIM_SET_COMPARE(htim, channel, compare_value);
 }
+
+/*******************************************************************************************************
+ * @brief PID controller for motor speed control.													   *
+ * 																									   *
+ * This function implements a PID controller to calculate the new duty cycle for the motor based on    *
+ * the setpoint and measured value. The PID gains (Kp, Ki, Kd) are used to compute the error, 		   *
+ * integral, and derivative terms.																	   *
+ * 																									   *
+ * @param setpoint [float] Desired motor speed.														   *
+ * @param measured_value [float] Current motor speed.												   *
+ * @return float New duty cycle percentage (0-100).													   *
+ * 																									   *
+ * @note This function only operates if the motor algorithm is set to PID control (motor_algo == 1).   *
+ * @note The function ensures that the duty cycle remains within the range of 0 to 100.				   *
+ ******************************************************************************************************/
 
 float pid_controller(float setpoint, float measured_value)
 {
@@ -561,6 +681,18 @@ float pid_controller(float setpoint, float measured_value)
     	return duty_cycle;
     }
 }
+
+/*******************************************************************************************************
+ * @brief Checks if a string represents a numeric value.											   *
+ * 																									   *
+ * This function checks if the provided string contains only numeric characters (0-9) or a single 	   *
+ * decimal point, indicating that it represents a valid numeric value.								   *
+ * 																									   *
+ * @param str [const char*] Input string to check.													   *
+ * @return int 1 if the string is numeric, 0 otherwise.												   *
+ * 																									   *
+ * @note An empty string is considered not numeric.													   *
+ ******************************************************************************************************/
 
 int isNumeric(const char *str) {
     int hasDecimalPoint = 0;
