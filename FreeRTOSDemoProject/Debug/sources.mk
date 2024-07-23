@@ -24,6 +24,7 @@ C_DEPS :=
 SUBDIRS := \
 Core/Src/AccManager \
 Core/Src/LedManager \
+Core/Src/MotorManager \
 Core/Src/RtcManager \
 Core/Src/UartManager \
 Core/Src \

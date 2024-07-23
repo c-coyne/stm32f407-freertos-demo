@@ -20,6 +20,7 @@ RM := rm -rf
 -include Core/Startup/subdir.mk
 -include Core/Src/UartManager/subdir.mk
 -include Core/Src/RtcManager/subdir.mk
+-include Core/Src/MotorManager/subdir.mk
 -include Core/Src/LedManager/subdir.mk
 -include Core/Src/AccManager/subdir.mk
 -include Core/Src/subdir.mk

@@ -1,7 +1,11 @@
 # STM32F407 FreeRTOS Demo Project
 
 ## Overview
-This project is intended to demonstrate a variety of the features available within FreeRTOS and the STM32F407 discovery board, such as on-board LEDs, the real-time clock, and the accelerometer. The project is intentionally limited to the STM32F407 discovery board to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
+This project is intended to demonstrate a variety of the features available within FreeRTOS and the STM32F407 discovery board, such as on-board LEDs, the real-time clock, discovery board accelerometer, and external DC motor. The project is intentionally limited to the STM32F407 discovery board with limited (optional) external components to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
+
+With the addition of motion control and interaction with the external DC motor in V1.1, this project can also be used as an educational platform for mechanical, electrical, or embedded software engineering students looking for a tangible system for intuitively grasping the intricacies and subtleties of PID motion control and beyond; as a rich debugging platform for learning interdisciplinary embedded system troubleshooting; as a simple circuitry project to understand basic concepts of electrical circuits, PWM, and control systems; and likely in a variety of other ways in an educational setting.
+
+**If you're interested in using this project in the context of a college course or similar, please feel free to reach out.** I would very much appreciate the opportunity to bring the joy of real-time operating systems and embedded software to the next generation of engineers, builders, and makers.
 
 ## Table of Contents
 
@@ -18,6 +22,7 @@ This project is intended to demonstrate a variety of the features available with
    - [Using the Application](#using-the-application)
    - [Analyzing with SEGGER SystemView](#analyzing-with-segger-systemview)
 6. [Task Descriptions](#task-descriptions)
+   - [Motor Manager](#motor-manager-_______________________________________________________)
    - [Accelerometer Manager](#accelerometer-manager-_______________________________________________)
    - [LED Manager](#led-manager-__________________________________________________________)
    - [RTC Manager](#rtc-manager-__________________________________________________________)
@@ -36,6 +41,7 @@ This project is intended to demonstrate a variety of the features available with
 
 ## Hardware and Software Requirements
 - **Hardware:** STM32F407 Discovery Board, FTDI USB-to-UART converter, USB cables
+- **Optional additioanl hardware (DC motor motion control):** 12V DC motor with quadrature encoder, L298N H-bridge motor controller
 - **Software:** STM32CubeIDE, FreeRTOS library, HAL drivers for STM32
 
 ## Project Structure
@@ -66,6 +72,10 @@ FreeRTOSDemoProject/
 | | | ├── Config_UartManager.h
 | | | ├── UartManager.h
 | | | └── UartManager.c
+│ │ ├── MotorManager/
+| | | ├── Config_MotorManager.h
+| | | ├── MotorManager.h
+| | | └── MotorManager.c
 │ │ ├── main.c
 │ │ ├── stm32f4xx_hal_msp.c
 │ │ ├── stm32f4xx_hal_timebase_tim.c
@@ -114,12 +124,17 @@ FreeRTOSDemoProject/
 
 ### Hardware setup
 This project handles all user communication via UART (**USART2** in the STM32CubeIDE Device Configuration Tool). This uses pins **PA2 (USART2_TX)** and **PA3 (USART2_RX)**, which must be connected to the RX and TX pins of your FTDI USB-to-UART converter. You must also ensure the FTDI USB-to-UART converter and the STM32F407 discovery board share a ground, so you'll need to add an additional jumper wire to ensure a common ground.
-ExpressionsView
 ### Terminal setup
 For this project, I used Tera Term on a Windows machine for all communication to / from the board, however any terminal emulator will work (for instance, I also tested this using picocom on a Linux machine running Ubuntu). You'll want to set up the terminal emulator the following way to facilitate UART communication:
 - Turn on line feed (LF) for both _Receive_ and _Transmit_. In Tera Term, you can find this at `Setup > Terminal...`, then select `LF` for _Receive_ and `LF` for _Transmit_
 - Turn on a local echo. In Tera Term, you can find this at `Setup > Terminal...`, then check the box for _Local echo_
 - Set the baud rate to 115,200. In Tera Term, you can find this at `Setup > Serial port...`, then use the drop-down menu to change _Speed_ to **115200**
+
+### System wiring
+The schematic below shows the system wiring, including communication and interfacing with the external DC motor.
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/SystemSchematic.png" />
+</p>
 
 ### Running the Application
 Upon powering the STM32F407 Discovery board, the FreeRTOS scheduler will start, and the tasks will begin execution as described below. You can tell if you've set up UART communication correctly if you're presented with a main menu upon powering up the board. If you don't see the main menu, try resetting the board while the FTDI connector is already connected.
@@ -137,6 +152,15 @@ SEGGER SystemView is already integrated into this project. The [User Manual](Fre
 </p>
 
 ## Task Descriptions
+
+### Motor Manager _______________________________________________________
+
+    File: Core/Src/MotorManager/MotorManager.c
+    Description: Handles interaction with the 12V DC motor with quadrature encoder, including motion control.
+    Documentation: MotorManager.md
+
+#### Motor Task (`motor_task`)
+- Manages motor commands and motion control.
 
 ### Accelerometer Manager _______________________________________________
 
@@ -212,5 +236,5 @@ Project Link: https://github.com/c-coyne/stm32f407-freertos-demo
 
 **STM32CubeIDE:** STMicroelectronics
 
-**FastBit Embedded Brain Academy:** This project is a modified and extended version of one of the many projects in their [_Mastering FreeRTOS: Hands on FreeRTOS and STM32Fx with Debugging_](https://www.udemy.com/course/mastering-rtos-hands-on-with-freertos-arduino-and-stm32fx/?couponCode=ST18MT62524) course.
+**FastBit Embedded Brain Academy:** This project is a modified and heavily extended version of one of the many projects in their [_Mastering FreeRTOS: Hands on FreeRTOS and STM32Fx with Debugging_](https://www.udemy.com/course/mastering-rtos-hands-on-with-freertos-arduino-and-stm32fx/?couponCode=ST18MT62524) course.
 

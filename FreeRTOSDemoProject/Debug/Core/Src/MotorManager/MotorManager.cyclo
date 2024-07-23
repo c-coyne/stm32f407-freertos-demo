@@ -1,0 +1,15 @@
+../Core/Src/MotorManager/MotorManager.c:141:6:motor_task	25
+../Core/Src/MotorManager/MotorManager.c:347:6:motor_gpio_callback	7
+../Core/Src/MotorManager/MotorManager.c:384:6:motor_timer_callback	2
+../Core/Src/MotorManager/MotorManager.c:412:6:motor_report_callback	3
+../Core/Src/MotorManager/MotorManager.c:444:6:print_motor_speed	1
+../Core/Src/MotorManager/MotorManager.c:468:6:initialize_parameters	1
+../Core/Src/MotorManager/MotorManager.c:488:6:print_motor_on_report	1
+../Core/Src/MotorManager/MotorManager.c:528:6:print_summary_report	1
+../Core/Src/MotorManager/MotorManager.c:573:6:calculate_average	2
+../Core/Src/MotorManager/MotorManager.c:597:6:calculate_sd	2
+../Core/Src/MotorManager/MotorManager.c:619:6:split_float_into_ints	1
+../Core/Src/MotorManager/MotorManager.c:640:6:set_pwm_duty_cycle	4
+../Core/Src/MotorManager/MotorManager.c:667:7:pid_controller	4
+../Core/Src/MotorManager/MotorManager.c:702:5:isNumeric	6
+../Core/Src/MotorManager/MotorManager.c:735:5:parse_param_string	11

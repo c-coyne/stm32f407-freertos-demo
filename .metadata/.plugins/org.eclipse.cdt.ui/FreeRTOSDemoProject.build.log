@@ -1,10 +1,10 @@
-20:40:22 **** Incremental Build of configuration Debug for project FreeRTOSDemoProject ****
+10:08:56 **** Incremental Build of configuration Debug for project FreeRTOSDemoProject ****
 make -j4 all 
 arm-none-eabi-size  FreeRTOSDemoProject.elf 
    text	   data	    bss	    dec	    hex	filename
-  55424	    204	 110996	 166624	  28ae0	FreeRTOSDemoProject.elf
+  81544	    704	 115864	 198112	  305e0	FreeRTOSDemoProject.elf
 Finished building: default.size.stdout
  
 
-20:40:23 Build Finished. 0 errors, 0 warnings. (took 699ms)
+10:08:56 Build Finished. 0 errors, 0 warnings. (took 585ms)
 

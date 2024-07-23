@@ -1,0 +1,140 @@
+
+/*=====================================================================================*\
+| Author:   Christopher Coyne                                           July 1st, 2024  |
+| --------------------------------------------------------------------------------------|
+| Date:     July 1st, 2024                                                              |
+| --------------------------------------------------------------------------------------|
+| MODULE:     [ MotorManager ]                                                          |
+| FILE:       MotorManager.c                                                            |
+| --------------------------------------------------------------------------------------|
+| DESCRIPTION:                                                                          |
+|    The `MotorManager` module is responsible for handling user input and speed         |
+|    control for the motor.                                                             |
+\*=====================================================================================*/
+
+/****************************************************
+ *  Include files                                   *
+ ****************************************************/
+
+#include "FreeRTOS.h"
+#include "main.h"
+
+/****************************************************
+ *  Function prototypes                             *
+ ****************************************************/
+
+/****************************************************
+ *  Messages                                        *
+ ****************************************************/
+
+// General system messages
+const char *msg_inv_motor = "\n***** Invalid motor control option ******\n";
+
+// Motor menu
+const char *msg_motor_menu = "\n======================================\n"
+				  		       "|               LED Menu             |\n"
+						       "======================================\n\n"
+							   " Start ---> Start the motor\n"
+							   " Stop  ---> Stop the motor\n"
+		 	 	 	 	 	   " Algo  ---> Change motion control algorithm\n"
+							   " Speed ---> Change motor speed\n"
+							   " Main  ---> Return to main menu\n\n"
+							   " Enter your selection here: ";
+
+/****************************************************
+ *  Variables                                       *
+ ****************************************************/
+
+/****************************************************
+ *  Public functions                                *
+ ****************************************************/
+
+/*******************************************************************************************************
+ * @brief Task to handle motion control of the DC motor.											   *
+ *  																								   *
+ * This FreeRTOS task handles ...																	   *
+ * 																									   *
+ * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * @return void																						   *
+ * 																									   *
+ * @note The print queue (`q_print`) and other required queues must be initialized.				 	   *
+ * @note The task must be notified when a new command is available.									   *
+ ******************************************************************************************************/
+
+void motor_task(void *param)
+{
+	uint32_t msg_addr;
+	message_t *msg;
+
+	while(1) {
+		// Wait for notification from another task
+		xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+		// Display motor manager menu for the user
+		xQueueSend(q_print, &msg_motor_menu, portMAX_DELAY);
+
+		// Wait for the user to make a selection
+		xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+		msg = (message_t*)msg_addr;
+
+		// Process command
+		if(msg->len <= 5) {
+			if(!strcmp((char*)msg->payload, "X")) {
+				// Read accelerometer for X-axis only
+				accelerometer_read(acc_data);						// Read data
+				acc_flag[0] = 1; 									// Set X-axis new data flag
+				show_acc_data(acc_data, acc_flag);					// Show data
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_X_BIT);	// Set X-axis event group bit for LED task synchronization
+			}
+			else if(!strcmp((char*)msg->payload, "Y")) {
+				// Read accelerometer for X-axis only
+				accelerometer_read(acc_data);						// Read data
+				acc_flag[1] = 1; 									// Set Y-axis new data flag
+				show_acc_data(acc_data, acc_flag);					// Show data
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Y_BIT); 	// Set Y-axis event group bit for LED task synchronization
+			}
+			else if(!strcmp((char*)msg->payload, "Z")) {
+				// Read accelerometer for X-axis only
+				accelerometer_read(acc_data);						// Read data
+				acc_flag[2] = 1; 									// Set Z-axis new data flag
+				show_acc_data(acc_data, acc_flag);					// Show data
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Z_BIT);	// Set Z-axis event group bit for LED task synchronization
+			}
+			else if(!strcmp((char*)msg->payload, "All")) {
+				accelerometer_read(acc_data);						// Read data
+				for(int i=0; i<3; i++) acc_flag[i] = 1; 			// Set new data flags for all axes
+				show_acc_data(acc_data, acc_flag);					// Show data
+				// Set all event group bits for LED task synchronization
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_X_BIT);
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Y_BIT);
+				xEventGroupSetBits(ledEventGroup, ACCEL_READ_Z_BIT);
+			}
+			else if (!strcmp((char*)msg->payload, "Main")) {
+				// Update the system state
+				curr_sys_state = sMainMenu;
+
+				// Set event group bit to turn off all LEDs upon exiting accelerometer menu
+				xEventGroupSetBits(ledEventGroup, TURN_OFF_LEDS_BIT);
+
+				// Notify the main menu task
+				xTaskNotify(handle_main_menu_task, 0, eNoAction);
+			}
+			else {
+				xQueueSend(q_print, &msg_inv_acc, portMAX_DELAY);
+			}
+		}
+		else {
+			// If user input is longer than 4 characters, notify user of invalid response
+			xQueueSend(q_print, &msg_inv_acc, portMAX_DELAY);
+		}
+
+		// Notify self / accelerometer task if not returning to the main menu
+		if (sAccMenu == curr_sys_state)
+			xTaskNotify(handle_acc_task, 0, eNoAction);
+	}
+}
+
+/****************************************************
+ *  Private functions                               *
+ ****************************************************/
+

@@ -1,1 +1,3 @@
-2024-06-25 14:46:10,130 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2024-07-22 20:41:36,439 [ERROR] ConfigurationRetriever:142 - IOException on connection: Connect timed out
+2024-07-22 20:41:38,454 [ERROR] ConfigurationRetriever:142 - IOException on connection: Connect timed out
+2024-07-22 20:41:40,457 [ERROR] ConfigurationRetriever:142 - IOException on connection: Connect timed out

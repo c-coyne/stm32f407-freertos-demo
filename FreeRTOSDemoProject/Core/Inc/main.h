@@ -51,6 +51,10 @@ typedef enum {
 	sLedMenu,
 	sAccMenu,
 	sRtcMenu,
+	sMotorMenu,
+	sMotorAlgo,
+	sMotorParam,
+	sMotorSpeed,
 	sRtcDateConfig,
 	sRtcTimeConfig
 } system_state_t;
@@ -64,6 +68,7 @@ extern xTaskHandle handle_print_task;
 extern xTaskHandle handle_led_task;
 extern xTaskHandle handle_rtc_task;
 extern xTaskHandle handle_acc_task;
+extern xTaskHandle handle_motor_task;
 
 // Queue handles
 extern QueueHandle_t q_print;
@@ -71,7 +76,9 @@ extern QueueHandle_t q_data;
 
 // Timer handles
 extern TimerHandle_t handle_led_timer[4];
+extern TimerHandle_t motor_report_timer;
 extern RTC_HandleTypeDef hrtc;
+extern TIM_HandleTypeDef htim3;
 
 // Event group handles
 extern EventGroupHandle_t ledEventGroup;
@@ -98,6 +105,8 @@ extern UART_HandleTypeDef huart2;
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -108,6 +117,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CS_I2C_SPI_Pin GPIO_PIN_3
 #define CS_I2C_SPI_GPIO_Port GPIOE
+#define ENCODER_A_Pin GPIO_PIN_4
+#define ENCODER_A_GPIO_Port GPIOE
+#define ENCODER_A_EXTI_IRQn EXTI4_IRQn
+#define ENCODER_B_Pin GPIO_PIN_6
+#define ENCODER_B_GPIO_Port GPIOE
+#define ENCODER_B_EXTI_IRQn EXTI9_5_IRQn
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
 #define PC14_OSC32_IN_GPIO_Port GPIOC
 #define PC15_OSC32_OUT_Pin GPIO_PIN_15
@@ -144,6 +159,10 @@ void Error_Handler(void);
 #define LD6_GPIO_Port GPIOD
 #define I2S3_MCK_Pin GPIO_PIN_7
 #define I2S3_MCK_GPIO_Port GPIOC
+#define MOTOR_IN1_Pin GPIO_PIN_8
+#define MOTOR_IN1_GPIO_Port GPIOC
+#define MOTOR_IN2_Pin GPIO_PIN_9
+#define MOTOR_IN2_GPIO_Port GPIOC
 #define VBUS_FS_Pin GPIO_PIN_9
 #define VBUS_FS_GPIO_Port GPIOA
 #define OTG_FS_ID_Pin GPIO_PIN_10

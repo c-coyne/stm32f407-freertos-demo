@@ -456,7 +456,6 @@ void execute_led_effect(int effect)
  *       validate the value range explicitly. It relies on other components to handle invalid values.  *
  ******************************************************************************************************/
 
-
 int parse_freq_string(message_t *msg, int *freq_Hz)
 {
     // Check if the input string is at least 2 characters long (F and one digit)

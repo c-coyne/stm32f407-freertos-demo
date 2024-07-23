@@ -12,8 +12,8 @@
 |    pertaining to the on-board LEDs.                                                   |
 \*=====================================================================================*/
 
-#ifndef SRC_LEDMANAGER_CONFIG_LEDMANAGER_H_
-#define SRC_LEDMANAGER_CONFIG_LEDMANAGER_H_
+#ifndef CONFIG_LEDMANAGER_H_
+#define CONFIG_LEDMANAGER_H_
 
 /****************************************************
  *  Macros                                          *
@@ -48,4 +48,4 @@
 #define EVENT_GROUP_WAIT_TIME		100
 #define RTC_SEMAPHORE_WAIT_TIME		10
 
-#endif /* SRC_LEDMANAGER_CONFIG_LEDMANAGER_H_ */
+#endif /* CONFIG_LEDMANAGER_H_ */

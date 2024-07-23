@@ -12,8 +12,8 @@
 |    of the real time clock (RTC).                                                      |
 \*=====================================================================================*/
 
-#ifndef SRC_RTCMANAGER_RTCMANAGER_H_
-#define SRC_RTCMANAGER_RTCMANAGER_H_
+#ifndef RTCMANAGER_H_
+#define RTCMANAGER_H_
 
 /****************************************************
  *  Include files                                   *
@@ -27,4 +27,4 @@
 
 void rtc_task(void *param);
 
-#endif /* SRC_RTCMANAGER_RTCMANAGER_H_ */
+#endif /* RTCMANAGER_H_ */

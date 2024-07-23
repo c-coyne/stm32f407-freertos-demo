@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="SCL"/>
+		<item key="selection" value="SEGGER_SYSVIEW_RTT_BUF"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
-			<item value="SDA"/>
-			<item value="SCL"/>
-			<item value="audio"/>
-			<item value="GPIO_PIN_6"/>
-			<item value="GPIO_SPEED_FREQ_HIGH"/>
-			<item value="uart"/>
-			<item value="i2c"/>
-			<item value="I2C"/>
-			<item value="main_menu"/>
+			<item value="SEGGER_SYSVIEW_RTT_BUF"/>
+			<item value="SEGGER_SYSVIEW_RTT"/>
+			<item value="SEGGER_SYSVIEW_BUFFER"/>
+			<item value="SEGGER_SYSVIEW_"/>
+			<item value="version"/>
+			<item value="ersion"/>
+			<item value="48"/>
+			<item value="- 48"/>
+			<item value="-48"/>
 			<item value="msg_conf"/>
-			<item value="conf"/>
-			<item value="RTC_AM_PM_Definitions"/>
-			<item value="validate_rtc_information"/>
-			<item value="msg_rtc_menu"/>
-			<item value="rtc_config"/>
+			<item value="control_all_leds"/>
+			<item value="eventGroup"/>
+			<item value="control_single_led"/>
+			<item value="4000"/>
+			<item value="raw_data"/>
 		</list>
 		<list key="replacehistory">
+			<item value="ledEventGroup"/>
+			<item value="sensor_reading"/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
