@@ -3,6 +3,10 @@
 ## Overview
 This project is intended to demonstrate a variety of the features available within FreeRTOS and the STM32F407 discovery board, such as on-board LEDs, the real-time clock, discovery board accelerometer, and external DC motor. The project is intentionally limited to the STM32F407 discovery board with limited (optional) external components to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
 
+With the addition of motion control and interaction with the external DC motor in V1.1, this project can also be used as an educational platform for mechanical, electrical, or embedded software engineering students looking for a tangible system for intuitively grasping the intricacies and subtleties of PID motion control and beyond; as a rich debugging platform for learning interdisciplinary embedded system troubleshooting; as a simple circuitry project to understand basic concepts of electrical circuits, PWM, and control systems; and likely in a variety of other ways in an educational setting.
+
+**If you're interested in using this project in the context of a college course or similar, please feel free to reach out.** I would very much appreciate the opportunity to bring the joy of real-time operating systems and embedded software to the next generation of engineers, builders, and makers.
+
 ## Table of Contents
 
 1. [Overview](#overview)

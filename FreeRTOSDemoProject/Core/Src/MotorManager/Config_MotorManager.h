@@ -34,6 +34,7 @@
 #define MOTOR_INACTIVE				0
 #define MOTOR_ACTIVE				1
 #define MOTOR_SPEED_REPORTING		2
+#define MOTOR_INVALID_INPUT			3
 
 // Parameter initialization
 #define MIN_SPEED_INITIALIZATION	1000

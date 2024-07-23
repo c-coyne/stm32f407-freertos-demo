@@ -59,7 +59,7 @@ const char *msg_motor_menu = "\n======================================\n"
 		 	 	 	 	 	   " Algo  ---> Change motion control algorithm\n"
 							   " Param ---> Change algorithm parameter\n"
 							   " Rec   ---> Start motor speed reporting\n"
-							   " Speed ---> Change motor speed\n"
+							   " Speed ---> Change target speed\n"
 							   " Main  ---> Return to main menu\n\n"
 							   " Enter your selection here: ";
 
@@ -210,6 +210,11 @@ void motor_task(void *param)
 						xTaskNotify(handle_main_menu_task, 0, eNoAction);
 					}
 					else {
+						// Update the system state
+						curr_sys_state = sMotorMenu;
+						curr_motor_state = MOTOR_INVALID_INPUT;
+
+						// Notify user of invalid input
 						xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
 					}
 				}
@@ -542,7 +547,7 @@ void print_summary_report(void)
 	// Print results
 	static char showstats[250];
 	static char *stats = showstats;
-	sprintf((char*)showstats,   "* Elapsed time:       %03d    sec   *"
+	sprintf((char*)showstats,   "* Elapsed time:       %06d sec   *"
 							  "\n* Min speed:          %03d.%02d RPM   *"
 							  "\n* Max speed:          %03d.%02d RPM   *"
 			                  "\n* Average speed:      %03d.%02d RPM   *"

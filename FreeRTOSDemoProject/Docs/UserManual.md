@@ -23,7 +23,15 @@ This project creates a menu-based console for interacting with the STM32F407 dis
     - [Z](#z)
     - [All](#all)
     - [Main menu](#acc-return-to-main-menu)
-6. [SEGGER SystemView Traces](#segger-systemview-traces)
+6. [Motor Menu](#motor-menu)
+    - [Start](#start)
+    - [Stop](#stop)
+    - [Algo](#algo)
+    - [Param](#param)
+    - [Rec](#rec)
+    - [Speed](#speed)
+    - [Main menu](#motor-return-to-main-menu)
+7. [SEGGER SystemView Traces](#segger-systemview-traces)
     - [Overview](#overview-1)
     - [SEGGER SystemView in this project](#segger-systemview-in-this-project)
     - [SystemView setup](#systemview-setup)
@@ -153,6 +161,46 @@ Display the accelerometer reading for the Z-axis.
 Display the accelerometer reading for all axes.
 
 ### Acc: return to Main Menu
+
+Selecting `Main` will bring you back to the main menu.
+
+## Motor Menu
+
+This menu allows for interfacing with the only truly external device included in this project to date, which is a [Pololu 350 RPM, 12V, DC, 30:1 Metal Gearmotor with 64 CPR encoder](https://www.pololu.com/product/1443). This device requires proper electrical setup, so be sure to check the [system schematic](Img/SystemSchematic.png) for wiring details.
+
+<p align="center">
+  <img src="Img/MotorMenu.png" />
+</p>
+
+At any point, in the case of emergency, if the 12V power is cut off to the motor driver, the motor will stop spinning immediately.
+
+### Start
+
+Sending the `Start` command sets the `curr_motor_state` to `MOTOR_ACTIVE` and configures the H-bridge motor driver to supply power to the motor (i.e. sets IN1 low and IN2 high on the H-bridge). Note that 12V must be supplied prior to sending this command or the motor won't start spinning.
+
+### Stop
+
+Sending the `Stop` command sets the `curr_motor_state` to `MOTOR_INACTIVE` and configures the H-bridge motor driver to stop supplying power to the motor (i.e. sets both IN1 and IN2 lower on the H-bridge). 
+
+### Algo
+
+Sending the `Algo` command will allow for selection of the motion control algorithm, which is currently configured with only two available options: no motion control at all (`0`, corresponding to `None`), and PID motion control (`1`, corresponding to `PID`). Selecting `None` will turn off all algorithms, which is helpful in observing the discrepancy between the desired target speed and the actual rotational speed of the motor (predominantly due to the voltage drop within the H-bridge motor driver). Selecting `PID` will turn on PID motion control, which by default is only proportional control (no derivative or integral control), which will then allow the system to use feedback to adjust the PWM signal applied to the H-bridge motor driver to fine tune and stabilize the motor rotational speed.
+
+### Param
+
+Sending the `Param` command will allow for modification of the algorithm parameters. Given that the system currently incorporates only (1) no algorithms in place and (2) PID motion control, the parameter list is limited to `Kp`, `Kd`, and `Ki`. Each of these values can be adjusted from `0.000` to `9.999`. While the majority of this range will result in unstable systems, this project is intentionally developed as a learning platform to allow the user to observe the effects of a variety of parameters in the context of PID motion control for DC motor rotational speed.
+
+### Rec
+
+Sending the `Rec` command will start motor speed logging to the terminal window. The `curr_motor_state` is first set to `MOTOR_SPEED_REPORTING`, then an introductory report is published to the terminal noting the target speed, Kp value, Kd value, and Ki value. While the report is running, the MCU is calculating statistics behind the scenes. As soon as the user presses any key to stop speed logging, a summary statistics report is published detailing the elapsed time (sec); minimum, maximum, and average rotational speed (RPM) observed within the logging window; and standard deviation of rotational speed (RPM) during the logging window. Note that the elapsed time is counted via an `int` variable, so the maximum logging window is therefore 2,147,483,647 seconds ~= 68 years. However, the logging window will appear to roll over after every `999` seconds, as the elapsed time is shown as only a 3-digit value.
+
+### Speed
+
+Sending the `Speed` command allows for updating the system `target_speed`. If the desired target speed is larger than `MAX_MOTOR_SPEED`, the target speed will automatically be set to `MAX_MOTOR_SPEED`. This `MAX_MOTOR_SPEED` can be configured in `Config_MotorManager.h`, but note the practical limitation; although the maximum motor speed is rated for 350 RPM, the motor will not see the full 12V needed to achieve this speed due to the voltage drop across the H-bridge motor driver.
+
+Additionally, be mindful that unless a motion control algorithm is active, setting the target speed will have no effect on the output rotational speed of the motor. 
+
+### Motor: return to Main Menu
 
 Selecting `Main` will bring you back to the main menu.
 
