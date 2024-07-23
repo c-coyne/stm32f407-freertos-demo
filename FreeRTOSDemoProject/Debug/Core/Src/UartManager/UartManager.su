@@ -2,4 +2,4 @@
 ../Core/Src/UartManager/UartManager.c:138:6:message_handler_task	48	static
 ../Core/Src/UartManager/UartManager.c:169:6:print_task	32	static
 ../Core/Src/UartManager/UartManager.c:195:6:process_message	24	static
-../Core/Src/UartManager/UartManager.c:246:5:extract_command	32	static
+../Core/Src/UartManager/UartManager.c:247:5:extract_command	32	static

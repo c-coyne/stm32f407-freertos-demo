@@ -5,5 +5,5 @@
 ../Core/Src/LedManager/LedManager.c:347:6:control_led_group	2
 ../Core/Src/LedManager/LedManager.c:384:6:control_single_led	2
 ../Core/Src/LedManager/LedManager.c:413:6:execute_led_effect	7
-../Core/Src/LedManager/LedManager.c:460:5:parse_freq_string	6
-../Core/Src/LedManager/LedManager.c:496:5:freq_str_to_int	2
+../Core/Src/LedManager/LedManager.c:459:5:parse_freq_string	6
+../Core/Src/LedManager/LedManager.c:495:5:freq_str_to_int	2

@@ -37,10 +37,11 @@ void print_motor_on_report(void);
 void print_summary_report(void);
 void calculate_average(float data[], int len);
 void calculate_sd(float data[], int len);
-void split_float_into_ints(int *int_val, int *dec_val, float float_val);
+void split_float_into_ints(int *int_val, int *dec_val, float float_val, int dec_places);
 void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_cycle_percent);
 float pid_controller(float setpoint, float measured_value);
 int isNumeric(const char *str);
+int parse_param_string(message_t *msg);
 
 /****************************************************
  *  Messages                                        *
@@ -57,14 +58,23 @@ const char *msg_motor_menu = "\n======================================\n"
 							   " Start ---> Start the motor\n"
 							   " Stop  ---> Stop the motor\n"
 		 	 	 	 	 	   " Algo  ---> Change motion control algorithm\n"
+							   " Param ---> Change algorithm parameter\n"
 							   " Rec   ---> Start motor speed reporting\n"
 							   " Speed ---> Change motor speed\n"
 							   " Main  ---> Return to main menu\n\n"
 							   " Enter your selection here: ";
 
+// Algorithm
 const char *msg_motor_algo = "\n Enter algorithm here (0 = None, 1 = PID): ";
 const char *msg_valid_algo = "\n Confirmed: motor speed control algorithm updated\n";
 const char *msg_inv_algo = "\n***** Invalid algorithm selection *****\n";
+
+// Parameters
+const char *msg_valid_param = "\n Confirmed: algorithm parameter updated\n";
+const char *msg_motor_param = "\n Enter parameter (KpX.XXX, KdX.XXX, KeX.XXX): ";
+const char *msg_inv_param = "\n***** Invalid parameter selection *****\n";
+
+// Speed
 const char *msg_motor_speed = "\n Enter new motor speed (RPM): ";
 const char *msg_motor_speed_max = "\n Selection exceeds threshold.\n";
 const char *msg_valid_speed = "\n Confirmed: motor speed updated\n";
@@ -117,13 +127,15 @@ static volatile motor_algo_t motor_algo = 1; // 0 for no algorithm, 1 for PID
 
 /*******************************************************************************************************
  * @brief Task to handle motion control of the DC motor.											   *
- *  																								   *
- * This FreeRTOS task handles ...																	   *
  * 																									   *
- * @param param [void*] Parameter passed during task creation (not used in this task).                 *
+ * This FreeRTOS task handles the user interface and command processing for controlling the DC motor.  *
+ * It waits for notifications and processes commands to start, stop, configure, and report on the 	   *
+ * motor.																							   *
+ * 																									   *
+ * @param param [void*] Parameter passed during task creation (not used in this task).				   *
  * @return void																						   *
  * 																									   *
- * @note The print queue (`q_print`) and other required queues must be initialized.				 	   *
+ * @note The print queue (`q_print`) and other required queues must be initialized.					   *
  * @note The task must be notified when a new command is available.									   *
  ******************************************************************************************************/
 
@@ -166,6 +178,12 @@ void motor_task(void *param)
 						curr_sys_state = sMotorAlgo;
 						// Prompt user for algorithm selection
 						xQueueSend(q_print, &msg_motor_algo, portMAX_DELAY);
+					}
+					else if(!strcmp((char*)msg->payload, "Param")) {
+						// Update the system state
+						curr_sys_state = sMotorParam;
+						// Prompt user for algorithm selection
+						xQueueSend(q_print, &msg_motor_param, portMAX_DELAY);
 					}
 					else if(!strcmp((char*)msg->payload, "Rec")) {
 						// Set the motor state
@@ -215,7 +233,7 @@ void motor_task(void *param)
 					}
 					xTaskNotify(handle_motor_task, 0, eNoAction);
 				}
-				else if (sMotorAlgo == curr_sys_state || sMotorSpeed == curr_sys_state) {
+				else if (sMotorAlgo == curr_sys_state || sMotorSpeed == curr_sys_state || sMotorParam == curr_sys_state) {
 					xTaskNotify(handle_motor_task, 0, eNoAction);
 				}
 				break;
@@ -243,6 +261,24 @@ void motor_task(void *param)
 				else {
 					// If something longer than 1 digit is entered, this is incorrect
 					xQueueSend(q_print, &msg_inv_algo, portMAX_DELAY);
+				}
+				// Update system state
+				curr_sys_state = sMotorMenu;
+				// Send control back to motor task main menu
+				xTaskNotify(handle_motor_task, 0, eNoAction);
+				break;
+			case sMotorParam:
+				// Wait for the user to make a selection
+				xTaskNotifyWait(0, 0, &msg_addr, portMAX_DELAY);
+				msg = (message_t*)msg_addr;
+
+				// Process command
+				if(parse_param_string(msg)) {
+					xQueueSend(q_print, &msg_valid_param, portMAX_DELAY);
+				}
+				else {
+					// If invalid entry, notify the user
+					xQueueSend(q_print, &msg_inv_param, portMAX_DELAY);
 				}
 				// Update system state
 				curr_sys_state = sMotorMenu;
@@ -380,7 +416,7 @@ void print_motor_speed(void)
 	// Separate float into two integers
 	int speed_i = 0;
 	int speed_d = 0;
-	split_float_into_ints(&speed_i, &speed_d, motor_speed);
+	split_float_into_ints(&speed_i, &speed_d, motor_speed, 2);
 
 	// Display speed in RPM
 	sprintf((char*)showspeed, " [%03ds] Motor speed: %03d.%02d RPM\n", report_counter++, speed_i, speed_d);
@@ -412,10 +448,10 @@ void print_motor_on_report(void)
 	int kp_i = 0, kp_d = 0;
 	int ki_i = 0, ki_d = 0;
 	int kd_i = 0, kd_d = 0;
-	split_float_into_ints(&target_speed_i, &target_speed_d, target_speed);
-	split_float_into_ints(&kp_i, &kp_d, Kp);
-	split_float_into_ints(&ki_i, &ki_d, Ki);
-	split_float_into_ints(&kd_i, &kd_d, Kd);
+	split_float_into_ints(&target_speed_i, &target_speed_d, target_speed, 2);
+	split_float_into_ints(&kp_i, &kp_d, Kp, 3);
+	split_float_into_ints(&ki_i, &ki_d, Ki, 3);
+	split_float_into_ints(&kd_i, &kd_d, Kd, 3);
 
 	// Print results
 	static char showparams[250];
@@ -445,10 +481,10 @@ void print_summary_report(void)
 	int max_speed_i = 0, max_speed_d = 0;
 	int average_i = 0, average_d = 0;
 	int standard_dev_i = 0, standard_dev_d = 0;
-	split_float_into_ints(&min_speed_i, &min_speed_d, min_speed);
-	split_float_into_ints(&max_speed_i, &max_speed_d, max_speed);
-	split_float_into_ints(&average_i, &average_d, average);
-	split_float_into_ints(&standard_dev_i, &standard_dev_d, standard_dev);
+	split_float_into_ints(&min_speed_i, &min_speed_d, min_speed, 2);
+	split_float_into_ints(&max_speed_i, &max_speed_d, max_speed, 2);
+	split_float_into_ints(&average_i, &average_d, average, 2);
+	split_float_into_ints(&standard_dev_i, &standard_dev_d, standard_dev, 2);
 
 	// Print results
 	static char showstats[250];
@@ -483,11 +519,12 @@ void calculate_sd(float data[], int len)
 	standard_dev = sqrt(standard_dev / len);
 }
 
-void split_float_into_ints(int *int_val, int *dec_val, float float_val)
+void split_float_into_ints(int *int_val, int *dec_val, float float_val, int dec_places)
 {
 	// Separate float into two integers
+	int tens = pow(10, dec_places);
 	*int_val = (int)float_val;
-	*dec_val = (int)((float_val * 100) - (*int_val * 100));
+	*dec_val = (int)((float_val * tens) - (*int_val * tens));
 }
 
 void set_pwm_duty_cycle(TIM_HandleTypeDef *htim, uint32_t channel, uint8_t duty_cycle_percent)
@@ -546,4 +583,48 @@ int isNumeric(const char *str) {
         str++;
     }
     return 1; // All characters are digits or one decimal point
+}
+
+/*******************************************************************************************************
+ * @brief Checks the parameter string for validity and sets motor parameter if valid value.			   *
+ * 																									   *
+ * This function checks for valid input, then updates the specified PID parameter (Kp, Kd, or Ki) 	   *
+ * accordingly by converting the latter portion of the message into a float value.					   *
+ * 																									   *
+ * @param msg [message_t*] A pointer to the message structure containing the payload.				   *
+ * @return int Pass (1) or fail (0).																   *
+ ******************************************************************************************************/
+
+int parse_param_string(message_t *msg)
+{
+    // Check if the input string is 7 characters long (parameter name and float value)
+    int len = strlen((char *)msg->payload);
+    if (len != 7) return 0;
+
+    // Check if the first character is 'K'
+    if (msg->payload[0] != 'K') return 0;
+
+    // Check if the remaining characters form a float per the template
+    if(!isdigit(msg->payload[2])) return 0;
+    if(msg->payload[3] != '.') return 0;
+    if(!isdigit(msg->payload[4])) return 0;
+    if(!isdigit(msg->payload[5])) return 0;
+    if(!isdigit(msg->payload[6])) return 0;
+
+    // Determine which PID parameter to change
+    const uint8_t *ptr = &msg->payload[2];
+    if(msg->payload[1] == 'p') {			// Kp
+    	Kp = atof((const char *)ptr);
+    	return 1;
+    }
+    else if(msg->payload[1] == 'd') {		// Kd
+    	Kd = atof((const char *)ptr);
+    	return 1;
+    }
+    else if(msg->payload[1] == 'i') {		// Ki
+		Ki = atof((const char *)ptr);
+		return 1;
+	}
+
+    return 0;
 }

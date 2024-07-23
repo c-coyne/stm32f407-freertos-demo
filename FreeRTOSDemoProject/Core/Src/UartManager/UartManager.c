@@ -211,6 +211,7 @@ void process_message(message_t *msg) {
 			break;
 		case sMotorMenu:
 		case sMotorAlgo:
+		case sMotorParam:
 		case sMotorSpeed:
 			// Notify the motor task and pass the message
 			xTaskNotify(handle_motor_task, (uint32_t)msg, eSetValueWithOverwrite);

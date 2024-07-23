@@ -53,6 +53,7 @@ typedef enum {
 	sRtcMenu,
 	sMotorMenu,
 	sMotorAlgo,
+	sMotorParam,
 	sMotorSpeed,
 	sRtcDateConfig,
 	sRtcTimeConfig
