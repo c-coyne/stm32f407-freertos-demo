@@ -163,8 +163,8 @@ void motor_task(void *param)
 						// Set the motor state
 						curr_motor_state = MOTOR_ACTIVE;
 						// Configure the H-bridge for forward rotation
-						HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin, GPIO_PIN_RESET);
-						HAL_GPIO_WritePin(MOTOR_IN2_GPIO_Port, MOTOR_IN2_Pin, GPIO_PIN_SET);
+						HAL_GPIO_WritePin(MOTOR_IN1_GPIO_Port, MOTOR_IN1_Pin, GPIO_PIN_SET);
+						HAL_GPIO_WritePin(MOTOR_IN2_GPIO_Port, MOTOR_IN2_Pin, GPIO_PIN_RESET);
 					}
 					else if(!strcmp((char*)msg->payload, "Stop")) {
 						// Set the motor state
@@ -219,6 +219,10 @@ void motor_task(void *param)
 					}
 				}
 				else {
+					// Update the system state
+					curr_sys_state = sMotorMenu;
+					curr_motor_state = MOTOR_INVALID_INPUT;
+
 					// If user input is longer than 5 characters, notify user of invalid response
 					xQueueSend(q_print, &msg_inv_motor, portMAX_DELAY);
 				}
@@ -352,18 +356,18 @@ void motor_gpio_callback(uint16_t GPIO_Pin)
     if (GPIO_Pin == ENCODER_A_GPIO_Pin) {
         if (a != last_a) {
             if (a == b) {
-                encoder_count++;
-            } else {
                 encoder_count--;
+            } else {
+                encoder_count++;
             }
             last_a = a;
         }
     } else if (GPIO_Pin == ENCODER_B_GPIO_Pin) {
         if (b != last_b) {
             if (a == b) {
-                encoder_count--;
-            } else {
                 encoder_count++;
+            } else {
+                encoder_count--;
             }
             last_b = b;
         }
