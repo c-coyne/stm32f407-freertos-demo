@@ -1,9 +1,13 @@
 # STM32F407 FreeRTOS Demo Project
 
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0660.jpg" alt="STM32F407G-DISC1 FreeRTOS project setup"/>
+</p>
+
 ## Overview
 This project is intended to demonstrate a variety of the features available within FreeRTOS and the STM32F407 discovery board, such as on-board LEDs, the real-time clock, discovery board accelerometer, and external DC motor. The project is intentionally limited to the STM32F407 discovery board with limited (optional) external components to minimize the amount of hardware required to set up the project and run. The application is rather simple, given that we're just exploring the development board and not necessarily "achieving" anything functional. Nonetheless, the project sets up multiple tasks to interact with various peripherals (ex. GPIO, UART, and RTC) and therefore hopefully serves as a somewhat comprehensive example of FreeRTOS in action, highlighting task management, inter-task communication, and peripheral interfacing.
 
-With the addition of motion control and interaction with the external DC motor in V1.1, this project can also be used as an educational platform for mechanical, electrical, or embedded software engineering students looking for a tangible system for intuitively grasping the intricacies and subtleties of PID motion control and beyond; as a rich debugging platform for learning interdisciplinary embedded system troubleshooting; as a simple circuitry project to understand basic concepts of electrical circuits, PWM, and control systems; and likely in a variety of other ways in an educational setting.
+With the addition of motion control and interaction with the external DC motor in V1.1, this project can also be used as an educational platform for mechanical, electrical, or embedded software engineering students looking for a tangible system for intuitively grasping the intricacies and subtleties of PID motion control and beyond; as a rich debugging platform for learning interdisciplinary embedded system troubleshooting; as a simple circuitry project to understand basic concepts of electrical circuits, PWM, and control systems; and likely in a variety of other ways in an educational setting. This project is not a productionalized anything. It's a platform for learning, so everything is intentionally kept at the prototype level (as can be seen in the image below of the wiring!) to allow for modification and customization to help achieve the learner's educational objectives.
 
 **If you're interested in using this project in the context of a college course or similar, please feel free to reach out.** I would very much appreciate the opportunity to bring the joy of real-time operating systems and embedded software to the next generation of engineers, builders, and makers.
 
@@ -29,9 +33,10 @@ With the addition of motion control and interaction with the external DC motor i
    - [UART Manager](#uart-manager-_________________________________________________________)
 7. [Communication Mechanisms](#communication-mechanisms)
 8. [Diagrams](#diagrams)
-9. [License](#license)
-10. [Contact](#contact)
-11. [Acknowledgements](#acknowledgements)
+9. [Gallery](#gallery)
+10. [License](#license)
+11. [Contact](#contact)
+12. [Acknowledgements](#acknowledgements)
 
 ## Features
 - **Task Management:** Demonstrates the creation and management of multiple FreeRTOS tasks.
@@ -64,6 +69,10 @@ FreeRTOSDemoProject/
 | | | ├── Config_LedManager.h
 | | | ├── LedManager.h
 | | | └── LedManager.c
+│ │ ├── MotorManager/
+| | | ├── Config_MotorManager.h
+| | | ├── MotorManager.h
+| | | └── MotorManager.c
 │ │ ├── RtcManager/
 | | | ├── Config_RtcManager.h
 | | | ├── RtcManager.h
@@ -72,10 +81,6 @@ FreeRTOSDemoProject/
 | | | ├── Config_UartManager.h
 | | | ├── UartManager.h
 | | | └── UartManager.c
-│ │ ├── MotorManager/
-| | | ├── Config_MotorManager.h
-| | | ├── MotorManager.h
-| | | └── MotorManager.c
 │ │ ├── main.c
 │ │ ├── stm32f4xx_hal_msp.c
 │ │ ├── stm32f4xx_hal_timebase_tim.c
@@ -85,22 +90,26 @@ FreeRTOSDemoProject/
 │ │ └── system_stm32f4xx.c
 | ├── Startup/
 ├── Debug/
-├── Drivers/
-│ ├── CMSIS/
-│ └── STM32F4XX_HAL_Driver/
-├── ThirdParty/
-│ └── FreeRTOS/
-├── Debug/
 ├── Docs/
 │ ├── Communication/
 │ │ ├── EventGroups.md
 │ │ ├── Queues.md
 │ │ └── Semaphores.md
+│ └── F4Discovery/
+│ └── Img/
+│ └── Rec/
 │ └── Tasks/
 │ │ ├── AccManager.md
 │ │ ├── LedManager.md
 │ │ ├── RtcManager.md
 │ │ └── UartManager.md
+│ └── UserManual.md
+├── Drivers/
+│ ├── CMSIS/
+│ └── STM32F4XX_HAL_Driver/
+├── ThirdParty/
+│ └── FreeRTOS/
+│ └── SEGGER/
 └── README.md
 ```
 
@@ -220,6 +229,37 @@ SEGGER SystemView is already integrated into this project. The [User Manual](Fre
 ## Diagrams
 
 See [task](FreeRTOSDemoProject/Docs/Tasks) and [communication](FreeRTOSDemoProject/Docs/Communication) documentation for data flow and sequence diagrams.
+
+## Gallery
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0633.jpg" alt="Front view"/>
+</p>
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0639.jpg" alt="Top view"/>
+</p>
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0642.jpg" alt="View #1"/>
+</p>
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0645.jpg" alt="View #2"/>
+</p>
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0648.jpg" alt="View #2 (no cover)"/>
+</p>
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0651.jpg" alt="View #3"/>
+</p>
+
+<p align="center">
+  <img src="FreeRTOSDemoProject/Docs/Img/0654.jpg" alt="View #4"/>
+</p>
+
 
 ## License
 
